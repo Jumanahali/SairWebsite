@@ -2,8 +2,7 @@
 body, html {
   margin: 0;
   padding: 0;
-  height: 100%;
-  font-family: 'poppins';  /* Global font for consistency */
+  height: 100%; /* Global font for consistency */
 }
 
 p {
