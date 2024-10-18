@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation
-import '../EmployerHome.css'; 
-import SAIRlogo from '../images/SAIRlogo.png'; 
+import '../App.css'; 
+import SAIRLogo from '../images/SAIRLogo.png'; 
 import logoutIcon from '../images/logout.png'; 
 import profileIcon from '../images/Profile.PNG'; 
 import driversIcon from '../images/drivers.png'; 
 import motorcyclesIcon from '../images/motorcyle.png'; 
 import violationsIcon from '../images/violation.png';
 import complaintsIcon from '../images/complaint.png'; 
-import crashesIcon from '../images/crash.png'; 
+import crashesIcon from '../images/crash.png';
+import back from '../images/back.jpg'; 
 import { auth, db } from '../firebase'; 
 import { doc, getDoc } from 'firebase/firestore'; 
 
@@ -57,66 +58,38 @@ const EmployeeHome = () => {
   };
 
   return (
-    <div className="employer-home">
-      {/* Header section */}
-      <header className="header">
-        <img src={SAIRlogo} alt="SAIR Logo" className="logo" />
-        <div className="user-info">
-          <img
-            src={logoutIcon}
-            alt="Logout"
-            className="logout-icon"
-            onClick={handleLogout} // Call the logout function
-            style={{ cursor: 'pointer' }} // Make it look clickable
-          />
-          <div className="profile-section">
-            <img
-              src={profileIcon}
-              alt="Profile"
-              className="profile-icon"
-              onClick={() => handleNavigation('/employee-profile')} // Call the profile function
-              style={{ cursor: 'pointer' }} // Make it look clickable
-            />
-            <span>{userName ? userName : ""}</span> {/* Display the first name or 'Loading...' */}
+    <div className="Header"> 
+      <header>
+        <nav>
+          <a onClick={() => handleNavigation('/Employeehomepage')}>
+            <img className="logo" src={SAIRLogo} alt="SAIR Logo"/>
+          </a>
+          <div className="nav-links" id="navLinks">
+            <ul>
+              <li><a  onClick={() => navigate('/employer-home')}>Home</a></li>
+              <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+              <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
+              <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
+              <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+              <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
+              <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+            </ul>
           </div>
-        </div>
+          <button className="logoutBu" onClick={handleLogout}>
+            <img className="logout" src={logoutIcon} alt="Logout"/>
+          </button>
+        </nav>
       </header>
-
-      {/* Horizontal line */}
-      <hr />
-
-     
-      <main className="body">
-        <h2>Welcome {userName ? userName : ""}!</h2>
-
-       
-        <div className="navigation-list">
-          <div className="nav-item" onClick={() => handleNavigation('/driverslist')}>
-            <img src={driversIcon} alt="Drivers List" className="nav-icon" />
-            <span>Drivers List</span>
-          </div>
-          <div className="nav-item" onClick={() => handleNavigation('/motorcycleslist')}>
-            <img src={motorcyclesIcon} alt="Motorcycles List" className="nav-icon" />
-            <span>Motorcycles List</span>
-          </div>
-          <div className="nav-item" onClick={() => handleNavigation('/violations')}>
-            <img src={violationsIcon} alt="Violations" className="nav-icon" />
-            <span>Violations List</span>
-          </div>
-          <div className="nav-item" onClick={() => handleNavigation('/complaints')}>
-            <img src={complaintsIcon} alt="Complaints" className="nav-icon" />
-            <span>Complaints List</span>
-          </div>
-          <div className="nav-item" onClick={() => handleNavigation('/crashes')}>
-            <img src={crashesIcon} alt="Crashes" className="nav-icon" />
-            <span>Crashes List</span>
-          </div>
-          <div className="nav-item" onClick={() => handleNavigation('/employee-profile')}>
-            <img src={profileIcon} alt="Profile" className="nav-icon" />
-            <span>Employee Profile</span>
-          </div>
-        </div>
-      </main>
+      <div className="text-box">
+        <h1>SAIR Vision</h1>
+        <p>
+          SAIR initiative seeks to enhance road safety through advanced monitoring and ensure the safety of delivery motorcycle drivers.
+          By equipping the General Department of Traffic (GDT), employers, and drivers with essential tools, it aims to reduce violations and accidents,
+          promoting a safer environment for everyone on the road. The system ultimately fosters a culture of accountability and safety. 
+          Through these measures, SAIR empowers all stakeholders to contribute to a safer and more efficient delivery ecosystem.
+        </p>
+        <a onClick={() => handleNavigation('/violations')} className="hero-btn">View Violations</a>
+      </div>
     </div>
   );
 };
