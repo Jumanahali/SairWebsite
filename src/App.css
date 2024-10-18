@@ -328,11 +328,9 @@ nav {
 .Header {
 min-height: 100vh;
 width: 100%;
-background-image: linear-gradient(rgba(4, 9, 30, 0), rgba(4, 9, 30)),
-url(back.jpg);
 
-background-position: center;
-background-size: cover;
+/* background-position: center;
+background-size: cover; */
 position: relative;
 }
 header{

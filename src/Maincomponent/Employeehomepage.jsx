@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import '../App.css'; 
-import SAIRLogo from '../images/SAIRLogo.png'; 
+import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png'; 
 import profileIcon from '../images/Profile.PNG'; 
 import driversIcon from '../images/drivers.png'; 
