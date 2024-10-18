@@ -1,427 +1,430 @@
 import React, { useEffect, useState } from 'react';
-import { db, auth } from '../firebase'; // Adjust the import path based on your project
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import successImage from '../images/Sucess.png';
-import errorImage from '../images/Error.png';
-import TrashIcon from '../images/Trash.png';
-import PencilIcon from '../images/pencil.png';
-import SAIRlogo from '../images/SAIRlogo.png';
-import ProfileImage from '../images/Profile.PNG';
-import LogoutIcon from '../images/logout.png';
-import { useNavigate } from 'react-router-dom';
-
-
+import { db } from '../firebase'; 
+import { useNavigate } from 'react-router-dom'; 
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import successImage from '../images/Sucess.png'; 
+import errorImage from '../images/Error.png'; 
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import { getAuth, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 
 const Profile = () => {
     const [Employer, setEmployer] = useState({
         Fname: '',
         Lname: '',
         commercialNumber: '',
-        Email: '',
+        EmployeerEmail:'',
         PhoneNumber: '',
         CompanyName: '',
         CompanyEmail: '',
-        Password: '',
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: '',
     });
-    const [editableField, setEditableField] = useState(null);
-    const [tempValue, setTempValue] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [popupVisible, setPopupVisible] = useState(false);
+    
+    const [originalEmployerData, setOriginalEmployerData] = useState({});
+    const [editMode, setEditMode] = useState(false);
+    const [validationMessages, setValidationMessages] = useState({
+        phoneError: '',
+        commercialNumberError: '',
+        emailError: '',
+        confirmPasswordError: '',
+        emailperError:'',
+        currentPasswordError:'',
+        currentPasswordsuccess:'',
+    });
+
+    const [loading, setLoading] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
-    const [popupImage, setPopupImage] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [companyEmailError, setCompanyEmailError] = useState('');
-    const [phoneError, setPhoneError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [confirmationError, setConfirmationError] = useState('');
-    const [currentUserName, setCurrentUserName] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordRequirements, setPasswordRequirements] = useState({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false,
+    });
+    const [currentPassValid, setCurrentPassValid] = useState(false); // New state for current password validity
     const navigate = useNavigate();
 
-
-
-    // Fetch employer data from Firestore
     useEffect(() => {
-    const employerUID = sessionStorage.getItem('employerUID'); // Get the stored UID
-    if (!employerUID) {
-        setError('Employer UID not found');
-        setLoading(false);
-        return;
-    }
-
-    const fetchEmployer = async () => {
-        try {
+        const employerUID = sessionStorage.getItem('employerUID');
+        const fetchEmployer = async () => {
             const docRef = doc(db, 'Employer', employerUID);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                setCurrentUserName(docSnap.data().Fname);
-                setEmployer(docSnap.data());
+                const data = docSnap.data();
+                setEmployer(data);
+                setOriginalEmployerData(data); // Store original data for cancel functionality
             } else {
-                setError('Employer not found');
+                setPopupMessage('Employer not found');
             }
-        } catch (err) {
-            setError('Error fetching employer data');
+        }; 
+
+        fetchEmployer();
+    }, []);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setEmployer({ ...Employer, [name]: value });
+
+        
+
+        switch (name) {
+            case 'PhoneNumber':
+                setValidationMessages((prev) => ({ ...prev, phoneError: validatePhoneNumber(value) }));
+                break;
+            case 'commercialNumber':
+                setValidationMessages((prev) => ({ ...prev, commercialNumberError: validateCommercialNumber(value) }));
+                break;
+            case 'EmployeerEmail':
+                setValidationMessages((prev) => ({ ...prev, emailperError: validateEmail(value) }));
+                break;
+            case 'CompanyEmail':
+                setValidationMessages((prev) => ({ ...prev, emailError: validateEmail(value) }));
+                break;
+            case 'newPassword':
+                setPasswordRequirements({
+                    length: value.length >= 8,
+                    uppercase: /[A-Z]/.test(value),
+                    lowercase: /[a-z]/.test(value),
+                    number: /\d/.test(value),
+                    special: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+                });
+                break;
+            case 'currentPassword':
+                    // Check if the current password is correct (this will be done on submit)
+                    break;
+            default:
+                break;
+        }
+    };
+
+    const validatePhoneNumber = (phoneNumber) => {
+        const phoneRegex = /^\+966\d{9}$/;
+        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +966 and be followed by 9 digits.';
+    }; 
+
+    const validateCommercialNumber = (number) => {
+        const numberRegex = /^\d{10}$/;
+        return numberRegex.test(number) ? '' : 'Commercial number must be exactly 10 digits long.';
+    };
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email) ? '' : 'Please enter a valid email address.';
+    };
+
+
+    const handleVerifyCurrentPassword = async () => {
+        if (!Employer.currentPassword) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                currentPasswordError: 'Please enter your current password to verify.',
+            }));
+            return;
+        }
+    
+        const auth = getAuth();
+        const user = auth.currentUser;
+    
+        try {
+            const credential = EmailAuthProvider.credential(
+                user.email,
+                Employer.currentPassword
+            );
+    
+            await reauthenticateWithCredential(user, credential);
+            setCurrentPassValid(true);
+            setValidationMessages((prev) => ({
+                ...prev,
+                currentPasswordError: '',
+            }));
+            
+            setValidationMessages((prev) => ({
+                ...prev,
+                currentPasswordsuccess: 'Current password verified successfully.',
+            }));
+        } catch (error) {
+            console.error("Error verifying current password:", error);
+            setCurrentPassValid(false);
+            setValidationMessages((prev) => ({
+                ...prev,
+                currentPasswordError: 'Incorrect current password. Please try again.',
+            }));
+        }
+    };
+    
+
+
+    
+    const handleSave = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+    
+        // Check for validation errors
+        if (Object.values(validationMessages).some(msg => msg)) {
+            setPopupMessage('Please fix validation errors.');
+            setLoading(false);
+            return;
+        }
+    
+        // Check if new passwords match
+        if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                confirmNewPasswordError: 'New passwords do not match.',
+            }));
+            setLoading(false);
+            return;
+        }
+    
+        const employerUID = sessionStorage.getItem('employerUID');
+        const auth = getAuth();
+        const user = auth.currentUser;
+    
+        try {
+            // Update the Firestore document first (except password)
+            const docRef = doc(db, 'Employer', employerUID);
+            const updateData = { ...Employer };
+            delete updateData.currentPassword;
+            delete updateData.newPassword;
+            delete updateData.confirmNewPassword;
+    
+            await updateDoc(docRef, updateData);
+    
+            // If a new password is provided, re-authenticate and update it
+            if (Employer.newPassword) {
+                const credential = EmailAuthProvider.credential(
+                    user.email,
+                    Employer.currentPassword // Use current password for re-authentication
+                );
+    
+                // Re-authenticate and then update the password
+                await reauthenticateWithCredential(user, credential);
+                await updatePassword(user, Employer.newPassword);
+            }
+    
+            setPopupMessage('Profile updated successfully.');
+            setEditMode(false);
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            
+                setPopupMessage('Failed to update profile.');
+            
         } finally {
             setLoading(false);
         }
     };
 
-    fetchEmployer();
-}, []);
-
-    // Handle field edit
-    const handleEditClick = (field) => {
-        setEditableField(field);
-        setTempValue(Employer[field]); // Store current value for editing
-        if (field === 'Password') {
-            setConfirmPassword('');
-            setIsEditing(true); // Set editing mode for password
-        }
-    };
-
-    // Handle change in input
-    const handleChange = (e) => {
-        const value = e.target.value;
-        setTempValue(value);
-        if (editableField === 'Email') {
-            const error = validateEmail(value);
-            setEmailError(error);
-        } else if (editableField === 'CompanyEmail') {
-            const error = validateEmail(value);
-            setCompanyEmailError(error);
-        }
-        if (editableField === 'PhoneNumber') {
-            const error = validatePhoneNumber(value);
-            setPhoneError(error); // Set error state if validation fails
-        }
-        if (editableField === 'Password') {
-            const error = validatePassword(value);
-            setPasswordError(error); // Set error state if validation fails
-        }
-    };
-
-    const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value);
-        setConfirmationError('');
-    };
-
-    // Save the updated profile
-    const handleSave = async (field) => {
-        try {
-            if (field === 'Password' && tempValue !== confirmPassword) {
-                setError('Passwords do not match!');
-                return;
-            }
-
-            const updatedData = { ...Employer, [field]: tempValue };
-            setEmployer(updatedData);
-
-            const docRef = doc(db, 'Employer', employerUID);
-            await updateDoc(docRef, { [field]: tempValue });
-
-            setPopupMessage(field+' updated successfully');
-            setPopupImage(successImage);
-            setPopupVisible(true);
-
-            // Reset edit state
-            setEditableField(null);
-            setConfirmPassword('');
-            setTempValue('');
-        } catch (error) {
-            setPopupMessage('Failed to update profile');
-            setPopupImage(errorImage);
-            setPopupVisible(true);
-        } finally {
-            setEmailError('');
-            setCompanyEmailError('');
-            setPhoneError('');
-            setPasswordError('');
-            setConfirmationError(''); // Clear any confirmation error after the process
-        }
-    };
-
-    // Handle pop-up close
-    const handleClosePopup = () => {
-        setPopupVisible(false);
-    };
-
-    const validateEmail = (email) => {
-        if (email.trim() === '') {
-            return '';
-        }
-        const emailRegex = /\S+@\S+\.\S+/;
-        return emailRegex.test(email) ? '' : 'Invalid email address';
-    };
-
-    const validatePhoneNumber = (phoneNumber) => {
-        if (phoneNumber.trim() === '') {
-            return '';
-        }
-        const phoneRegex = /^\+?\d{10}$/; // Allows optional + followed by exactly 10 digits
-        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +966 and be followed by 9 digits.';
-    };
-
-    const validatePassword = (Password) => {
-        if (Password.trim() === '') {
-            return '';
-        }
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=]).{8,}$/;
-        return passwordRegex.test(Password) ? '' : 'Password must contain 8+ characters, including uppercase, lowercase, number, and special character.';
-    };
-
-    const handleLogout = () => {
-      console.log('Logout initiated');
-      auth.signOut().then(() => {
-          console.log('Logout successful');
-          navigate('/'); 
-      }).catch((error) => {
-          console.error('Error LOGGING out:', error);
-      });
-  };
-
-    // Handle cancel
     const handleCancel = () => {
-        setEditableField(null);
-        setTempValue('');
-        setConfirmPassword(''); // Reset confirm password
-        setEmailError('');
-        setCompanyEmailError('');
-        setPhoneError('');
-        setPasswordError('');
-        setConfirmationError('');
-        setIsEditing(false);
+        setEmployer(originalEmployerData); // Restore original data
+        setEditMode(false); // Exit edit mode
+        setValidationMessages({ // Clear validation messages
+            phoneError: '',
+            commercialNumberError: '',
+            emailError: '',
+            confirmPasswordError: '',
+            newPassword: '',
+            confirmNewPassword: '',
+        });
+          // Reset password requirements to default (all false)
+    setPasswordRequirements({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false,
+    });
+    setCurrentPassValid(false); // Reset current password verification
+
     };
-    const handleNavigation = (path) => {
-      navigate(path);
-  };
+    
 
-    if (error) return <p>{error}</p>;
-
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     return (
-      
         <div className="profile-container">
-            <header className="header-container">
-                <img src={SAIRlogo} alt="SAIR logo" className="logo-image" />
-                <div className="user-info-container">
-                    <button className="logout-button" onClick={handleLogout}><img className='logout-icon' src={LogoutIcon} alt="Logout" /></button>
-                    <div className="profile-section-container">
-                        <img id='profile-image' src={ProfileImage} alt="Profile" />
-                        <span id='name'>{currentUserName}</span>
-                    </div>
-                </div>
-            </header>
-
-            <nav className="navbar-container">
-                <a onClick={() => handleNavigation('/employer-home')}>Home</a>
-                <a onClick={() => handleNavigation('/violations')}>Violations List</a>
-                <a onClick={() => handleNavigation('/crashes')}>Crashes List</a>
-                <a onClick={() => handleNavigation('/complaints')}>Complaints List</a>
-                <a onClick={() => handleNavigation('/driverslist')}>Drivers List</a>
-                <a onClick={() => handleNavigation('/motorcycleslist')}>Motorcycles List</a>
-                <a onClick={() => handleNavigation('/employee-profile')}>Profile page</a>
-            </nav>
-
-            <hr />
             <h1>My Profile</h1>
-            <div className="profile-fieldpro">
-                <label className='prolabel'>First Name</label>
-                {editableField === 'Fname' ? (
-                    <>
-                        <input type="text" value={tempValue} onChange={handleChange} />
-                        <button className='edit' onClick={() => handleSave('Fname')}                          disabled={ !tempValue} // Disable save if fields are empty
-                        >Save</button>
-                        <button className='edit' onClick={handleCancel}>Cancel</button>
-                    </>
-                ) : (
-                    <>
-                        <div>
+            <form onSubmit={handleSave}>
+                <div>
+                    <label>First Name</label>
                     <input
-                    type="text"
-                    value={Employer.Fname}
-                    readOnly
-                />
-                   <button className='edit' onClick={() => handleEditClick('Fname')}>Edit</button>
+                        type="text"
+                        name="Fname"
+                        value={Employer.Fname}
+                        onChange={handleChange}
+                        disabled={!editMode}
+                       required 
+                    />
                 </div>
-                    </>
-                )}
-            </div>
-
-           
-            <div className="profile-fieldpro">
-                <label className='prolabel'>Last Name</label>
-                {editableField === 'Lname' ? (
-                    <>
-                        <input type="text" value={tempValue} onChange={handleChange} />
-                        <button className='edit' onClick={() => handleSave('Lname')}                          disabled={ !tempValue} // Disable save if fields are empty
-                        >Save</button>
-                        <button className='edit' onClick={handleCancel}>Cancel</button>
-                    </>
-                ) : (
-                    <>
-                        <div>
+                <div>
+                    <label>Last Name</label>
                     <input
-                    type="text"
-                    value={Employer.Lname}
-                    readOnly
-                />
-                   <button className='edit' onClick={() => handleEditClick('Lname')}>Edit</button>
+                        type="text"
+                        name="Lname"
+                        value={Employer.Lname}
+                        onChange={handleChange}
+                        disabled={!editMode}
+                        required
+                    />
                 </div>
-                    </>
-                )}
-            </div>
-
-            <div className="profile-fieldpro">
-    <label className='prolabel'>Commercial Number</label><br></br>
-    <input
-        type="text"
-        value={Employer.commercialNumber} 
-        readOnly 
-    />
-</div>
-
-
-<div className="profile-fieldpro">
-                <label className='prolabel'>Email</label>
-                {editableField === 'Email' ? (
-                    <>
-                        <input type="text" value={tempValue} onChange={handleChange} />
-                        <button className='edit' onClick={() => handleSave('Email')}                          disabled={ !tempValue} // Disable save if fields are empty
-                        >Save</button>
-                        <button className='edit' onClick={handleCancel}>Cancel</button>
-                    </>
-                ) : (
-                    <>
-                        <div>
+                <div>
+                    <label>Email</label>
                     <input
-                    type="text"
-                    value={Employer.Email}
-                    readOnly
-                />
-                   <button className='edit' onClick={() => handleEditClick('Email')}>Edit</button>
+                        type="email"
+                        name="EmployeerEmail"
+                        value={Employer.EmployeerEmail}
+                        onChange={handleChange}
+                        disabled={!editMode}
+                        required
+                    />
+                    {validationMessages.emailperError && <p style={{ color: 'red' }}>{validationMessages.emailperError}</p>}
                 </div>
-                        
-                    </>
-                )}
-                            {emailError && <p style={{ color: 'red', margin: '0 0 0.5rem 0' }}>{emailError}</p>} 
-
-            </div>
-
-            <div className="profile-fieldpro">
-                <label className='prolabel'>Phone Number</label>
-                {editableField === 'PhoneNumber' ? (
-                    <>
-                        <input type="tel" value={tempValue} onChange={handleChange} />
-                        <button className='edit' onClick={() => handleSave('PhoneNumber')}                          disabled={ !tempValue} // Disable save if fields are empty
-                        >Save</button>
-                        <button className='edit' onClick={handleCancel}>Cancel</button>
-                    </>
-                ) : (
-                    <>
-                        <div>
+                <div>
+                    <label>Phone Number</label>
                     <input
-                    type="text"
-                    value={Employer.PhoneNumber}
-                    readOnly
-                />
-                   <button className='edit' onClick={() => handleEditClick('PhoneNumber')}>Edit</button>
+                        type="tel"
+                        name="PhoneNumber"
+                        value={Employer.PhoneNumber}
+                        onChange={handleChange}
+                        disabled={!editMode}
+                        required
+                    />
+                    {validationMessages.phoneError && <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>}
                 </div>
-                    </>
-                )}
-                {phoneError && <p style={{ color: 'red', margin: '0 0 0.5rem 0' }}>{phoneError}</p>} 
-
-            </div>
-
-            <div className="profile-fieldpro">
-                <label className='prolabel'>Company Name</label>
-                {editableField === 'CompanyName' ? (
-                    <>
-                        <input type="text" value={tempValue} onChange={handleChange} />
-                        <button className='edit' onClick={() => handleSave('CompanyName')}                          disabled={ !tempValue} // Disable save if fields are empty
-                        >Save</button>
-                        <button className='edit' onClick={handleCancel}>Cancel</button>
-                    </>
-                ) : (
-                    <>
-                       <div>
+                <div>
+                    <label>Commercial Number</label>
                     <input
-                    type="text"
-                    value={Employer.CompanyName}
-                    readOnly
-                />
-                   <button className='edit' onClick={() => handleEditClick('CompanyName')}>Edit</button>
+                        type="text"
+                        name="commercialNumber"
+                        value={Employer.commercialNumber}
+                        onChange={handleChange}
+                        disabled={!editMode}
+                        required
+                    />
+                    {validationMessages.commercialNumberError && <p style={{ color: 'red' }}>{validationMessages.commercialNumberError}</p>}
                 </div>
-                    </>
-                )}
-
-            </div>
-
-            <div className="profile-fieldpro">
-                <label className='prolabel'>Company Email</label>
-                {editableField === 'CompanyEmail' ? (
-                    <>
-                        <input type="email" value={tempValue} onChange={handleChange} />
-                        <button className='edit' onClick={() => handleSave('CompanyEmail')}                          disabled={ !tempValue} // Disable save if fields are empty
-                        >Save</button>
-                        <button className='edit' onClick={handleCancel}>Cancel</button>
-                    </>
-                ) : (
-                    <>
-                        <div>
+                <div>
+                    <label>Company Name</label>
                     <input
-                    type="text"
-                    value={Employer.CompanyEmail}
-                    readOnly
-                />
-                   <button className='edit' onClick={() => handleEditClick('CompanyEmail')}>Edit</button>
+                        type="text"
+                        name="CompanyName"
+                        value={Employer.CompanyName}
+                        onChange={handleChange}
+                        disabled={!editMode}
+                        required
+                    />
                 </div>
-                    </>
-                )}
-                            {companyEmailError && <p style={{ color: 'red', margin: '0 0 0.5rem 0' }}>{companyEmailError}</p>} 
+                <div>
+                    <label>Company Email</label>
+                    <input
+                        type="text"
+                        name="CompanyEmail"
+                        value={Employer.CompanyEmail}
+                        onChange={handleChange}
+                        disabled={!editMode}
+                        required
+                    />
+                    {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
+                </div>
+                {editMode && (
+    <>
+        <div>
+            <label>Current Password</label>
+            <input
+                type={showPassword ? "text" : "password"}
+                name="currentPassword"
+                value={Employer.currentPassword}
+                onChange={handleChange}
+                required={Employer.newPassword ? true : false} // Only required if newPassword is entered
+                            />
+                            <button type="button" onClick={handleVerifyCurrentPassword}>
+                                Verify
+                            </button>
+             <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+                <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+            </span>
+            {validationMessages.currentPasswordError && (
+        <p style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
+            <i className="fas fa-times-circle" style={{ marginRight: '5px', color: 'red' }}></i>
+            {validationMessages.currentPasswordError}
+        </p>
+    )}
+    {currentPassValid && !validationMessages.currentPasswordError && (
+        <p style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
+            <i className="fas fa-check-circle" style={{ marginRight: '5px', color: 'green' }}></i>
+            Current password verified successfully.
+        </p>
+    )}
+        </div>
+        <div>
+            <label>New Password</label>
+            <input
+                type={showPassword ? "text" : "password"}
+                name="newPassword"
+                value={Employer.newPassword}
+                onChange={handleChange}
+                disabled={!currentPassValid} // Disable until current password is valid
+               
+            />
+            <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+                <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+            </span>
+            <div className="password-requirements">
+    <ul>
+        <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
+            At least 8 characters
+        </li>
+        <li style={{ color: passwordRequirements.uppercase ? '#059855' : 'red' }}>
+            At least one uppercase letter
+        </li>
+        <li style={{ color: passwordRequirements.lowercase ? '#059855' : 'red' }}>
+            At least one lowercase letter
+        </li>
+        <li style={{ color: passwordRequirements.number ? '#059855' : 'red' }}>
+            At least one number
+        </li>
+        <li style={{ color: passwordRequirements.special ? '#059855' : 'red' }}>
+            At least one special character
+        </li>
+    </ul>
+    </div>
+        </div>
+        <div>
+            <label>Confirm New Password</label>
+            <input
+                type={showPassword ? "text" : "password"}
+                name="confirmNewPassword"
+                value={Employer.confirmNewPassword}
+                onChange={handleChange}
+                disabled={!currentPassValid}
+               
+                
+            />
+             <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+                <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+            </span>
+            {validationMessages.confirmNewPasswordError && (
+                <p style={{ color: 'red' }}>{validationMessages.confirmNewPasswordError}</p>
+            )}
+        </div>
+    </>
+)}
 
-            </div>
-
-            <div className="profile-fieldpro">
-                <label className='prolabel'>Password</label>
-                {editableField === 'Password' ? (
-                    <>
-                        <input type="password" value={tempValue} onChange={handleChange} />
-                        {passwordError && <p style={{ color: 'red', margin: '0 0 0.5rem 0' }}>{passwordError}</p>}
-
-                        <input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
-                            placeholder="Confirm Password"
-                        />
-                        <button className='edit' onClick={() => handleSave('Password')}      
-                         disabled={!tempValue || !confirmPassword} // Disable save if fields are empty
-                        >Save</button>
-                        <button className='edit' onClick={handleCancel}>Cancel</button>
-                        <br></br>
-                        {confirmationError && <p style={{ color: 'red', margin: '0 0 0.5rem 0' }}>{confirmationError}</p>}
-                    </>
-                ) : (
-                    <>
-                       <div>
-                        <input type="password" value={Employer.Password} readOnly />
-                        <button className='edit' onClick={() => handleEditClick('Password')}>Edit</button>
+                {editMode ? (
+                    <div>
+                        <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
+                        <button type="button" onClick={handleCancel}>Cancel</button>
                     </div>
-                    </>
+                ) : (
+                    <button type="button" onClick={() => setEditMode(true)}>Edit</button>
                 )}
-            </div>
+            </form>
 
-            
-
-
-
-            {/* Popup message */}
-            {popupVisible && (
+            {popupMessage && (
                 <div className="popup">
-                    <button className="close-btn" onClick={handleClosePopup}>×</button>
-                    <img src={popupImage} alt="Popup" />
                     <p>{popupMessage}</p>
                 </div>
             )}

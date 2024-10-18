@@ -2,209 +2,298 @@ import React, { useState } from 'react';
 import { db, auth } from '../../firebase'; 
 import { useNavigate } from 'react-router-dom'; 
 import { doc, addDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth'; 
 import successImage from '../../images/Sucess.png'; 
 import errorImage from '../../images/Error.png'; 
-import backgroundImage from '../../images/Background.png'; 
+import backgroundImage from '../../images/sairbackground.png'; 
 import '../../App.css'; 
-
 import { getDocs, query, collection, where } from 'firebase/firestore';
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const SignUp = () => {
     const [user, setUser] = useState({
         Fname: '',
         Lname: '',
         commercialNumber: '',
-        Email: '',
+        EmployeerEmail:'',
         PhoneNumber: '',
         CompanyName: '',
         CompanyEmail: '',
         Password: '',
+        confirmPassword: '',
+        confirmPasswordError: '',
     });
-    const navigate = useNavigate();
-    const [error, setError] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [companyEmailError, setCompanyEmailError] = useState('');
-    const [phoneError, setPhoneError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [confirmationError, setConfirmationError] = useState('');
-    const [commercialNumberError, setCommercialNumberError] = useState('');
+    const [validationMessages, setValidationMessages] = useState({
+        phoneError: '',
+        commercialNumberError: '',
+        emailError: '',
+        passwordError: '',
+        emailperError:'',
+        
+    });
     const [loading, setLoading] = useState(false);
     const [popupVisible, setPopupVisible] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
     const [popupImage, setPopupImage] = useState('');
-    const[notificationMessage,setNotificationMessage]=useState('');
-    const [isNotificationVisible, setIsNotificationVisible] = useState(false);
-    
+    const [showPasswordRequirements, setShowPasswordRequirements] = useState(true);
+    const [phoneNumber, setPhoneNumber] = useState('+966');
+    const [showPassword, setShowPassword] = useState(false);
+    const [passwordRequirements, setPasswordRequirements] = useState({
+        length: false,
+        uppercase: false,
+        lowercase: false,
+        number: false,
+        special: false,
+    });
+    const navigate = useNavigate();
 
-    // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUser({ ...user, [name]: value });
-
-        // Validate fields on change
-        if (name === 'Email') {
-            setEmailError(validateEmail(value));
+ // Validation for the confirmation password
+ if (name === 'confirmPassword') {
+    const confirmPasswordError = value !== user.Password ? 'Passwords do not match.' : '';
+    setValidationMessages((prev) => ({
+        ...prev,
+        confirmPasswordError: confirmPasswordError,
+    }));
+}
+        if (name === 'commercialNumber') {
+            const commercialNumberError = validateCommercialNumber(value);
+            setValidationMessages((prev) => ({
+                ...prev,
+                commercialNumberError: value === '' ? '' : commercialNumberError,
+            }));
         } else if (name === 'CompanyEmail') {
-            setCompanyEmailError(validateEmail(value));
-        } else if (name === 'PhoneNumber') {
-            setPhoneError(validatePhoneNumber(value));
-        } else if (name === 'Password') {
-            setPasswordError(validatePassword(value));
-        } else if (name === 'commercialNumber') {
-            setCommercialNumberError(validateCommercialNumber(value));
+            const emailError = validateEmail(value);
+            setValidationMessages((prev) => ({
+                ...prev,
+                emailError: value === '' ? '' : emailError,
+            }));
+        }else if (name === 'EmployeerEmail') {
+            const emailperError = validateEmail(value);
+            setValidationMessages((prev) => ({
+                ...prev,
+                emailperError: value === '' ? '' : emailperError,
+            }));
+        }
+          if (name === 'Password') {
+            // Check password requirements
+            setPasswordRequirements({
+                length: value.length >= 8,
+                uppercase: /[A-Z]/.test(value),
+                lowercase: /[a-z]/.test(value),
+                number: /\d/.test(value),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+            });
+        }else if (value.trim() === '') {
+            setValidationMessages((prev) => ({ ...prev, [`${name}Error`]: '' }));
         }
     };
 
-    // Confirm password change
-    const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value);
-        setConfirmationError('');
+     // Function to toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+    const handlePhoneNumberChange = (e) => {
+        let newPhoneNumber = e.target.value;
+
+        // Allow only digits after the prefix
+        if (newPhoneNumber.startsWith('+966')) {
+            newPhoneNumber = '+966' + newPhoneNumber.slice(4);
+        }
+
+        // Validate phone number
+        const phoneError = validatePhoneNumber(newPhoneNumber);
+        setValidationMessages((prev) => ({
+            ...prev,
+            phoneError: phoneError || (newPhoneNumber === '+966' ? '' : phoneError),
+        }));
+
+        setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
     };
 
-    // Handle sign-up
+    const handleFocus = (e) => {
+        e.target.setSelectionRange(user.PhoneNumber.length, user.PhoneNumber.length);
+    };
+
+
+    const handleClick = (e) => {
+        // If the user clicks inside the input, ensure the cursor stays after the prefix
+        if (e.target.selectionStart < 4) {
+            e.target.setSelectionRange(user.PhoneNumber.length, user.PhoneNumber.length);
+        }
+    };
+
+    const validatePhoneNumber = (phoneNumber) => {
+        const phoneRegex = /^\+966\d{9}$/; // Example for a specific format
+        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must with +966 and be followed by 9 digits.';
+    };
+
+    const validateCommercialNumber = (number) => {
+        const numberRegex = /^\d{10}$/; // Exactly 10 digits
+        return numberRegex.test(number) ? '' : 'Commercial number must be exactly 10 digits long.';
+    };
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email format
+        return emailRegex.test(email) ? '' : 'Please enter a valid email address.';
+    };
+
+   
     const handleSignUp = async (e) => {
         e.preventDefault();
-        if (user.Password !== confirmPassword) {
-            setConfirmationError('Passwords do not match!');
+        setLoading(true);
+        setValidationMessages((prev) => ({ ...prev, confirmPasswordError: '' }));
+
+        // Check if passwords match
+        if (user.Password !== user.confirmPassword) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                confirmPasswordError: 'Passwords do not match.',
+            }));
+            setLoading(false);
             return;
         }
 
-        // Check for other validation errors
-        if (emailError || companyEmailError || phoneError || passwordError || commercialNumberError) {
-            return; // Prevent sign-up if there are validation errors
-        }
-
-        setLoading(true);
 
         try {
             // Check if the commercialNumber already exists
             const existingUserQuery = await getDocs(query(collection(db, 'Employer'), where('commercialNumber', '==', user.commercialNumber)));
-    
-            
-        if (!existingUserQuery.empty) {
-            setPopupMessage("The commercial number is already in use. Please use a different number.");
+
+            if (!existingUserQuery.empty) {
+                setPopupMessage("The commercial number is already used. Please use a correct number.");
+                setPopupImage(errorImage);
+                setPopupVisible(true);
+                setLoading(false);
+                return; // Prevent sign-up if commercial number exists
+            }
+
+            // Create user with Firebase Authentication using email
+            const userCredential = await createUserWithEmailAndPassword(auth,`${user.commercialNumber}@sair.com`, user.Password);
+            const newUser = userCredential.user;
+
+            // Add user data to Firestore
+            await addDoc(collection(db, 'Employer'), {
+                Fname: user.Fname,
+                Lname: user.Lname,
+                commercialNumber: user.commercialNumber,
+                PhoneNumber: user.PhoneNumber,
+                CompanyName: user.CompanyName,
+                EmployeerEmail:user.EmployeerEmail,
+                CompanyEmail: user.CompanyEmail,
+                uid: newUser.uid,
+            });
+
+            // Handle success
+            setPopupMessage("You have successfully signed up! Welcome aboard.");
+            setPopupImage(successImage);
+            setPopupVisible(true);
+            setTimeout(() => {
+                setPopupVisible(false);
+                navigate('/');
+            }, 3000);
+        } catch (error) {
+            console.error('Error signing up:', error);
+            setPopupMessage('Signup failed. Please try again.');
             setPopupImage(errorImage);
             setPopupVisible(true);
-            setLoading(false); // Stop loading
-            return; // Prevent sign-up if commercial number exists
-        }
-    
-        //     const userCredential = await createUserWithEmailAndPassword(auth, user.Email, user.Password);
-        // const newuser = userCredential.user;
-
-        // Add a new document with an auto-generated ID
-        const userRef = collection(db, 'Employer');
-        await addDoc(userRef, {
-            Fname: user.Fname,
-            Lname: user.Lname,
-            commercialNumber: user.commercialNumber,
-            Email: user.Email,
-            PhoneNumber: user.PhoneNumber,
-            CompanyName: user.CompanyName,
-            CompanyEmail: user.CompanyEmail,
-            Password:user.Password,
-        });
-
-        // Handle success
-
-        setPopupMessage("You have successfully signed up! Welcome aboard.");
-                            setPopupImage(successImage);
-                            setPopupVisible(true);
-                            setTimeout(() => {
-                                setPopupVisible(false);
-                                navigate('/');
-                            }, 3000);
-
-
-
-     
-        
-    } catch (error) {
-        console.error('Error signing up:', error);
-        setError('Failed to sign up. Please try again.');
-        setPopupMessage('Signup failed. Please try again.');
-        setPopupImage(errorImage);
-        setPopupVisible(true);
         } finally {
             setLoading(false);
-            // Clear error messages
-            setError('');
-            setEmailError('');
-            setCompanyEmailError('');
-            setPhoneError('');
-            setPasswordError('');
-            setConfirmationError('');
-            setCommercialNumberError('');
         }
     };
 
-
-    // Validation functions
-    const validateEmail = (email) => {
-        if (email.trim() === '') {
-            return '';
-        }
-        const emailRegex = /\S+@\S+\.\S+/;
-        return emailRegex.test(email) ? '' : 'Invalid email address.';
-    };
-
-    const validatePhoneNumber = (phoneNumber) => {
-        if (phoneNumber.trim() === '') {
-            return '';
-        }
-        const phoneRegex =  /^\+966\d{9}$/; // Allows optional + followed by exactly 10 digits
-        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +966 and be followed by 9 digits.';
-    };
-
-    const validatePassword = (Password) => {
-        if (Password.trim() === '') {
-            return '';
-        }
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=]).{8,}$/;
-        return passwordRegex.test(Password) ? '' : 'Password must contain 8+ characters, including uppercase, \n lowercase, number, and special character.';
-    };
-
-    const validateCommercialNumber = (number) => {
-        if (number.trim() === '') {
-            return '';
-        }
-        const numberRegex = /^\d{10}$/; // Only digits and exactly 10 digits long
-        return numberRegex.test(number) ? '' : 'Commercial number must be exactly 10 digits long.';
-    };
     const handleClosePopup = () => {
         setPopupVisible(false);
     };
 
-    return (
-        <div className="login-container" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className="signup-container">
-                <h1>Welcome to SAIR! <br /> Your easy solution for managing delivery drivers.</h1><br></br>
+    
+    const getBorderColor = (field) => {
+        if (field === 'Password') {
+            return validationMessages.passwordError ? 'red' : !validationMessages.passwordError && user.Password ? 'green' : '';
+        } else if (field === 'PhoneNumber') {
+            return validationMessages.phoneError ? 'red' : !validationMessages.phoneError && user.PhoneNumber ? 'green' : '';
+        } else if (field === 'confirmPassword') {
+            return validationMessages.confirmPasswordError ? 'red' : user.confirmPassword ? 'green' : '';
+        }  else if (field === 'CompanyEmail') {
+            return validationMessages.emailError ? 'red' : !validationMessages.emailError && user.CompanyEmail ? 'green' : '';
+        } else if (field === 'EmployeerEmail') {
+            return validationMessages.emailperError ? 'red' : !validationMessages.emailperError && user.EmployeerEmail ? 'green' : '';
+        } else if (field === 'commercialNumber') {
+            return validationMessages.commercialNumberError ? 'red' : !validationMessages.commercialNumberError && user.commercialNumber ? 'green' : '';
+        } else {
+            return validationMessages[`${field}Error`] ? 'red' : !validationMessages[`${field}Error`] && user[field] ? 'green' : '';
+        }
+    };
 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <form onSubmit={handleSignUp}>
-                    <div className="profile-field">
-                        <label>First Name</label><br />
+    
+
+    return (
+
+        <div 
+            className="login-container"  
+        >
+            <div >
+  <img src={backgroundImage} alt="Top Right Image" className="top-right-image" />
+ 
+</div>
+            <div >
+                <h1>Welcome to SAIR! </h1> <p style={{fontSize:'30px' , color: '#059855', marginTop:'-21px', marginLeft:'47px'}}>Your easy solution for managing <br/>delivery drivers.</p>
+                
+
+                
+                <form className='form-container' style={{ marginLeft: '70px' }} onSubmit={handleSignUp}>
+                        <div className="profile-field">
+                        <label>First Name</label><br></br>
                         <input
                             type="text"
                             name="Fname"
                             value={user.Fname}
                             onChange={handleChange}
                             required
-                        /><br/>
+                            style={{ borderColor: getBorderColor('Fname') }}
+                        />
                     </div>
-
                     <div className="profile-field">
-                        <label>Last Name</label><br />
+                        <label>Last Name</label><br></br>
                         <input
                             type="text"
                             name="Lname"
                             value={user.Lname}
                             onChange={handleChange}
+                           
                             required
-                        /><br/>
+                            style={{ borderColor: getBorderColor('Lname') }}
+                        />
                     </div>
+                    <div className="profile-field">
+                        <label>Email</label><br></br>
+                        <input
+                            type="email"
+                            name="Email"
+                            value={user.EmployeerEmail}
+                            onChange={handleChange}
+                         
+                            style={{ borderColor: getBorderColor('EmployeerEmail') }}
+                        />
+                    {validationMessages.emailperError && <p style={{ color: 'red' }}>{validationMessages.emailperError}</p>}
+
+                    </div>
+                    <div className="profile-field">
+                        <label>Phone Number</label><br />
+                        <input
+                            type="tel"
+                            name="PhoneNumber"
+                            value={`+966${user.PhoneNumber}`}
+                            onChange={handlePhoneNumberChange}
+                            onFocus={handleFocus}
+                            required
+                            style={{ borderColor: getBorderColor('PhoneNumber') }}
+                        />
+                        {validationMessages.phoneError && <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>}
+                    </div>
+
 
                     <div className="profile-field">
                         <label>Commercial Number</label><br />
@@ -213,102 +302,104 @@ const SignUp = () => {
                             name="commercialNumber"
                             value={user.commercialNumber}
                             onChange={handleChange}
+                           
                             required
-                            pattern="\d{10}" // Restricts input to exactly 10 digits
-                            title="Commercial number must be exactly 10 digits long."
+                            style={{ borderColor: getBorderColor('commercialNumber') }}
                         />
-                        {commercialNumberError && <p style={{ color: 'red' }}>{commercialNumberError}</p>}<br/>
+                        {validationMessages.commercialNumberError && <p style={{ color: 'red' }}>{validationMessages.commercialNumberError}</p>}
                     </div>
 
                     <div className="profile-field">
-                        <label>Email</label><br />
-                        <input
-                            type="email"
-                            name="Email"
-                            value={user.Email}
-                            onChange={handleChange}
-                            required
-                        />
-                        {emailError && <p style={{ color: 'red' }}>{emailError}</p>}<br/>
-                    </div>
-
-                    <div className="profile-field">
-                        <label>Phone Number</label><br />
-                        <input
-                            type="tel"
-                            name="PhoneNumber"
-                            value={user.PhoneNumber}
-                            onChange={handleChange}
-                            required
-                            pattern="\+966\d{9}"
-                            title="Phone number must start with + followed by exactly 10 digits."
-                        />
-                        {phoneError && <p style={{ color: 'red' }}>{phoneError}</p>}<br/>
-                    </div>
-
-                    <div className="profile-field">
-                        <label>Company Name</label><br />
+                        <label>Company Name</label><br/>
                         <input
                             type="text"
                             name="CompanyName"
                             value={user.CompanyName}
                             onChange={handleChange}
+                         
                             required
-                        /><br/>
+                            style={{ borderColor: getBorderColor('CompanyName') }}
+                        />
                     </div>
-
                     <div className="profile-field">
-                        <label>Company Email</label><br />
+                        <label>Company Email</label><br></br>
                         <input
                             type="email"
                             name="CompanyEmail"
                             value={user.CompanyEmail}
                             onChange={handleChange}
-                            required
+                         
+                            style={{ borderColor: getBorderColor('CompanyEmail') }}
                         />
-                        {companyEmailError && <p style={{ color: 'red' }}>{companyEmailError}</p>}<br/>
-                    </div>
+                    {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
 
-                    <div className="profile-field">
-                        <label>Password</label><br />
+                    </div>
+<div>
+                    <label>Password</label><br />
                         <input
-                            type="password"
+                             type={showPassword ? "text" : "password"}
                             name="Password"
                             value={user.Password}
                             onChange={handleChange}
                             required
+                            style={{ borderColor: getBorderColor('Password') }}
                         />
-                        {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}<br/>
                     </div>
-
+                    <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+                                 <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+                               </span>
+                               <div className="password-requirements">
+    <ul>
+        <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
+            At least 8 characters
+        </li>
+        <li style={{ color: passwordRequirements.uppercase ? '#059855' : 'red' }}>
+            At least one uppercase letter
+        </li>
+        <li style={{ color: passwordRequirements.lowercase ? '#059855' : 'red' }}>
+            At least one lowercase letter
+        </li>
+        <li style={{ color: passwordRequirements.number ? '#059855' : 'red' }}>
+            At least one number
+        </li>
+        <li style={{ color: passwordRequirements.special ? '#059855' : 'red' }}>
+            At least one special character
+        </li>
+    </ul>
+</div>
                     <div className="profile-field">
-                        <label>Confirm Password</label><br />
+                        <label >Confirm Password</label><br />
                         <input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
+                            type={showPassword ? "text" : "password"}
+                            name="confirmPassword"
+                            value={user.confirmPassword}
+                            onChange={handleChange}
                             required
+                            style={{ borderColor: getBorderColor('confirmPassword') }}
                         />
-                        {confirmationError && <p style={{ color: 'red' }}>{confirmationError}</p>}<br/>
+                         <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+                                 <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+                               </span>
+                        {validationMessages.confirmPasswordError && <p style={{ color: 'red' }}>{validationMessages.confirmPasswordError}</p>}
                     </div>
+                    <a 
+                                id='signup2' 
+                                onClick={() => navigate('/')} 
+                                style={{ cursor: 'pointer' }}
+                            >
+                                Already have a company account? Log in here
+                            </a>
 
-                    <a id='login'
-                     onClick={() => navigate('/')}
-                     style={{ cursor: 'pointer' }}
-                     >Already have an account? Log in here</a>
-
-                    <button id='signsubmit1' type="submit" disabled={loading}>{loading ? 'Sign Up' : 'Sign Up'}</button>
+                    <button id='signsubmit1' type="submit" >Sign up</button>
                 </form>
 
-
-{popupVisible && (
-                <div className="popup">
-                    <button className="close-btn" onClick={handleClosePopup}>×</button>
-                    <img src={popupImage} alt="Popup" />
-                    <p>{popupMessage}</p>
-                </div>
-            )}
-                
+                {popupVisible && (
+                    <div className="popup">
+                        <button className="close-btn" onClick={handleClosePopup}>×</button>
+                        <img src={popupImage} alt="Popup" />
+                        <p>{popupMessage}</p>
+                    </div>
+                )}
             </div>
         </div>
     );

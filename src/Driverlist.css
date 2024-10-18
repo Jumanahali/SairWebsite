@@ -1,4 +1,5 @@
 /* General reset for cleaner layout */
+/*
 * {
     margin: 0;
     padding: 0;
@@ -6,14 +7,13 @@
 }
 
 body {
-    margin: 0; /* Remove default margin */
-    overflow-x: hidden; /* Prevent horizontal scrolling */
+    margin: 0; 
+    overflow-x: hidden; 
 }
  h1{
     color:#3CC585;
  } 
 
-/* Header Styling */
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -44,8 +44,8 @@ body {
 .logout-button {
     margin-right: -530px;
     cursor: pointer;
-    background: none; /* Remove default button styles */
-    border: none; /* Remove border */
+    background: none; 
+    border: none; 
     width: 1000px;
     margin-top: 0px;
 
@@ -53,7 +53,7 @@ body {
 
 .logout-icon {
     height: 40px;
-    width: 40px;/* Temporary border for debugging */
+    width: 40px;
 }
 
 #profile-image {
@@ -63,7 +63,6 @@ body {
     width: 40px;
 }
 
-/* Navbar Styling */
 .navbar-container {
     display: flex;
     justify-content: left;
@@ -82,11 +81,10 @@ body {
     color: #3CC585;
 }
 
-/* Driver List Header */
 .driver-list-header-container {
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    align-items: flex-start; /* Align items to the start */
+    flex-direction: column; 
+    align-items: flex-start; 
     margin-left: 9px;
     margin-top: 30px;
 }
@@ -110,7 +108,6 @@ body {
 }
 
 
-/* Search bar styling */
 .search-container {
     position: relative;
     display: flex;
@@ -139,7 +136,6 @@ body {
     border-color: #3CC585; 
 }
 
-/* Search Icon */
 .search-container img {
     position: absolute;
     left: 10px;
@@ -149,7 +145,6 @@ body {
     height: 20px;
 }
 
-/* Table Styling */
 .driver-table {
     width: 80%;
     margin: 0 auto;
@@ -168,7 +163,6 @@ body {
     border-bottom: 2px solid #3CC585; 
 }
 
-/* Popup */
 .popup-container {
     display: flex;
     justify-content: center;
@@ -178,26 +172,26 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: auto;
-    height: auto; /* Adjust height to auto for better content fit */
+    height: auto; 
     background-color: white;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-    padding: 20px; /* Optional: add some padding for the content */
+    padding: 20px; 
 }
 
 .popup-content {
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Increased gap between elements */
+    gap: 20px; 
     align-items: center;
     justify-content: center;
 }
 
 .popup-content input, .popup-content select {
-    padding: 10px; /* Increased padding for inputs */
-    font-size: 1.2rem; /* Larger font size for inputs */
-    border: 2px solid #3CC585; /* Optional: add border */
-    border-radius: 10px; /* Make inputs slightly rounded */
+    padding: 10px; 
+    font-size: 1.2rem; 
+    border: 2px solid #3CC585; 
+    border-radius: 10px; 
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -207,8 +201,8 @@ body {
 }
 
 .popup-content h2 {
-    font-size: 2rem; /* Increase the heading size */
-    text-align: center; /* Center the title */
+    font-size: 2rem; 
+    text-align: center; 
     color: #3CC585;
 }
 
@@ -217,10 +211,10 @@ body {
     color: black;
     border: none;
     padding: 15px;
-    font-size: 1.2rem; /* Increased font size */
-    border-radius: 30px; /* Make the button rounded */
+    font-size: 1.2rem; 
+    border-radius: 30px; 
     cursor: pointer;
-    width: 160px; /* Make the button fill the available width */
+    width: 160px; 
     text-align: center;
     margin-left: 1080px;
     margin-top: -50px;
@@ -242,12 +236,11 @@ body {
 
 
 .actions-container {
-    width: 70px; /* Set your desired width */
-    height: auto; /* Maintain aspect ratio */
+    width: 70px; /* Set your desired width 
+    height: auto; /* Maintain aspect ratio 
 }
 
 
-/* Delete Confirmation Popup */
 #delete {
     display: flex;
     justify-content: center;
@@ -257,21 +250,20 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: auto;
-    height: auto; /* Adjust height to auto for better content fit */
+    height: auto; 
     background-color: white;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-    padding: 20px; /* Optional: add some padding for the content */
+    padding: 20px;
 }
 
 #delete > div {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    position: relative; /* This allows positioning the close button inside */
+    position: relative;
     text-align: center;
 }
 
-/* Close button 'x' styling */
 #delete .delete-close-popup-btn {
     position: absolute;
     top: -50px;
@@ -280,14 +272,12 @@ body {
     cursor: pointer;
 }
 
-/* Hover effect for the close button */
 #delete .delete-close-popup-btn:hover {
     color: red;
 }
 
-/* Style for the YES and NO buttons */
 #YES, #NO {
-    background-color: #3CC585; /* Green color */
+    background-color: #3CC585; 
     color: white;
     border: none;
     padding: 10px 20px;
@@ -298,12 +288,10 @@ body {
     width: 100px;
 }
 
-/* Optional hover effect for the buttons */
 #YES:hover, #NO:hover {
     background-color: #28a828;
 }
 
-/* Optional: Style the text inside the popup */
 #delete p {
     font-size: 18px;
     margin-bottom: 20px;
@@ -314,7 +302,6 @@ body {
 }
 
 
-/* Notification Popup */
 .notification-popup {
     position: fixed;
     top: 50%;
@@ -324,16 +311,15 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-    z-index: 1000; /* Ensure it appears above other elements */
+    z-index: 1000; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 300px; /* Set a fixed width for consistency */
-}
+    width: 300px; 
 
 .notification-popup img {
-    width: 50px; /* Set the size of the icon */
+    width: 50px; 
     height: 50px;
 }
 
@@ -347,18 +333,18 @@ body {
     align-self: flex-end;
     cursor: pointer;
     font-size: 1.5rem;
-    /*margin: -10px -10px 0 0;  Adjust to position in the corner */
+    /*margin: -10px -10px 0 0;  
 }
 
 .notification-popup .close-popup-btn:hover {
-    color: red; /* Change color on hover */
+    color: red; 
 }
 
 .notification-popup button {
-    background-color: #3CC585; /* Button color */
+    background-color: #3CC585; 
     color: white;
     border: none;
-    border-radius: 25px; /* Rounded corners */
+    border-radius: 25px; 
     padding: 10px 20px;
     cursor: pointer;
     font-size: 1rem;
@@ -366,7 +352,7 @@ body {
 }
 
 .notification-popup button:hover {
-    background-color: #28a828; /* Darker green on hover */
+    background-color: #28a828; 
 }
 
 .details-popup {
@@ -390,4 +376,5 @@ body {
 .details-table th {
     background-color: #f2f2f2;
 }
+    */
 

@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { db } from '../../firebase'; 
 import { collection, query, where, getDocs } from 'firebase/firestore'; 
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"; 
 import '../../App.css'; 
 import successImage from '../../images/Sucess.png'; 
 import errorImage from '../../images/Error.png'; 
-import backgroundImage from '../../images/Background.png'; 
+import backgroundImage from '../../images/sairbackground.png'; 
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
 
 const Login = () => {
     const navigate = useNavigate(); 
@@ -27,13 +31,13 @@ const Login = () => {
         validatePhoneNumber(phoneNumber);
     }, [phoneNumber]);
 
-    useEffect(() => {
-        if (role === 'employee') {
-            validateCommercialNumber(commercialRegNumber);
-        } else {
-            setErrors((prev) => ({ ...prev, commercialError: '' }));
-        }
-    }, [commercialRegNumber, role]);
+    // useEffect(() => {
+    //     if (role === 'employer') {
+    //         validateCommercialNumber(commercialRegNumber);
+    //     } else {
+    //         setErrors((prev) => ({ ...prev, commercialError: '' }));
+    //     }
+    // }, [commercialRegNumber, role]);
 
     const handleRoleChange = (event) => {
         const selectedRole = event.target.value;
@@ -43,6 +47,11 @@ const Login = () => {
         setPassword('');
         setErrors({ phoneStartError: '', phoneLengthError: '', commercialError: '' });
     };
+
+     // Function to toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
     const validatePhoneNumber = (phoneValue) => {
         let phoneStartError = '';
@@ -64,23 +73,19 @@ const Login = () => {
     };
 
     const validateCommercialNumber = (commercialValue) => {
-        const numberRegex = /^\d{10}$/; // Only digits and exactly 10 digits long
-        if (commercialValue.trim() === '') {
-            setErrors((prev) => ({ ...prev, commercialError: '' })); // Clear error if input is empty
-        } else {
-            const commercialError = numberRegex.test(commercialValue) ? '' : 'Commercial registration number must be exactly 10 digits long.';
-            setErrors((prev) => ({
-                ...prev,
-                commercialError,
-            }));
-        }
+        const numberRegex = /^\d{10}$/;
+        const commercialError = numberRegex.test(commercialValue) ? '' : 'Commercial registration number must be exactly 10 digits long.';
+        setErrors((prev) => ({
+            ...prev,
+            commercialError,
+        }));
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
-        if (!errors.phoneStartError && !errors.phoneLengthError && !errors.commercialError) {
+
             try {
+                const auth = getAuth();
                 let userFound = false;
 
                 if (role === 'gdtAdmin' || role === 'gdtStaff') {
@@ -88,22 +93,22 @@ const Login = () => {
                     const querySnapshot = await getDocs(q);
                     
                     if (!querySnapshot.empty) {
-                        const docSnap = querySnapshot.docs[0];
-                        const data = docSnap.data();
-
-                        if (data.Password === password) {
-                            userFound = true;
-                            setPopupMessage("Login successful!");
-                            setPopupImage(successImage);
-                            setPopupVisible(true);
-                            setTimeout(() => {
-                                navigate(role === 'gdtAdmin' ? '/Adminhomepage' : '/Staffhomepage');
-                            }, 1500);
-                        } else {
-                            setPopupMessage('Incorrect password for Admin/Staff.');
-                            setPopupImage(errorImage);
-                            setPopupVisible(true);
-                        }
+                        const data = querySnapshot.docs[0].data();
+                        await signInWithEmailAndPassword(auth, phoneNumber, password)
+                            .then(() => {
+                                userFound = true;
+                                setPopupMessage("Login successful!");
+                                setPopupImage(successImage);
+                                setPopupVisible(true);
+                                setTimeout(() => {
+                                    navigate(role === 'gdtAdmin' ? '/Adminhomepage' : '/Staffhomepage');
+                                }, 1500);
+                            })
+                            .catch(() => {
+                                setPopupMessage('Incorrect password for Admin/Staff.');
+                                setPopupImage(errorImage);
+                                setPopupVisible(true);
+                            });
                     } else {
                         setPopupMessage('Admin/Staff user not found.');
                         setPopupImage(errorImage);
@@ -111,65 +116,64 @@ const Login = () => {
                     }
                 }
 
-                if (role === 'employee') {
+                if (role === 'employer') {
                     const q = query(collection(db, 'Employer'), where('commercialNumber', '==', commercialRegNumber));
                     const querySnapshot = await getDocs(q);
 
                     if (!querySnapshot.empty) {
-                        const docSnap = querySnapshot.docs[0];
-                        const data = docSnap.data();
-
-                        if (data.Password === password) {
-                            userFound = true;
-                            const employerUID = docSnap.id;
-                            sessionStorage.setItem('employerUID', employerUID); 
-                            setPopupMessage("Login successful!");
-                            setPopupImage(successImage);
-                            setPopupVisible(true);
-                            setTimeout(() => {
-                                navigate('/employer-home');
-                            }, 1500);
-                        } else {
-                            setPopupMessage('Incorrect password for Employee.');
-                            setPopupImage(errorImage);
-                            setPopupVisible(true);
-                        }
-                    } else {
-                        setPopupMessage('Employee not found.');
-                        setPopupImage(errorImage);
-                        setPopupVisible(true);
-                    }
+                        await signInWithEmailAndPassword(auth, `${commercialRegNumber}@sair.com`, password)
+                            .then(() => {
+                                userFound = true;
+                                const employerUID = querySnapshot.docs[0].id;
+                                sessionStorage.setItem('employerUID', employerUID); 
+                                setPopupMessage("Login successful!");
+                                setPopupImage(successImage);
+                                setPopupVisible(true);
+                                setTimeout(() => {
+                                    navigate('/employer-home');
+                                }, 1500);
+                            })
+                            .catch(() => {
+                                setPopupMessage('Incorrect commercial Number or password');
+                                setPopupImage(errorImage);
+                                setPopupVisible(true);
+                            });
+                    } 
                 }
 
                 if (!userFound) {
-                    setPopupMessage("Incorrect credentials.");
+                    setPopupMessage("Incorrect commercial Number or password");
                     setPopupImage(errorImage);
                     setPopupVisible(true);
                 }
             } catch (error) {
                 console.error("Error fetching user: ", error);
             }
-        } else {
-            console.log("Validation failed");
-        }
+        
     };
 
     const handleClosePopup = () => {
         setPopupVisible(false);
-    };
+    }; 
 
     return (
         <div 
-            className="login-container" 
-            style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className="login-container"  
         >
+            <div >
+  <img src={backgroundImage} alt="Top Right Image" className="top-right-image" />
+ 
+</div>
+
             <h1>Welcome to SAIR!</h1>
-            <p>Please Select a Role</p>
+            <p style={{ marginLeft: '95px', marginTop: '38px', color:'#211d1d' }}>Please Select your Role</p>
+
+
             <select id="roleSelect" onChange={handleRoleChange}>
                 <option value="">-- Select a Role --</option>
                 <option value="gdtAdmin">GDT Admin</option>
                 <option value="gdtStaff">GDT Staff</option>
-                <option value="employee">Employee</option>
+                <option value="employer">Employer</option>
             </select>
             <br /><br />
 
@@ -177,7 +181,7 @@ const Login = () => {
                 <form id="dynamicForm" onSubmit={handleSubmit}>
                     {role === 'gdtAdmin' || role === 'gdtStaff' ? (
                         <div>
-                            <p className='fill'>Please fill in the following information to log in to your account.</p>
+                            <p >Please fill in the following information to log in to your account.</p>
                             <br />
                             <label htmlFor="phoneNumber">Phone Number:</label><br />
                             <input 
@@ -198,52 +202,67 @@ const Login = () => {
                                 required 
                             /><br />
                         </div>
-                    ) : role === 'employee' ? (
-                        <div>
-                            <div>
-                            <p className='fill'>Please fill in the following information to log in to your account.</p>
-                            <br />
-                            <label htmlFor="commercialRegNumber">Commercial Registration Number:</label><br />
+                    ) : role === 'employer' ? (
+                        <div style={{marginLeft: '70px' , marginTop:'-8px'}}>
+<p style={{ marginLeft: '24px', marginBottom: '1px' ,color:'#211d1d'}}>Please fill in the following information to log in to your account.</p>
+<style>
+        {`
+          input::placeholder {
+            font-size: 14px;
+            padding-left: 15px;
+          }
+        `}
+      </style>
+
                             <input 
                                 type="text" 
                                 id="commercialRegNumber" 
+                                placeholder='Enter your Commercial Registration'
                                 value={commercialRegNumber} 
+                                onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
+                                onBlur={(e) => e.target.placeholder = 'Enter your Commercial Registration'} // Restore placeholder on blur if empty
                                 onChange={(e) => setCommercialRegNumber(e.target.value.replace(/[^0-9]/g, ''))} 
-                            /><br />
-                            {/* {commercialNumberError && <p style={{ color: 'red' }}>{commercialNumberError}</p>} */}
-                            {errors.commercialError && (
-                          <p style={{ color: 'red' }}>
-                                    {errors.commercialError}
-                                   </p>
-                                       )}  <br/>    
-                              </div>
-                              <div>                         
-                            <label htmlFor="password">Password:</label><br />
+                            />
+                            <label htmlFor="password"></label><br />
+                            <div className="password-container">
                             <input 
                                 type={showPassword ? "text" : "password"}
                                 id="password" 
                                 name="password" 
+                                placeholder='Enter your password'
                                 value={password}
+                                onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
+                                onBlur={(e) => e.target.placeholder = 'Enter your password'} // Restore placeholder on blur if empty
                                 onChange={(e) => setPassword(e.target.value)} 
                                 required 
                             /><br />
-                            </div>  
+                              <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+                                 <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+                               </span>
+                               </div> 
                         </div>
                     ) : null}
+                    <br></br>
                     <div className="link-container">
-                        <a id='forget' href="Forgetpassword.jsx">Forget Password?</a> 
+                    <a 
+                                id='forget' 
+                                onClick={() => navigate('/ForgotPassword')} 
+                                style={{ cursor: 'pointer' }}
+                            >
+                                Forget password?
+                            </a>
                         <br />
-                        {role === 'employee' && (
+                        {role === 'employer' && (
                             <a 
                                 id='signup' 
                                 onClick={() => navigate('/Signup')} 
                                 style={{ cursor: 'pointer' }}
                             >
-                                Don't have a company account? Sign up here
+                                Don't have a employer account? Sign up here
                             </a>
                         )}
                     </div>
-                    <button id='signsubmit2' type="submit">Login</button>
+                    <button id='signsubmit2' type="submit">Log in</button>
                 </form>
             </div>
 

@@ -1,4 +1,4 @@
-
+/* 
 .header {
     display: flex;
     justify-content: space-between;
@@ -12,19 +12,19 @@
 
 .user-info {
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    align-items: center; /* Center the items horizontally */
+    flex-direction: column; 
+    align-items: center; 
 }
 
 .profile-section {
     display: flex;
-    align-items: center; /* Horizontally align profile icon and name */
-    margin-top: 10px; /* Space between the logout icon and profile section */
+    align-items: center; 
+    margin-top: 10px; 
 }
 
 .profile-icon {
     height: 40px;
-    margin-right: 5px; /* Space between profile icon and name */
+    margin-right: 5px; 
     margin-top: 15px;
     width: 40px;
 }
@@ -35,7 +35,7 @@
 }
 
 span {
-    font-size: 20px; /* Adjust font size of the name if necessary */
+    font-size: 20px; 
     margin-top: 35px;
 }
 
@@ -55,41 +55,41 @@ h2{
 
 .navigation-list {
     display: flex;
-    flex-wrap: wrap; /* Allows items to wrap onto the next line */
-    justify-content: space-between; /* Space items evenly */
+    flex-wrap: wrap; 
+    justify-content: space-between; 
     margin-top: 20px;
 }
 
 .navigation-list {
     display: flex;
-    flex-wrap: wrap; /* Allows items to wrap onto the next line */
-    justify-content: center; /* Center items horizontally */
+    flex-wrap: wrap; 
+    justify-content: center; 
     margin-top: 20px;
 }
 
 .nav-item {
     display: flex;
-    align-items: center; /* Center items vertically */
-    justify-content: center; /* Center items horizontally */
-    cursor: pointer; /* Make it look clickable */
-    width: 300px; /* Set width for each item */
-    height: 100px; /* Set height for each item */
-    box-sizing: border-box; /* Ensure padding is included in width */
-    border: 1px solid #ccc; /* Optional: Add a border for visual separation */
-    border-radius: 20px; /* Optional: Add rounded corners */
-    margin: 10px; /* Reduce space between items */
-    background-color: #3cc585ce; /* Set background color */
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    width: 300px; 
+    height: 100px; 
+    box-sizing: border-box; 
+    border: 1px solid #ccc; 
+    border-radius: 20px; 
+    margin: 10px; 
+    background-color: #3cc585ce; 
     margin-top: 50px;
 }
 
 .nav-icon {
-    height: 60px; /* Set a larger icon size */
-    width: 60px; /* Set a larger width for consistency */
-    margin-right: 10px; /* Space between icon and text */
+    height: 60px; 
+    width: 60px; 
+    margin-right: 10px; 
 }
 
 .nav-item span {
-    font-size: 1.2em; /* Increase font size for text */
-    align-items: center; /* Align text vertically (flex doesn't apply here) */
+    font-size: 1.2em; 
+    align-items: center; 
 }
-
+ */

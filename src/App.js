@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from './Maincomponent/UserAuth/Login';
 import Signup from './Maincomponent/UserAuth/Signup';
+import ForgotPassword from './Maincomponent/UserAuth/ForgotPassword';
 import EmployeeHome from './Maincomponent/Employeehomepage'; // Import EmployeeHome component
 import DriversList from './Maincomponent/driverslist'; // Ensure this file name matches exactly
 import MotorcyclesList from './Maincomponent/motorcycleslist'; // Ensure this file name matches exactly
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/employer-home" element={<EmployeeHome />} /> 
         <Route path="/driverslist" element={<DriversList />} />
         <Route path="/motorcycleslist" element={<MotorcyclesList />} />
@@ -23,6 +25,7 @@ function App() {
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/crashes" element={<Crashes />} />
         <Route path="/employee-profile" element={<EmployeeProfile />} />
+
       </Routes>
     </Router>
   );
