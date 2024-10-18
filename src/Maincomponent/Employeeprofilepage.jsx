@@ -27,10 +27,11 @@ const Profile = () => {
         phoneError: '',
         commercialNumberError: '',
         emailError: '',
-        confirmPasswordError: '',
         emailperError:'',
         currentPasswordError:'',
-        currentPasswordsuccess:'',
+        newPassword:'',
+        confirmNewPassword:'',
+        currentPasswordEmpty:'',
     });
 
     const [loading, setLoading] = useState(false);
@@ -119,7 +120,8 @@ const Profile = () => {
         if (!Employer.currentPassword) {
             setValidationMessages((prev) => ({
                 ...prev,
-                currentPasswordError: 'Please enter your current password to verify.',
+                currentPasswordEmpty: 'Please enter your current password to verify.',
+                currentPasswordError: '',
             }));
             return;
         }
@@ -138,11 +140,7 @@ const Profile = () => {
             setValidationMessages((prev) => ({
                 ...prev,
                 currentPasswordError: '',
-            }));
-            
-            setValidationMessages((prev) => ({
-                ...prev,
-                currentPasswordsuccess: 'Current password verified successfully.',
+                currentPasswordEmpty: '',
             }));
         } catch (error) {
             console.error("Error verifying current password:", error);
@@ -150,9 +148,11 @@ const Profile = () => {
             setValidationMessages((prev) => ({
                 ...prev,
                 currentPasswordError: 'Incorrect current password. Please try again.',
+                currentPasswordEmpty: '',
             }));
         }
     };
+    
     
 
 
@@ -163,6 +163,7 @@ const Profile = () => {
     
         // Check for validation errors
         if (Object.values(validationMessages).some(msg => msg)) {
+            console.log(validationMessages);
             setPopupMessage('Please fix validation errors.');
             setLoading(false);
             return;
@@ -223,9 +224,11 @@ const Profile = () => {
             phoneError: '',
             commercialNumberError: '',
             emailError: '',
-            confirmPasswordError: '',
             newPassword: '',
             confirmNewPassword: '',
+            currentPasswordError:'',
+            emailperError:'',
+            currentPasswordEmpty:'',
         });
           // Reset password requirements to default (all false)
     setPasswordRequirements({
@@ -343,22 +346,32 @@ const Profile = () => {
                             <button type="button" onClick={handleVerifyCurrentPassword}>
                                 Verify
                             </button>
-             <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-            </span>
-            {validationMessages.currentPasswordError && (
+                            <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+        <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+    </span>
+
+    {validationMessages.currentPasswordEmpty && (
+        <p style={{ color: '#FFA500', display: 'flex', alignItems: 'center' }}>
+            <i className="fas fa-exclamation-circle" style={{ marginRight: '5px', color: '#FFA500' }}></i>
+            {validationMessages.currentPasswordEmpty}
+        </p>
+    )}
+
+    {validationMessages.currentPasswordError && (
         <p style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
             <i className="fas fa-times-circle" style={{ marginRight: '5px', color: 'red' }}></i>
             {validationMessages.currentPasswordError}
         </p>
     )}
-    {currentPassValid && !validationMessages.currentPasswordError && (
+
+    {currentPassValid && (
         <p style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
             <i className="fas fa-check-circle" style={{ marginRight: '5px', color: 'green' }}></i>
+            {validationMessages.currentPasswordsuccess}
             Current password verified successfully.
         </p>
     )}
-        </div>
+</div>
         <div>
             <label>New Password</label>
             <input
