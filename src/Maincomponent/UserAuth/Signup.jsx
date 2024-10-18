@@ -97,7 +97,14 @@ const SignUp = () => {
   };
 
     const handlePhoneNumberChange = (e) => {
+
+
         let newPhoneNumber = e.target.value;
+      
+        //user.PhoneNumber='+966'+ e.target.value;
+        console.log(e.target.value);
+       // setPhoneNumber({phoneNumber:'+966'+ e.target.value});
+      // user.PhoneNumber.value='+966'+ e.target.value;
 
         // Allow only digits after the prefix
         if (newPhoneNumber.startsWith('+966')) {
@@ -110,6 +117,7 @@ const SignUp = () => {
             ...prev,
             phoneError: phoneError || (newPhoneNumber === '+966' ? '' : phoneError),
         }));
+      //  setUser({ ...user, PhoneNumber: '+966'+newPhoneNumber }); // Store only the digits
 
         setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
     };
@@ -285,7 +293,8 @@ const SignUp = () => {
                         <input
                             type="tel"
                             name="PhoneNumber"
-                            value={`+966${user.PhoneNumber}`}
+                            placeholder='+966'
+                            value={`${user.PhoneNumber}`}
                             onChange={handlePhoneNumberChange}
                             onFocus={handleFocus}
                             required

@@ -208,7 +208,7 @@ label {
 
 #signup {
   color: #059855;
-  margin-left: 113px;
+  margin-left: 91px;
   text-decoration: underline;
 }
 #signup2 {
@@ -296,8 +296,35 @@ label {
 
 .password-toggle-icon {
   position: absolute;
-  top: 57%;
+  top: 60%;
   right: 66px; 
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color:gray;
+}
+.password-toggle-iconprofile1 {
+  position: absolute;
+  top: 57%;
+  left:50px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color:gray;
+}
+.password-toggle-iconprofile2 {
+  position: absolute;
+  top: 57%;
+  left:70px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color:gray;
+}
+.password-toggle-iconprofile3 {
+  position: absolute;
+  top: 57%;
+  left:90px;
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 18px;

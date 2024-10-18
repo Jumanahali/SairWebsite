@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase'; 
+import { db , auth} from '../firebase'; 
 import { useNavigate } from 'react-router-dom'; 
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import successImage from '../images/Sucess.png'; 
 import errorImage from '../images/Error.png'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import SAIRLogo from '../images/SAIRlogo.png'; 
+import logoutIcon from '../images/logout.png'; 
 import { getAuth, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 
 const Profile = () => {
@@ -32,11 +34,16 @@ const Profile = () => {
         newPassword:'',
         confirmNewPassword:'',
         currentPasswordEmpty:'',
+        confirmNewPasswordError:'',
+        currentPasswordsuccess:'',
     });
 
     const [loading, setLoading] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
     const [passwordRequirements, setPasswordRequirements] = useState({
         length: false,
         uppercase: false,
@@ -67,7 +74,13 @@ const Profile = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setEmployer({ ...Employer, [name]: value });
-
+        setValidationMessages((prev) => ({
+            ...prev,
+            currentPasswordError: '',
+            currentPasswordEmpty: '',
+            currentPasswordsuccess:'',
+            confirmNewPasswordError: '',
+        }));
         
 
         switch (name) {
@@ -92,12 +105,15 @@ const Profile = () => {
                     special: /[!@#$%^&*(),.?":{}|<>]/.test(value),
                 });
                 break;
-            case 'currentPassword':
-                    // Check if the current password is correct (this will be done on submit)
-                    break;
             default:
                 break;
         }
+        // console.log(Employer.currentPassword);
+
+        // console.log(Employer.newPassword);
+
+        // console.log(Employer.confirmNewPassword);
+      
     };
 
     const validatePhoneNumber = (phoneNumber) => {
@@ -122,9 +138,11 @@ const Profile = () => {
                 ...prev,
                 currentPasswordEmpty: 'Please enter your current password to verify.',
                 currentPasswordError: '',
+                currentPasswordsuccess:'',
             }));
             return;
         }
+       
     
         const auth = getAuth();
         const user = auth.currentUser;
@@ -141,6 +159,7 @@ const Profile = () => {
                 ...prev,
                 currentPasswordError: '',
                 currentPasswordEmpty: '',
+                currentPasswordsuccess:'Current password verified successfully',
             }));
         } catch (error) {
             console.error("Error verifying current password:", error);
@@ -149,28 +168,36 @@ const Profile = () => {
                 ...prev,
                 currentPasswordError: 'Incorrect current password. Please try again.',
                 currentPasswordEmpty: '',
+                currentPasswordsuccess:'',
             }));
         }
     };
     
     
 
-
-    
     const handleSave = async (e) => {
         e.preventDefault();
         setLoading(true);
-    
+      
+       
+        setValidationMessages((prev) => ({
+            ...prev,
+            currentPasswordError: '',
+            currentPasswordEmpty: '',
+            currentPasswordsuccess:'',
+            confirmNewPasswordError: '',
+        }));
+        // if (Employer.newPassword && Employer.newPassword === Employer.confirmNewPassword) {
+        //     console.log('jhhhhhhhhhhhhh');
+        //     setValidationMessages((prev) => ({
+        //         ...prev,
+        //         confirmNewPasswordError: '',
+        //     }));
+        // }
         // Check for validation errors
-        if (Object.values(validationMessages).some(msg => msg)) {
-            console.log(validationMessages);
-            setPopupMessage('Please fix validation errors.');
-            setLoading(false);
-            return;
-        }
-    
-        // Check if new passwords match
-        if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
+         // Check if new passwords match
+         
+         if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
             setValidationMessages((prev) => ({
                 ...prev,
                 confirmNewPasswordError: 'New passwords do not match.',
@@ -178,6 +205,24 @@ const Profile = () => {
             setLoading(false);
             return;
         }
+      
+
+        setValidationMessages((prev) => ({
+            ...prev,
+            currentPasswordError: '',
+            currentPasswordEmpty: '',
+            currentPasswordsuccess:'',
+             confirmNewPasswordError: '',
+        }));
+
+
+        if (Object.values(validationMessages).some(msg => msg)) {
+            setPopupMessage('Please fix validation errors.');
+            setLoading(false);
+            return;
+        }
+    
+      
     
         const employerUID = sessionStorage.getItem('employerUID');
         const auth = getAuth();
@@ -204,18 +249,39 @@ const Profile = () => {
                 await reauthenticateWithCredential(user, credential);
                 await updatePassword(user, Employer.newPassword);
             }
-    
+
+            
+            setEmployer((prevState) => ({
+                ...prevState,
+                currentPassword: '',
+                newPassword: '',
+                confirmNewPassword: '',
+            }));
             setPopupMessage('Profile updated successfully.');
             setEditMode(false);
         } catch (error) {
             console.error("Error updating profile:", error);
             
-                setPopupMessage('Failed to update profile.');
+            setPopupMessage('Failed to update profile.');
             
         } finally {
             setLoading(false);
         }
     };
+
+    // const handleChangeOn=()=>{
+    //     console.log(Employer.newPassword);
+    //     console.log(Employer.confirmNewPassword);
+
+
+    //     if (Employer.newPassword && Employer.newPassword === Employer.confirmNewPassword) {
+    //         console.log('jhhhhhhhhhhhhh');
+    //         setValidationMessages((prev) => ({
+    //             ...prev,
+    //             confirmNewPasswordError: '',
+    //         }));
+    //     }
+    // }
 
     const handleCancel = () => {
         setEmployer(originalEmployerData); // Restore original data
@@ -229,6 +295,10 @@ const Profile = () => {
             currentPasswordError:'',
             emailperError:'',
             currentPasswordEmpty:'',
+            confirmNewPasswordError:'',
+            currentPasswordsuccess:'',
+
+        
         });
           // Reset password requirements to default (all false)
     setPasswordRequirements({
@@ -243,12 +313,55 @@ const Profile = () => {
     };
     
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
+    const togglePasswordVisibility = (type) => {
+        if (type === 'current') {
+            setShowCurrentPassword(!showCurrentPassword);
+        } else if (type === 'new') {
+            setShowNewPassword(!showNewPassword);
+        } else if (type === 'confirm') {
+            setShowConfirmNewPassword(!showConfirmNewPassword);
+        }
     };
 
+    // Logout function to navigate back to the login page
+  const handleLogout = () => {
+    auth.signOut().then(() => {
+      navigate('/'); // Redirect to login page (Login.jsx)
+    }).catch((error) => {
+      console.error('Error LOGGING out:', error);
+    });
+  };
+
+  // Handle redirection functions for each page
+  const handleNavigation = (path) => {
+    navigate(path); // Navigate to the specified path
+  };
+
     return (
+        <div className="Header"> 
+      <header>
+        <nav>
+          <a onClick={() => handleNavigation('/Employeehomepage')}>
+            <img className="logo" src={SAIRLogo} alt="SAIR Logo"/>
+          </a>
+          <div className="nav-links" id="navLinks">
+            <ul>
+              <li><a  onClick={() => navigate('/employer-home')}>Home</a></li>
+              <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+              <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
+              <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
+              <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+              <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
+              <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+            </ul>
+          </div>
+          <button className="logoutBu" onClick={handleLogout}>
+            <img className="logout" src={logoutIcon} alt="Logout"/>
+          </button>
+        </nav>
+      </header>
         <div className="profile-container">
+
             <h1>My Profile</h1>
             <form onSubmit={handleSave}>
                 <div>
@@ -333,11 +446,11 @@ const Profile = () => {
                     {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
                 </div>
                 {editMode && (
-    <>
-        <div>
+               <> 
+               <div>
             <label>Current Password</label>
             <input
-                type={showPassword ? "text" : "password"}
+                type={showCurrentPassword ? "text" : "password"}
                 name="currentPassword"
                 value={Employer.currentPassword}
                 onChange={handleChange}
@@ -346,69 +459,71 @@ const Profile = () => {
                             <button type="button" onClick={handleVerifyCurrentPassword}>
                                 Verify
                             </button>
-                            <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-        <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-    </span>
+                            <span onClick={() => togglePasswordVisibility('current')} className="password-toggle-iconprofile1">
+                <i className={showCurrentPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+              </span>
 
-    {validationMessages.currentPasswordEmpty && (
-        <p style={{ color: '#FFA500', display: 'flex', alignItems: 'center' }}>
+           {validationMessages.currentPasswordEmpty && (
+          <p style={{ color: '#FFA500', display: 'flex', alignItems: 'center' }}>
             <i className="fas fa-exclamation-circle" style={{ marginRight: '5px', color: '#FFA500' }}></i>
             {validationMessages.currentPasswordEmpty}
-        </p>
-    )}
+         </p>
+         )}
 
-    {validationMessages.currentPasswordError && (
-        <p style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
+         {validationMessages.currentPasswordError && (
+         <p style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
             <i className="fas fa-times-circle" style={{ marginRight: '5px', color: 'red' }}></i>
             {validationMessages.currentPasswordError}
-        </p>
-    )}
+         </p>
+           )}
 
-    {currentPassValid && (
-        <p style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
+           {currentPassValid && validationMessages.currentPasswordsuccess &&(
+         <p style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
             <i className="fas fa-check-circle" style={{ marginRight: '5px', color: 'green' }}></i>
             {validationMessages.currentPasswordsuccess}
-            Current password verified successfully.
-        </p>
-    )}
-</div>
-        <div>
+         </p>
+           )
+          
+           }
+           
+         </div>
+         <div>
             <label>New Password</label>
             <input
-                type={showPassword ? "text" : "password"}
+                type={showNewPassword ? "text" : "password"}
                 name="newPassword"
                 value={Employer.newPassword}
                 onChange={handleChange}
                 disabled={!currentPassValid} // Disable until current password is valid
                
             />
-            <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+            <span onClick={() => togglePasswordVisibility('new')}className="password-toggle-iconprofile2">
+                <i className={showNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
             </span>
             <div className="password-requirements">
-    <ul>
-        <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
+         <ul>
+         <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
             At least 8 characters
-        </li>
-        <li style={{ color: passwordRequirements.uppercase ? '#059855' : 'red' }}>
+         </li>
+         <li style={{ color: passwordRequirements.uppercase ? '#059855' : 'red' }}>
             At least one uppercase letter
-        </li>
-        <li style={{ color: passwordRequirements.lowercase ? '#059855' : 'red' }}>
+         </li>
+         <li style={{ color: passwordRequirements.lowercase ? '#059855' : 'red' }}>
             At least one lowercase letter
-        </li>
-        <li style={{ color: passwordRequirements.number ? '#059855' : 'red' }}>
+         </li>
+         <li style={{ color: passwordRequirements.number ? '#059855' : 'red' }}>
             At least one number
-        </li>
-        <li style={{ color: passwordRequirements.special ? '#059855' : 'red' }}>
+         </li>
+         <li style={{ color: passwordRequirements.special ? '#059855' : 'red' }}>
             At least one special character
-        </li>
-    </ul>
-    </div>
-        </div>
-        <div>
+         </li>
+           </ul>
+          </div>
+         </div>
+          <div>
             <label>Confirm New Password</label>
             <input
-                type={showPassword ? "text" : "password"}
+                type={showConfirmNewPassword ? "text" : "password"}
                 name="confirmNewPassword"
                 value={Employer.confirmNewPassword}
                 onChange={handleChange}
@@ -416,15 +531,15 @@ const Profile = () => {
                
                 
             />
-             <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+             <span onClick={() => togglePasswordVisibility('confirm')} className="password-toggle-iconprofile3">
+                <i className={showConfirmNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
             </span>
             {validationMessages.confirmNewPasswordError && (
                 <p style={{ color: 'red' }}>{validationMessages.confirmNewPasswordError}</p>
             )}
-        </div>
-    </>
-)}
+          </div>
+           </>
+         )}
 
                 {editMode ? (
                     <div>
@@ -441,8 +556,8 @@ const Profile = () => {
                     <p>{popupMessage}</p>
                 </div>
             )}
-        </div>
-    );
-};
+         </div></div>
+          );
+          };
 
 export default Profile;
