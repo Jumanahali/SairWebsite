@@ -385,195 +385,210 @@ console.log(newPhoneNumber);
 
             <h1>My Profile</h1>
             <form onSubmit={handleSave}>
-                <div>
-                    <label style={{marginBottom:'2px'}}>First Name</label>
-                    <input
-                        type="text"
-                        name="Fname"
-                        value={Employer.Fname}
-                        onChange={handleChange}
-                        disabled={!editMode}
-                       required 
-                    />
-                </div>
-                <div>
-                    <label>Last Name</label>
-                    <input
-                        type="text"
-                        name="Lname"
-                        value={Employer.Lname}
-                        onChange={handleChange}
-                        disabled={!editMode}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="EmployeerEmail"
-                        value={Employer.EmployeerEmail}
-                        onChange={handleChange}
-                        disabled={!editMode}
-                        required
-                    />
-                    {validationMessages.emailperError && <p style={{ color: 'red' }}>{validationMessages.emailperError}</p>}
-                </div>
-                <div>
-                    <label>Phone Number</label>
-                    <input
-                     type="tel"
-                     name="PhoneNumber"
-                    placeholder='+966'
-                     value={`${Employer.PhoneNumber}`}
-                     onChange={handlePhoneNumberChange}
-                     onFocus={handleFocus}
-                     required
-                     disabled={!editMode}
-                    
-                    />
-                    {validationMessages.phoneError && <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>}
-                </div>
-                <div>
-                    <label>Commercial Number</label>
-                    <input
-                        type="text"
-                        name="commercialNumber"
-                        value={Employer.commercialNumber}
-                        onChange={handleChange}
-                        disabled={!editMode}
-                        required
-                    />
-                    {validationMessages.commercialNumberError && <p style={{ color: 'red' }}>{validationMessages.commercialNumberError}</p>}
-                </div>
-                <div>
-                    <label>Company Name</label>
-                    <input
-                        type="text"
-                        name="CompanyName"
-                        value={Employer.CompanyName}
-                        onChange={handleChange}
-                        disabled={!editMode}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Company Email</label>
-                    <input
-                        type="text"
-                        name="CompanyEmail"
-                        value={Employer.CompanyEmail}
-                        onChange={handleChange}
-                        disabled={!editMode}
-                        required
-                    />
-                    {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
-                </div>
-                {editMode && (
-               <> 
-               <div>
-            <label>Current Password</label>
-            <input
-                type={showCurrentPassword ? "text" : "password"}
-                name="currentPassword"
-                value={Employer.currentPassword}
-                onChange={handleChange}
-                required={Employer.newPassword ? true : false} // Only required if newPassword is entered
-                            />
-                            <button type="button" onClick={handleVerifyCurrentPassword}>
-                                Verify
-                            </button>
-                            <span onClick={() => togglePasswordVisibility('current')} className="password-toggle-iconprofile1">
-                <i className={showCurrentPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-              </span>
+  <div className="form-row">
+    <div>
+      <label className="profileLabel">First Name</label>
+      <input
+        type="text"
+        name="Fname"
+        value={Employer.Fname}
+        onChange={handleChange}
+        disabled={!editMode}
+        required
+      />
+    </div>
+    <div>
+      <label className="profileLabel" >Last Name</label>
+      <input
+        type="text"
+        name="Lname"
+        value={Employer.Lname}
+        onChange={handleChange}
+        disabled={!editMode}
+        required
+      />
+    </div>
+  </div>
 
-           {validationMessages.currentPasswordEmpty && (
-          <p style={{ color: '#FFA500', display: 'flex', alignItems: 'center' }}>
-            <i className="fas fa-exclamation-circle" style={{ marginRight: '5px', color: '#FFA500' }}></i>
-            {validationMessages.currentPasswordEmpty}
-         </p>
-         )}
+  <div className="form-row">
+    <div>
+      <label className="profileLabel">Email</label>
+      <input
+        type="email"
+        name="EmployeerEmail"
+        value={Employer.EmployeerEmail}
+        onChange={handleChange}
+        disabled={!editMode}
+        required
+      />
+      {validationMessages.emailperError && <p style={{ color: 'red' }}>{validationMessages.emailperError}</p>}
+    </div>
+    <div>
+      <label className="profileLabel">Phone Number</label>
+      <input
+        type="tel"
+        name="PhoneNumber"
+        placeholder='+966'
+        value={`${Employer.PhoneNumber}`}
+        onChange={handlePhoneNumberChange}
+        onFocus={handleFocus}
+        required
+        disabled={!editMode}
+      />
+      {validationMessages.phoneError && <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>}
+    </div>
+  </div>
 
-         {validationMessages.currentPasswordError && (
-         <p style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
-            <i className="fas fa-times-circle" style={{ marginRight: '5px', color: 'red' }}></i>
-            {validationMessages.currentPasswordError}
-         </p>
-           )}
+  <div className="form-row">
+    <div>
+      <label className="profileLabel">Commercial Number</label>
+      <input
+        type="text"
+        name="commercialNumber"
+        value={Employer.commercialNumber}
+        onChange={handleChange}
+        disabled={!editMode}
+        required
+      />
+      {validationMessages.commercialNumberError && <p style={{ color: 'red' }}>{validationMessages.commercialNumberError}</p>}
+    </div>
+    <div>
+      <label className="profileLabel">Company Name</label>
+      <input
+        type="text"
+        name="CompanyName"
+        value={Employer.CompanyName}
+        onChange={handleChange}
+        disabled={!editMode}
+        required
+      />
+    </div>
+  </div>
 
-           {currentPassValid && validationMessages.currentPasswordsuccess &&(
-         <p style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
-            <i className="fas fa-check-circle" style={{ marginRight: '5px', color: 'green' }}></i>
-            {validationMessages.currentPasswordsuccess}
-         </p>
-           )
+  <div className="form-row">
+    <div>
+      <label className="profileLabel">Company Email</label>
+      <input
+        type="text"
+        name="CompanyEmail"
+        value={Employer.CompanyEmail}
+        onChange={handleChange}
+        disabled={!editMode}
+        required
+      />
+      {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
+    </div>
+  </div>
+
+  {editMode && (
+    <>
+      <div className="form-row">
+        <div>
+          <label className="profileLabel">Current Password</label>
+          <input
+            type={showCurrentPassword ? "text" : "password"}
+            name="currentPassword"
+            value={Employer.currentPassword}
+            onChange={handleChange}
+            required={Employer.newPassword ? true : false}
+          />
+          <button type="button" className='profileVerify' onClick={handleVerifyCurrentPassword}>
+            Verify
+          </button>
+   
+          <span onClick={() => togglePasswordVisibility('current')} className="password-toggle-iconprofile1">
+            <i className={showCurrentPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+          </span>
           
-           }
-           
-         </div>
-         <div>
-            <label>New Password</label>
-            <input
-                type={showNewPassword ? "text" : "password"}
-                name="newPassword"
-                value={Employer.newPassword}
-                onChange={handleChange}
-                disabled={!currentPassValid} // Disable until current password is valid
-               
-            />
-            <span onClick={() => togglePasswordVisibility('new')}className="password-toggle-iconprofile2">
-                <i className={showNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-            </span>
-            <div className="password-requirements">
-         <ul>
-         <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
-            At least 8 characters
-         </li>
-         <li style={{ color: passwordRequirements.uppercase ? '#059855' : 'red' }}>
-            At least one uppercase letter
-         </li>
-         <li style={{ color: passwordRequirements.lowercase ? '#059855' : 'red' }}>
-            At least one lowercase letter
-         </li>
-         <li style={{ color: passwordRequirements.number ? '#059855' : 'red' }}>
-            At least one number
-         </li>
-         <li style={{ color: passwordRequirements.special ? '#059855' : 'red' }}>
-            At least one special character
-         </li>
-           </ul>
-          </div>
-         </div>
-          <div>
-            <label>Confirm New Password</label>
-            <input
-                type={showConfirmNewPassword ? "text" : "password"}
-                name="confirmNewPassword"
-                value={Employer.confirmNewPassword}
-                onChange={handleChange}
-                disabled={!currentPassValid}
-               
-                
-            />
-             <span onClick={() => togglePasswordVisibility('confirm')} className="password-toggle-iconprofile3">
-                <i className={showConfirmNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-            </span>
-            {validationMessages.confirmNewPasswordError && (
-                <p style={{ color: 'red' }}>{validationMessages.confirmNewPasswordError}</p>
-            )}
-          </div>
-           </>
-         )}
 
-                {editMode ? (
-                    <div>
-                        <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
-                        <button type="button" onClick={handleCancel}>Cancel</button>
-                    </div>
-                ) : (
-                    <button type="button" onClick={() => setEditMode(true)}>Edit</button>
-                )}
-            </form>
+          {validationMessages.currentPasswordEmpty && (
+            <p style={{ color: '#FFA500', display: 'flex', alignItems: 'center' }}>
+              <i className="fas fa-exclamation-circle" style={{ marginRight: '5px', color: '#FFA500' }}></i>
+              {validationMessages.currentPasswordEmpty}
+            </p>
+          )}
+
+          {validationMessages.currentPasswordError && (
+            <p style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
+              <i className="fas fa-times-circle" style={{ marginRight: '5px', color: 'red' }}></i>
+              {validationMessages.currentPasswordError}
+            </p>
+          )}
+
+          {currentPassValid && validationMessages.currentPasswordsuccess && (
+            <p style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
+              <i className="fas fa-check-circle" style={{ marginRight: '5px', color: 'green' }}></i>
+              {validationMessages.currentPasswordsuccess}
+            </p>
+          )}
+        </div>
+        <div>
+          <label className="profileLabel">New Password</label>
+          <input
+            type={showNewPassword ? "text" : "password"}
+            name="newPassword"
+            value={Employer.newPassword}
+            onChange={handleChange}
+            disabled={!currentPassValid}
+          />
+          <span onClick={() => togglePasswordVisibility('new')} className="password-toggle-iconprofile2">
+            <i className={showNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+          </span>
+          <div className="password-requirements">
+            <ul>
+              <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>At least 8 characters</li>
+              <li style={{ color: passwordRequirements.uppercase ? '#059855' : 'red' }}>At least one uppercase letter</li>
+              <li style={{ color: passwordRequirements.lowercase ? '#059855' : 'red' }}>At least one lowercase letter</li>
+              <li style={{ color: passwordRequirements.number ? '#059855' : 'red' }}>At least one number</li>
+              <li style={{ color: passwordRequirements.special ? '#059855' : 'red' }}>At least one special character</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-row">
+        <div>
+          <label className="profileLabel">Confirm New Password</label>
+          <input
+            type={showConfirmNewPassword ? "text" : "password"}
+            name="confirmNewPassword"
+            value={Employer.confirmNewPassword}
+            onChange={handleChange}
+            disabled={!currentPassValid}
+          />
+          <span onClick={() => togglePasswordVisibility('confirm')} className="password-toggle-iconprofile3">
+            <i className={showConfirmNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+          </span>
+          {validationMessages.confirmNewPasswordError && (
+            <p style={{ color: 'red' }}>{validationMessages.confirmNewPasswordError}</p>
+          )}
+        </div>
+      </div>
+    </>
+  )}
+
+  <div>
+    {editMode ? (
+      <div>
+        <button type="submit" className='profilesave' disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
+        <button type="button" className='profileCancel' onClick={handleCancel}>Cancel</button>
+      </div>
+    ) : (
+      <button type="button" className='editBtn' onClick={() => setEditMode(true)}>Edit</button>
+    )}
+  </div>
+{/*
+<div className="info">
+    <div className="info__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none"><path fill="#393a37" d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"></path></svg>
+    </div>
+    <div className="info__title">Profile updated successfully</div>
+    <div className="info__close"><svg height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z" fill="#393a37"></path></svg></div>
+</div>*/
+}
+</form>
+
+
 
             {popupMessage && (
                 <div className="popup">

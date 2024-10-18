@@ -450,3 +450,144 @@ border: 1px solid  #059855;
 background: #059855;
 transition: 1s;
 }
+
+/* Profile Container */
+.profile-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-container h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #059855;
+}
+
+.profile-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+/* Popup Styling */
+.popup, .notification-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.popup img, .notification-popup img {
+  width: 50px;
+  margin-bottom: 10px;
+}
+
+.popup p, .notification-popup p {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Error and Success Messages */
+.error-message, .password-requirements li {
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.error-message {
+  color: red;
+}
+
+.success-message {
+  color: green;
+}
+
+.password-requirements {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.password-requirements li {
+  color: red;
+}
+
+.password-requirements li.valid {
+  color: #059855;
+}
+/* Profile Form Styling */
+.profile-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+  margin-left: 0; /* Remove custom left margin */
+  margin-top: 0; /* Remove custom top margin */
+}
+
+.profile-container  input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #059855; /* Green border */
+  border-radius: 8px; 
+  font-size: 14px;
+  transition: border-color 0.3s ease-in-out;
+}
+
+/* Change border color on focus */
+.profile-container  input:focus {
+  outline: none;
+  border-color: #1c7a50; /* Darker green when focused */
+
+}
+
+/* Form Layout Styling */
+.profile-container .form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Space between the columns */
+  margin-bottom: 20px;
+}
+
+.profile-container .form-row div {
+  flex: 1;
+}
+
+
+.profile-container input:focus {
+  outline: none;
+  box-shadow: 0px 4px 8px rgba(60, 197, 133, 0.3);
+}
+
+.editBtn,.profileCancel, .profilesave ,.profileVerify {
+  border-radius: 15px;
+  background-color: #059855;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  color: white;
+  margin-right: 10px;
+}
+.editBtn:hover ,.profilesave:hover ,.profileCancel:hover , .profileVerify.profileVerify:hover{
+  background-color: #1c7a50;
+}
+.profileLabel{
+color: #059855;
+}
+.profile-container label{
+  color: #059855;
+ 
+}
