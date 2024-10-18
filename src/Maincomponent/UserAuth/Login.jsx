@@ -166,7 +166,7 @@ const Login = () => {
 </div>
 
             <h1 style={{marginTop:'40px'}}>Welcome to SAIR!</h1>
-            <p style={{ marginLeft: '95px', marginTop: '38px', color:'#211d1d' }}>Please Select your Role</p>
+            <p style={{ marginLeft: '120px', marginTop: '38px', color:'#211d1d' }}>Please Select your Role</p><br></br>
 
 
             <select id="roleSelect" onChange={handleRoleChange}>
@@ -177,7 +177,8 @@ const Login = () => {
             </select>
             <br /><br />
 
-            <div className="form-container" style={{ display: role ? 'block' : 'none' }}>
+            <div className="form-container" style={{ display: role ? 'block' : 'none' ,  marginLeft: '100px'
+}}>
                 <form id="dynamicForm" onSubmit={handleSubmit}>
                     {role === 'gdtAdmin' || role === 'gdtStaff' ? (
                         <div>
@@ -203,7 +204,7 @@ const Login = () => {
                             /><br />
                         </div>
                     ) : role === 'employer' ? (
-                        <div style={{marginLeft: '70px' , marginTop:'-8px'}}>
+                        <div >
 <p style={{ marginLeft: '24px', marginBottom: '1px' ,color:'#211d1d'}}>Please fill in the following information to log in to your account.</p>
 <style>
         {`

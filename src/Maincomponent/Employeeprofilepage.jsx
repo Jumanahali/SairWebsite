@@ -108,18 +108,60 @@ const Profile = () => {
             default:
                 break;
         }
-        // console.log(Employer.currentPassword);
-
-        // console.log(Employer.newPassword);
-
-        // console.log(Employer.confirmNewPassword);
+        
       
     };
 
+
+
+    const handlePhoneNumberChange = (e) => {
+
+
+        let newPhoneNumber = e.target.value;
+      
+        //user.PhoneNumber='+966'+ e.target.value;
+       
+       // setPhoneNumber({phoneNumber:'+966'+ e.target.value});
+      // user.PhoneNumber.value='+966'+ e.target.value;
+
+        // Allow only digits after the prefix
+        if (newPhoneNumber.startsWith('+966')) {
+                                                    
+         setEmployer({ ...Employer, PhoneNumber: newPhoneNumber }); // Store only the digits
+
+        }
+        else{
+            newPhoneNumber = '+966' + newPhoneNumber.slice(3);
+           
+
+            setEmployer({ ...Employer, PhoneNumber: newPhoneNumber }); // Store only the digits
+        }
+       
+       
+console.log(newPhoneNumber);
+         // Only validate if there is more than just the prefix ('+966')
+         const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
+
+        // setValidationMessages((prev) => ({
+        //     ...prev,
+        //     phoneError: phoneError 
+        // }));//removed when empty
+        setValidationMessages((prev) => ({ ...prev, phoneError: validatePhoneNumber(phoneError) }));
+
+  //      setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
+
+
+    };
+
+    const handleFocus = (e) => {
+        e.target.setSelectionRange(Employer.PhoneNumber.length, Employer.PhoneNumber.length);
+    };
+
+
     const validatePhoneNumber = (phoneNumber) => {
-        const phoneRegex = /^\+966\d{9}$/;
-        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +966 and be followed by 9 digits.';
-    }; 
+        const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
+        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +9665 and be followed by 8 digits.';
+    };
 
     const validateCommercialNumber = (number) => {
         const numberRegex = /^\d{10}$/;
@@ -187,15 +229,7 @@ const Profile = () => {
             currentPasswordsuccess:'',
             confirmNewPasswordError: '',
         }));
-        // if (Employer.newPassword && Employer.newPassword === Employer.confirmNewPassword) {
-        //     console.log('jhhhhhhhhhhhhh');
-        //     setValidationMessages((prev) => ({
-        //         ...prev,
-        //         confirmNewPasswordError: '',
-        //     }));
-        // }
-        // Check for validation errors
-         // Check if new passwords match
+        
          
          if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
             setValidationMessages((prev) => ({
@@ -217,7 +251,6 @@ const Profile = () => {
 
 
         if (Object.values(validationMessages).some(msg => msg)) {
-            setPopupMessage('Please fix validation errors.');
             setLoading(false);
             return;
         }
@@ -269,19 +302,7 @@ const Profile = () => {
         }
     };
 
-    // const handleChangeOn=()=>{
-    //     console.log(Employer.newPassword);
-    //     console.log(Employer.confirmNewPassword);
-
-
-    //     if (Employer.newPassword && Employer.newPassword === Employer.confirmNewPassword) {
-    //         console.log('jhhhhhhhhhhhhh');
-    //         setValidationMessages((prev) => ({
-    //             ...prev,
-    //             confirmNewPasswordError: '',
-    //         }));
-    //     }
-    // }
+    
 
     const handleCancel = () => {
         setEmployer(originalEmployerData); // Restore original data
@@ -365,7 +386,7 @@ const Profile = () => {
             <h1>My Profile</h1>
             <form onSubmit={handleSave}>
                 <div>
-                    <label>First Name</label>
+                    <label style={{marginBottom:'2px'}}>First Name</label>
                     <input
                         type="text"
                         name="Fname"
@@ -401,12 +422,15 @@ const Profile = () => {
                 <div>
                     <label>Phone Number</label>
                     <input
-                        type="tel"
-                        name="PhoneNumber"
-                        value={Employer.PhoneNumber}
-                        onChange={handleChange}
-                        disabled={!editMode}
-                        required
+                     type="tel"
+                     name="PhoneNumber"
+                    placeholder='+966'
+                     value={`${Employer.PhoneNumber}`}
+                     onChange={handlePhoneNumberChange}
+                     onFocus={handleFocus}
+                     required
+                     disabled={!editMode}
+                    
                     />
                     {validationMessages.phoneError && <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>}
                 </div>

@@ -102,24 +102,34 @@ const SignUp = () => {
         let newPhoneNumber = e.target.value;
       
         //user.PhoneNumber='+966'+ e.target.value;
-        console.log(e.target.value);
+       
        // setPhoneNumber({phoneNumber:'+966'+ e.target.value});
       // user.PhoneNumber.value='+966'+ e.target.value;
 
         // Allow only digits after the prefix
         if (newPhoneNumber.startsWith('+966')) {
-            newPhoneNumber = '+966' + newPhoneNumber.slice(4);
-        }
+           setUser({ ...user, PhoneNumber: newPhoneNumber }); // Store only the digits
 
-        // Validate phone number
-        const phoneError = validatePhoneNumber(newPhoneNumber);
+        }
+        else{
+            newPhoneNumber = '+966' + newPhoneNumber.slice(3);
+           
+
+            setUser({ ...user, PhoneNumber: newPhoneNumber }); // Store only the digits 
+        }
+       
+       
+console.log(newPhoneNumber);
+         // Only validate if there is more than just the prefix ('+966')
+         const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
+
         setValidationMessages((prev) => ({
             ...prev,
-            phoneError: phoneError || (newPhoneNumber === '+966' ? '' : phoneError),
+            phoneError: phoneError 
         }));
-      //  setUser({ ...user, PhoneNumber: '+966'+newPhoneNumber }); // Store only the digits
+  //      setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
 
-        setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
+
     };
 
     const handleFocus = (e) => {
@@ -135,8 +145,8 @@ const SignUp = () => {
     };
 
     const validatePhoneNumber = (phoneNumber) => {
-        const phoneRegex = /^\+966\d{9}$/; // Example for a specific format
-        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must with +966 and be followed by 9 digits.';
+        const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
+        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +9665 and be followed by 8 digits.';
     };
 
     const validateCommercialNumber = (number) => {
@@ -234,7 +244,7 @@ const SignUp = () => {
             return validationMessages[`${field}Error`] ? 'red' : !validationMessages[`${field}Error`] && user[field] ? 'green' : '';
         }
     };
-
+ 
     
 
     return (
@@ -247,11 +257,11 @@ const SignUp = () => {
  
 </div>
             <div >
-                <h1>Welcome to SAIR! </h1> <p style={{fontSize:'30px' , color: '#059855', marginTop:'-21px', marginLeft:'47px'}}>Your easy solution for managing <br/>delivery drivers.</p>
+                <h1 style={{marginTop:'40px'}}>Welcome to SAIR! </h1> <p style={{fontSize:'30px' , color: '#059855', marginTop:'6px', marginLeft:'47px'}}>Your easy solution for managing <br/>delivery drivers.</p>
                 
 
                 
-                <form className='form-container' style={{ marginLeft: '70px' }} onSubmit={handleSignUp}>
+                <form className='form-container' style={{ marginLeft: '100px' }} onSubmit={handleSignUp}>
                         <div className="profile-field">
                         <label>First Name</label><br></br>
                         <input
@@ -279,7 +289,7 @@ const SignUp = () => {
                         <label>Email</label><br></br>
                         <input
                             type="email"
-                            name="Email"
+                            name="EmployeerEmail"
                             value={user.EmployeerEmail}
                             onChange={handleChange}
                          
@@ -293,7 +303,7 @@ const SignUp = () => {
                         <input
                             type="tel"
                             name="PhoneNumber"
-                            placeholder='+966'
+                           placeholder='+966'
                             value={`${user.PhoneNumber}`}
                             onChange={handlePhoneNumberChange}
                             onFocus={handleFocus}
@@ -305,7 +315,7 @@ const SignUp = () => {
 
 
                     <div className="profile-field">
-                        <label>Commercial Number</label><br />
+                        <label>Commercial Number</label><br/>
                         <input
                             type="text"
                             name="commercialNumber"
@@ -344,7 +354,7 @@ const SignUp = () => {
 
                     </div>
 <div>
-                    <label>Password</label><br />
+                    <label>Password</label><br/>
                         <input
                              type={showPassword ? "text" : "password"}
                             name="Password"
@@ -358,7 +368,7 @@ const SignUp = () => {
                                  <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
                                </span>
                                <div className="password-requirements">
-    <ul>
+    <ul style={{marginLeft: '45px'}}>
         <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
             At least 8 characters
         </li>
@@ -375,7 +385,7 @@ const SignUp = () => {
             At least one special character
         </li>
     </ul>
-</div>
+</div><br></br>
                     <div className="profile-field">
                         <label >Confirm Password</label><br />
                         <input
@@ -386,9 +396,7 @@ const SignUp = () => {
                             required
                             style={{ borderColor: getBorderColor('confirmPassword') }}
                         />
-                         <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                                 <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-                               </span>
+                         
                         {validationMessages.confirmPasswordError && <p style={{ color: 'red' }}>{validationMessages.confirmPasswordError}</p>}
                     </div>
                     <a 
@@ -397,7 +405,7 @@ const SignUp = () => {
                                 style={{ cursor: 'pointer' }}
                             >
                                 Already have a company account? Log in here
-                            </a>
+                            </a> 
 
                     <button id='signsubmit1' type="submit" >Sign up</button>
                 </form>

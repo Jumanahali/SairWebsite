@@ -62,7 +62,7 @@ label {
   cursor: pointer;
   color: white;
   text-align: center;
-  margin-left: 151px;
+  margin-left: 80px;
   margin-top: 20px;
   width: 195px;
   height: 40;
@@ -76,6 +76,8 @@ label {
 }
 .form-container{
  max-height: 400px;
+ margin-top:54px;
+ /* margin-left: 100px; */
  
 } 
 
@@ -148,7 +150,7 @@ label {
   padding: 10px;
   font-size: 16px;
   background-color: white;
-  margin-left: 95px;
+  margin-left: 119px;
   margin-bottom: 5px;
 }
 
@@ -201,14 +203,14 @@ label {
 /* Links in Login Styles */
 #forget {
   color: #059855;
-  margin-left: 195px;
+  margin-left: 116px;
   text-decoration: underline;
 
 }
 
 #signup {
   color: #059855;
-  margin-left: 91px;
+  margin-left: 20px;
   text-decoration: underline;
 }
 #signup2 {
@@ -297,7 +299,7 @@ label {
 .password-toggle-icon {
   position: absolute;
   top: 60%;
-  right: 66px; 
+  right: 70px; 
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 18px;
