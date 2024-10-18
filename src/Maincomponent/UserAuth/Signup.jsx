@@ -35,7 +35,7 @@ const SignUp = () => {
     const [popupVisible, setPopupVisible] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
     const [popupImage, setPopupImage] = useState('');
-    const [showPasswordRequirements, setShowPasswordRequirements] = useState(true);
+    const [showConfirmNewPassword, setshowConfirmNewPassword] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('+966');
     const [showPassword, setShowPassword] = useState(false);
     const [passwordRequirements, setPasswordRequirements] = useState({
@@ -91,10 +91,13 @@ const SignUp = () => {
         }
     };
 
-     // Function to toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+    const togglePasswordVisibility = (type) => {
+        if (type === 'new') {
+            setShowPassword(!showPassword);
+        }  else if (type === 'confirm') {
+            setshowConfirmNewPassword(!showConfirmNewPassword);
+        }
+    };
 
     const handlePhoneNumberChange = (e) => {
 
@@ -292,7 +295,7 @@ console.log(newPhoneNumber);
                             name="EmployeerEmail"
                             value={user.EmployeerEmail}
                             onChange={handleChange}
-                         
+                         required
                             style={{ borderColor: getBorderColor('EmployeerEmail') }}
                         />
                     {validationMessages.emailperError && <p style={{ color: 'red' }}>{validationMessages.emailperError}</p>}
@@ -347,7 +350,7 @@ console.log(newPhoneNumber);
                             name="CompanyEmail"
                             value={user.CompanyEmail}
                             onChange={handleChange}
-                         
+                         required
                             style={{ borderColor: getBorderColor('CompanyEmail') }}
                         />
                     {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
@@ -364,9 +367,21 @@ console.log(newPhoneNumber);
                             style={{ borderColor: getBorderColor('Password') }}
                         />
                     </div>
-                    <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                                 <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-                               </span>
+                    <span 
+    onClick={() => togglePasswordVisibility('new')}
+    className="password-toggle-iconsignup" 
+    style={{
+        position: 'absolute',
+        top: '146%',
+        left: '405px',
+        transform: 'translateY(-50%)',
+        cursor: 'pointer',
+        fontSize: '18px',
+        color: 'gray'
+    }}
+>
+    <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+</span>
                                <div className="password-requirements">
     <ul style={{marginLeft: '45px'}}>
         <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
@@ -389,14 +404,28 @@ console.log(newPhoneNumber);
                     <div className="profile-field">
                         <label >Confirm Password</label><br />
                         <input
-                            type={showPassword ? "text" : "password"}
+                            type={showConfirmNewPassword ? "text" : "password"}
                             name="confirmPassword"
                             value={user.confirmPassword}
                             onChange={handleChange}
                             required
                             style={{ borderColor: getBorderColor('confirmPassword') }}
                         />
-                         
+                           <span 
+   onClick={() => togglePasswordVisibility('confirm')}
+    className="password-toggle-iconsignup2" 
+    style={{
+        position: 'absolute',
+        top: '178%',
+        left: '405px',
+        transform: 'translateY(-50%)',
+        cursor: 'pointer',
+        fontSize: '18px',
+        color: 'gray'
+    }}
+>
+    <i className={showConfirmNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
+</span>
                         {validationMessages.confirmPasswordError && <p style={{ color: 'red' }}>{validationMessages.confirmPasswordError}</p>}
                     </div>
                     <a 
