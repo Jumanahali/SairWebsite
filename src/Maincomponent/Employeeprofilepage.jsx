@@ -502,21 +502,21 @@ console.log(newPhoneNumber);
           
 
           {validationMessages.currentPasswordEmpty && (
-            <p style={{ color: '#FFA500', display: 'flex', alignItems: 'center' }}>
+            <p style={{ color: '#FFA500', display: 'flex', alignItems: 'center', fontSize: '14px' }}>
               <i className="fas fa-exclamation-circle" style={{ marginRight: '5px', color: '#FFA500' }}></i>
               {validationMessages.currentPasswordEmpty}
             </p>
           )}
 
           {validationMessages.currentPasswordError && (
-            <p style={{ color: 'red', display: 'flex', alignItems: 'center' }}>
+            <p  style={{ color: 'red', display: 'flex', alignItems: 'center', fontSize: '14px' }}>
               <i className="fas fa-times-circle" style={{ marginRight: '5px', color: 'red' }}></i>
               {validationMessages.currentPasswordError}
             </p>
           )}
 
           {currentPassValid && validationMessages.currentPasswordsuccess && (
-            <p style={{ color: 'green', display: 'flex', alignItems: 'center' }}>
+            <p style={{ color: 'green', display: 'flex', alignItems: 'center', fontSize: '14px' }}>
               <i className="fas fa-check-circle" style={{ marginRight: '5px', color: 'green' }}></i>
               {validationMessages.currentPasswordsuccess}
             </p>
@@ -530,6 +530,7 @@ console.log(newPhoneNumber);
             value={Employer.newPassword}
             onChange={handleChange}
             disabled={!currentPassValid}
+            className='newPass'
           />
           <span onClick={() => togglePasswordVisibility('new')} className="password-toggle-iconprofile2">
             <i className={showNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
