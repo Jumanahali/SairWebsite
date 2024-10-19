@@ -522,6 +522,17 @@ transition: 1s;
 .password-requirements li {
   color: red;
 }
+.password-requirements {
+  margin: 0;
+  padding-left: 18px; /* Adjust this value to align with the input field */
+  font-size: 12px; /* Make the font size smaller */
+  list-style-type: none;
+}
+
+.password-message {
+  font-size: 12px; /* Smaller font size */
+  margin-top: 5px;
+}
 
 .password-requirements li.valid {
   color: #059855;
