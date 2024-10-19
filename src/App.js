@@ -10,6 +10,7 @@ import Violations from './Maincomponent/Violations'; // Ensure this file name ma
 import Complaints from './Maincomponent/Complaints'; // Ensure this file name matches exactly
 import Crashes from './Maincomponent/Crashes'; // Ensure this file name matches exactly
 import EmployeeProfile from './Maincomponent/Employeeprofilepage'; // Ensure this file name matches exactly
+import ViolationDetail from './Maincomponent/ViolationDetail';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/driverslist" element={<DriversList />} />
         <Route path="/motorcycleslist" element={<MotorcyclesList />} />
         <Route path="/violations" element={<Violations />} />
+        <Route path="/violations/:violationId" element={<ViolationDetail />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/crashes" element={<Crashes />} />
         <Route path="/employee-profile" element={<EmployeeProfile />} />
