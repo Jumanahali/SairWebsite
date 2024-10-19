@@ -37,16 +37,17 @@ label {
   border-radius: 18px;
   background-color: #059855;
   border: none;
-  padding: 15px 30px;
+  padding: 10px 20px;
   font-size: 20px;
   cursor: pointer;
   color: white;
   text-align: center;
-  margin-left: -244px;
+  margin-left: -56px;
   margin-top: 20px;
   width: 195px;
   height: 40;
   transition: background-color 0.3s ease;
+  margin-bottom: 20px; 
   font-weight: bold;
 }
 #signsubmit1:hover {
@@ -215,8 +216,9 @@ label {
 }
 #signup2 {
   color: #059855;
-  margin-left: 33px;
+  margin-left: -35px;
   text-decoration: underline;
+  margin-top: 10px;
 }
 
 #login {
@@ -307,17 +309,22 @@ label {
 }
 .password-toggle-iconprofile1 {
   position: absolute;
-  top: 57%;
-  left:50px;
+  top: 45px;
+  right:11px;
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 18px;
   color:gray;
+  position: 'absolute',
 }
+                            
+                           
+                            
+                  
 .password-toggle-iconprofile2 {
   position: absolute;
-  top: 57%;
-  left:70px;
+  top: 45px;
+  right:10px;
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 18px;
@@ -325,8 +332,8 @@ label {
 }
 .password-toggle-iconprofile3 {
   position: absolute;
-  top: 57%;
-  left:90px;
+  top: 47px;
+  right:10px;
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 18px;

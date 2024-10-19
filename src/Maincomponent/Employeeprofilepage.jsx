@@ -483,7 +483,7 @@ console.log(newPhoneNumber);
   {editMode && (
     <>
       <div className="form-row">
-        <div>
+        <div style={{ position: 'relative' }}>
           <label className="profileLabel">Current Password</label>
           <input
             type={showCurrentPassword ? "text" : "password"}
@@ -522,7 +522,7 @@ console.log(newPhoneNumber);
             </p>
           )}
         </div>
-        <div>
+        <div  style={{ position: 'relative' }}>
           <label className="profileLabel">New Password</label>
           <input
             type={showNewPassword ? "text" : "password"}
@@ -547,7 +547,7 @@ console.log(newPhoneNumber);
       </div>
 
       <div className="form-row">
-        <div>
+        <div style={{ position: 'relative' }}>
           <label className="profileLabel">Confirm New Password</label>
           <input
             type={showConfirmNewPassword ? "text" : "password"}

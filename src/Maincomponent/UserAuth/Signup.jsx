@@ -264,8 +264,11 @@ console.log(newPhoneNumber);
                 
 
                 
-                <form className='form-container' style={{ marginLeft: '100px' }} onSubmit={handleSignUp}>
-                        <div className="profile-field">
+                <form 
+  className='form-container' 
+  style={{ marginLeft: '100px', paddingBottom: '20px' }} 
+  onSubmit={handleSignUp}
+>                        <div className="profile-field">
                         <label>First Name</label><br></br>
                         <input
                             type="text"
@@ -356,7 +359,7 @@ console.log(newPhoneNumber);
                     {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
 
                     </div>
-<div>
+                    <div style={{ position: 'relative', marginBottom: '20px' }}>
                     <label>Password</label><br/>
                         <input
                              type={showPassword ? "text" : "password"}
@@ -364,16 +367,16 @@ console.log(newPhoneNumber);
                             value={user.Password}
                             onChange={handleChange}
                             required
-                            style={{ borderColor: getBorderColor('Password') }}
+                            style={{ borderColor: getBorderColor('Password') ,paddingRight: '30px'}}
                         />
-                    </div>
+                    
                     <span 
     onClick={() => togglePasswordVisibility('new')}
     className="password-toggle-iconsignup" 
     style={{
         position: 'absolute',
-        top: '146%',
-        left: '405px',
+        top: '63px',
+        left: '309px',
         transform: 'translateY(-50%)',
         cursor: 'pointer',
         fontSize: '18px',
@@ -381,7 +384,7 @@ console.log(newPhoneNumber);
     }}
 >
     <i className={showPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
-</span>
+</span></div>
                                <div className="password-requirements">
     <ul style={{marginLeft: '45px'}}>
         <li style={{ color: passwordRequirements.length ? '#059855' : 'red' }}>
@@ -401,7 +404,7 @@ console.log(newPhoneNumber);
         </li>
     </ul>
 </div><br></br>
-                    <div className="profile-field">
+                    <div style={{ position: 'relative' }} className="profile-field">
                         <label >Confirm Password</label><br />
                         <input
                             type={showConfirmNewPassword ? "text" : "password"}
@@ -416,8 +419,8 @@ console.log(newPhoneNumber);
     className="password-toggle-iconsignup2" 
     style={{
         position: 'absolute',
-        top: '178%',
-        left: '405px',
+        top: '64px',
+        left: '309px',
         transform: 'translateY(-50%)',
         cursor: 'pointer',
         fontSize: '18px',
@@ -428,15 +431,21 @@ console.log(newPhoneNumber);
 </span>
                         {validationMessages.confirmPasswordError && <p style={{ color: 'red' }}>{validationMessages.confirmPasswordError}</p>}
                     </div>
+                    <div style={{ marginTop: '20px', textAlign: 'center', position:'relative' }}>
                     <a 
-                                id='signup2' 
-                                onClick={() => navigate('/')} 
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Already have a company account? Log in here
-                            </a> 
+      id='signup2' 
+      onClick={() => navigate('/')} 
+      style={{ cursor: 'pointer', color: '#059855', textDecoration: 'underline', marginTop: '10px' }}
+    >
+      Already have a company account? Log in here
+    </a> <br />
 
-                    <button id='signsubmit1' type="submit" >Sign up</button>
+    <button id='signsubmit1' type="submit" style={{ marginBottom: '15px' }}>
+      Sign up
+    </button>
+   
+  
+  </div>
                 </form>
 
                 {popupVisible && (
