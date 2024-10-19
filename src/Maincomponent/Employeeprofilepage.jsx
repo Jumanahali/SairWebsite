@@ -560,6 +560,7 @@ console.log(newPhoneNumber);
             value={Employer.confirmNewPassword}
             onChange={handleChange}
             disabled={!currentPassValid}
+            className='confPass'
           />
           <span onClick={() => togglePasswordVisibility('confirm')} className="password-toggle-iconprofile3">
             <i className={showConfirmNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
