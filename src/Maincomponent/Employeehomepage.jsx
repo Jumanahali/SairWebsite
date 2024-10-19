@@ -12,7 +12,7 @@ import crashesIcon from '../images/crash.png';
 import back from '../images/back.jpg'; 
 import { auth, db } from '../firebase'; 
 import { doc, getDoc } from 'firebase/firestore'; 
-import homeBackground from '../images/homebackground5.png'; // Ensure this path is correct
+import homeBackground from '../images/homebackground7.png'; // Ensure this path is correct
 
 const EmployeeHome = () => {
   const [userName, setUserName] = useState(''); // State for storing user's first name
