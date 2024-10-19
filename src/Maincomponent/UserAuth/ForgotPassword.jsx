@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { auth } from '../../firebase';
+import React, { useState, useEffect } from 'react';
+import { auth, db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { EmailAuthProvider, updatePassword, reauthenticateWithCredential } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import successImage from '../../images/Sucess.png';
 import errorImage from '../../images/Error.png';
-// import phoneIcon from '../../images/phone-icon.png'; // Update with the path to your phone icon
 import '../../App.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const ForgetPassword = () => {
-  const [state, setState] = useState('');
     const [step, setStep] = useState(1);
     const [phoneNumber, setPhoneNumber] = useState('+966');
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -34,6 +33,8 @@ const ForgetPassword = () => {
     const [popupImage, setPopupImage] = useState('');
     const navigate = useNavigate();
 
+    const employerUID = sessionStorage.getItem('employerUID'); // Retrieve employerUID from session storage
+
     const handlePhoneChange = (e) => {
         let newPhoneNumber = e.target.value;
         if (newPhoneNumber.startsWith('+966')) {
@@ -52,6 +53,35 @@ const ForgetPassword = () => {
         return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +9665 and be followed by 8 digits.';
     };
 
+    const handleVerifyPhoneNumber = async () => {
+        try {
+            const docRef = doc(db, 'Employer', employerUID);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const employerData = docSnap.data();
+                if (employerData.PhoneNumber === phoneNumber) {
+                    // Proceed to OTP step if phone numbers match
+                    setStep(2);
+                } else {
+                    setValidationMessages((prev) => ({
+                        ...prev,
+                        phoneError: 'The phone number does not match our records.',
+                    }));
+                }
+            } else {
+                setPopupMessage('Employer not found.');
+                setPopupImage(errorImage);
+                setPopupVisible(true);
+            }
+        } catch (error) {
+            console.error('Error verifying phone number:', error);
+            setPopupMessage('Failed to verify phone number. Please try again.');
+            setPopupImage(errorImage);
+            setPopupVisible(true);
+        }
+    };
+
     const handleOtpChange = (e, index) => {
         const value = e.target.value;
         if (/^\d*$/.test(value)) {
@@ -59,16 +89,19 @@ const ForgetPassword = () => {
             newOtp[index] = value;
             setOtp(newOtp);
 
-            // Focus next input
             if (value && index < otp.length - 1) {
                 document.getElementById(`otp-input-${index + 1}`).focus();
+            }
+
+            if (!value && index > 0) {
+                document.getElementById(`otp-input-${index - 1}`).focus();
             }
         }
     };
 
     const handleVerifyOtp = () => {
         if (otp.join('') === '123456') {
-            setStep(3); // Assuming '123456' is the correct OTP for demonstration
+            setStep(3);
         } else {
             setValidationMessages((prev) => ({
                 ...prev,
@@ -112,7 +145,7 @@ const ForgetPassword = () => {
             const user = auth.currentUser;
             const credential = EmailAuthProvider.credential(
                 user.email,
-                otp.join('') // In a real scenario, replace with the user's verified current password or OTP equivalent
+                otp.join('')
             );
 
             await reauthenticateWithCredential(user, credential);
@@ -123,7 +156,7 @@ const ForgetPassword = () => {
             setPopupVisible(true);
             setTimeout(() => {
                 setPopupVisible(false);
-                navigate('/login'); // Redirect to login page after password reset
+                navigate('/login');
             }, 3000);
         } catch (error) {
             console.error('Error resetting password:', error);
@@ -156,12 +189,11 @@ const ForgetPassword = () => {
                     {validationMessages.phoneError && (
                         <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>
                     )}
-                    <button onClick={() => setStep(2)} style={{ marginTop: '20px' }}>Send OTP</button>
+                    <button onClick={handleVerifyPhoneNumber} style={{ marginTop: '20px' }}>Send OTP</button>
                 </div>
             )}
             {step === 2 && (
                 <div>
-                    {/* <img src={phoneIcon} alt="Phone Icon" className="phone-icon" /> */}
                     <h2>Please check your phone</h2>
                     <p>We’ve sent a code to {phoneNumber}</p>
                     <div className="otp-inputs">
@@ -174,6 +206,14 @@ const ForgetPassword = () => {
                                 onChange={(e) => handleOtpChange(e, index)}
                                 id={`otp-input-${index}`}
                                 className="otp-input"
+                                style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    textAlign: 'center',
+                                    margin: '5px',
+                                    fontSize: '18px',
+                                    borderColor: validationMessages.otpError ? 'red' : 'green'
+                                }}
                             />
                         ))}
                     </div>
