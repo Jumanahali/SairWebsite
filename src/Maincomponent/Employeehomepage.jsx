@@ -12,10 +12,19 @@ import crashesIcon from '../images/crash.png';
 import back from '../images/back.jpg'; 
 import { auth, db } from '../firebase'; 
 import { doc, getDoc } from 'firebase/firestore'; 
+import homeBackground from '../images/homebackground5.png'; // Ensure this path is correct
 
 const EmployeeHome = () => {
   const [userName, setUserName] = useState(''); // State for storing user's first name
   const navigate = useNavigate(); // Use navigate for redirection
+
+  const styles = {
+    backgroundImage: `url(${homeBackground})`,
+    backgroundSize: '100%', // Ensures the image covers the entire background
+    backgroundPosition: 'center', // Centers the image
+    height: '100vh', // Sets the height to full viewport height
+    width: '100%', // Ensures it takes the full width
+  };
 
   useEffect(() => {
     // Fetch the first name from the Employer collection
@@ -58,37 +67,39 @@ const EmployeeHome = () => {
   };
 
   return (
-    <div className="Header"> 
-      <header>
-        <nav>
-          <a onClick={() => handleNavigation('/Employeehomepage')}>
-            <img className="logo" src={SAIRLogo} alt="SAIR Logo"/>
-          </a>
-          <div className="nav-links" id="navLinks">
-            <ul>
-              <li><a  onClick={() => navigate('/employer-home')}>Home</a></li>
-              <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
-              <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
-              <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-              <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
-              <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
-              <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
-            </ul>
-          </div>
-          <button className="logoutBu" onClick={handleLogout}>
-            <img className="logout" src={logoutIcon} alt="Logout"/>
-          </button>
-        </nav>
-      </header>
-      <div className="text-box">
-        <h1>SAIR Vision</h1>
-        <p>
-          SAIR initiative seeks to enhance road safety through advanced monitoring and ensure the safety of delivery motorcycle drivers.
-          By equipping the General Department of Traffic (GDT), employers, and drivers with essential tools, it aims to reduce violations and accidents,
-          promoting a safer environment for everyone on the road. The system ultimately fosters a culture of accountability and safety. 
-          Through these measures, SAIR empowers all stakeholders to contribute to a safer and more efficient delivery ecosystem.
-        </p>
-        <a onClick={() => handleNavigation('/violations')} className="hero-btn">View Violations</a>
+    <div style={styles}>
+      <div className="Header">
+        <header>
+          <nav>
+            <a onClick={() => handleNavigation('/Employeehomepage')}>
+              <img className="logo" src={SAIRLogo} alt="SAIR Logo" />
+            </a>
+            <div className="nav-links" id="navLinks">
+              <ul>
+                <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
+                <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+                <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>
+                <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
+                <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
+                <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+              </ul>
+            </div>
+            <button className="logoutBu" onClick={handleLogout}>
+              <img className="logout" src={logoutIcon} alt="Logout" />
+            </button>
+          </nav>
+        </header>
+        <div className="text-box">
+        <h1 style={{ color: '#059855' }}>SAIR Vision</h1>
+           <p style={{ fontSize: '20px' }}>
+            SAIR initiative seeks to enhance road safety through advanced monitoring and ensure the safety of delivery motorcycle drivers.
+            By equipping the General Department of Traffic (GDT), employers, and drivers with essential tools, it aims to reduce violations and accidents,
+            promoting a safer environment for everyone on the road. The system ultimately fosters a culture of accountability and safety.
+            Through these measures, SAIR empowers all stakeholders to contribute to a safer and more efficient delivery ecosystem.
+          </p>
+          <a onClick={() => handleNavigation('/violations')} className="hero-btn">View Violations</a>
+        </div>
       </div>
     </div>
   );

@@ -23,6 +23,10 @@ margin-bottom: 30px;
 
 }
 
+#bachgroundimage {
+
+}
+
 
 label {
   color: black;
@@ -443,8 +447,8 @@ color: f1f1ff;
 .hero-btn {
 display: inline-block;
 text-decoration: none;
-color: f1f1ff;
-border: 1px solid #fafaff;
+color: #059855;
+border: 1px solid #059855;
 padding: 12px 34px;
 font-size: 13px;
 background: transparent;
@@ -455,6 +459,7 @@ cursor: pointer;
 .hero-btn:hover {
 border: 1px solid  #059855;
 background: #059855;
+color: #fafaff;
 transition: 1s;
 }
 
