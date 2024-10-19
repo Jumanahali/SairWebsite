@@ -380,9 +380,13 @@ console.log(newPhoneNumber);
             <img className="logout" src={logoutIcon} alt="Logout"/>
           </button>
         </nav>
-      </header>
+      </header>     <div class="breadcrumb">
+      <a onClick={() => navigate('/employer-home')}>Home</a>
+      <span> / </span>
+      <a onClick={() => navigate('/employee-profile')}>Profile</a>
+    </div>
         <div className="profile-container">
-
+   
             <h1>My Profile</h1>
             <form onSubmit={handleSave}>
   <div className="form-row">

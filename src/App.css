@@ -635,3 +635,13 @@ color: #059855;
   color: #7d7d7d; /* Dark grey text */
   cursor: not-allowed; /* Optional: Change cursor to indicate disabled state */
 }
+.breadcrumb {
+  margin: 20px 0;
+  text-align: left;
+  margin-left: 20px;
+}
+.breadcrumb a {
+  color: #059855;
+  font-size: 1rem;
+  text-decoration: underline;
+}
