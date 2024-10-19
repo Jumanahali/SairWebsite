@@ -5,9 +5,11 @@ import { collection, doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import SearchIcon from '../images/search.png';
 import EyeIcon from '../images/eye.png';
-import SAIRlogo from '../images/SAIRlogo.png';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import SAIRLogo from '../images/SAIRlogo.png'; 
+import logoutIcon from '../images/logout.png'; 
 import ProfileImage from '../images/Profile.PNG';
-import LogoutIcon from '../images/logout.png';
+
 import '../Violations.css';
 
 const ViolationList = () => {
@@ -85,34 +87,33 @@ const ViolationList = () => {
     };
 
     return (
-        <div>
-            {/* Header Section */}
-            <header className="header-container">
-                <img src={SAIRlogo} alt="SAIR logo" className="logo-image" />
-                <div className="user-info-container">
-                    <button className="logout-button" onClick={handleLogout}>
-                        <img className='logout-icon' src={LogoutIcon} alt="Logout" />
-                    </button>
-                    <div className="profile-section-container">
-                        <img id='profile-image' src={ProfileImage} alt="Profile" />
-                        <span id='name'>{currentUserName}</span>
-                    </div>
-                </div>
-            </header>
+               <div className="Header"> 
+      <header>
+        <nav>
+        <a onClick={() => navigate('/Employeehomepage')}>
+  <img className="logo" src={SAIRLogo} alt="SAIR Logo"/>
+</a>
 
-            {/* Navigation Bar */}
-            <nav className="navbar-container">
-                <a onClick={() => navigate('/employer-home')}>Home</a>
-                <a onClick={() => navigate('/violations')}>Violations List</a>
-                <a onClick={() => navigate('/crashes')}>Crashes List</a>
-                <a onClick={() => navigate('/complaints')}>Complaints List</a>
-                <a onClick={() => navigate('/driverslist')}>Drivers List</a>
-                <a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a>
-                <a onClick={() => navigate('/employee-profile')}>Profile page</a>
-            </nav>
-
-            <hr />
-
+          <div className="nav-links" id="navLinks">
+            <ul>
+              <li><a  onClick={() => navigate('/employer-home')}>Home</a></li>
+              <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+              <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
+              <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
+              <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+              <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
+              <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+            </ul>
+          </div>
+          <button className="logoutBu" onClick={handleLogout}>
+            <img className="logout" src={logoutIcon} alt="Logout"/>
+          </button>
+        </nav>
+      </header>     <div class="breadcrumb">
+      <a onClick={() => navigate('/employer-home')}>Home</a>
+      <span> / </span>
+      <a onClick={() => navigate('/violations')}>Violations List</a>
+    </div>
             {/* Search Bar */}
             <h1>Violations List</h1>
             <div className="search-container">

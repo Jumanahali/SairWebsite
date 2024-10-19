@@ -4,16 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { collection, doc, onSnapshot, deleteDoc, addDoc, getDoc } from 'firebase/firestore';
 import TrashIcon from '../images/Trash.png';
 import PencilIcon from '../images/pencil.png';
-import SAIRlogo from '../images/SAIRlogo.png';
 import ProfileImage from '../images/Profile.PNG';
-import LogoutIcon from '../images/logout.png';
 import AddIcon from '../images/addmotorcycle.png';
 import SearchIcon from '../images/search.png';
 import EyeIcon from '../images/eye.png';
 import '../motorcyclelist.css';
 import successImage from '../images/Sucess.png';
 import errorImage from '../images/Error.png';
-
+import SAIRLogo from '../images/SAIRlogo.png'; 
+import logoutIcon from '../images/logout.png'; 
 const MotorcycleList = () => {
     const [motorcycleData, setMotorcycleData] = useState([]);
     const [driverData, setDriverData] = useState([]);
@@ -157,31 +156,33 @@ const MotorcycleList = () => {
     };
 
     return (
-        <div>
-            <header className="header-container">
-                <img src={SAIRlogo} alt="SAIR logo" className="logo-image" />
-                <div className="user-info-container">
-                    <button className="logout-button" onClick={handleLogout}>
-                        <img className='logout-icon' src={LogoutIcon} alt="Logout" />
-                    </button>
-                    <div className="profile-section-container">
-                        <img id='profile-image' src={ProfileImage} alt="Profile" />
-                        <span id='name'>{currentUserName}</span>
-                    </div>
-                </div>
-            </header>
-
-            <nav className="navbar-container">
-                <a onClick={() => handleNavigation('/employer-home')}>Home</a>
-                <a onClick={() => handleNavigation('/violations')}>Violations List</a>
-                <a onClick={() => handleNavigation('/crashes')}>Crashes List</a>
-                <a onClick={() => handleNavigation('/complaints')}>Complaints List</a>
-                <a onClick={() => handleNavigation('/driverslist')}>Drivers List</a>
-                <a onClick={() => handleNavigation('/motorcycleslist')}>Motorcycles List</a>
-                <a onClick={() => handleNavigation('/employee-profile')}>Profile page</a>
-            </nav>
-
-            <hr />
+        <div className="Header"> 
+        <header>
+          <nav>
+          <a onClick={() => navigate('/Employeehomepage')}>
+    <img className="logo" src={SAIRLogo} alt="SAIR Logo"/>
+  </a>
+  
+            <div className="nav-links" id="navLinks">
+              <ul>
+                <li><a  onClick={() => navigate('/employer-home')}>Home</a></li>
+                <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+                <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
+                <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
+                <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
+                <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+              </ul>
+            </div>
+            <button className="logoutBu" onClick={handleLogout}>
+              <img className="logout" src={logoutIcon} alt="Logout"/>
+            </button>
+          </nav>
+        </header>     <div class="breadcrumb">
+        <a onClick={() => navigate('/employer-home')}>Home</a>
+        <span> / </span>
+        <a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a>
+      </div>
 
             <div className="motorcycle-list-header-container">
                 <h1>Motorcycles List</h1>
