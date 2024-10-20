@@ -1,3 +1,54 @@
+main {  
+}
+
+h2.title {
+  color: #059855;
+  font-size: 32px;
+  margin: 20px 0;
+}
+
+.search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.search-inputs {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-container {
+  padding: 10px 12px;
+  border-radius:  999999px;
+
+}
+.search-container svg {
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-right: 10px;
+}
+.search-container:focus-within {
+  border: 2px solid #059855;
+  border-radius: 20px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(90deg);
+}
+
+main .search-container input[type="date"] {
+outline: none;
+  border: none;
+}
+main .search-container input[type="text"] {
+  padding: 0;
+  margin: 0;
+}
+ 
+
 /* /*
 * {
     margin: 0;

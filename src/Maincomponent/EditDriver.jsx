@@ -4,7 +4,8 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Form, Input, Button, notification, Card, Row, Col } from 'antd';
 import styles from '../DriverList.module.css';
-import { BackwardOutlined } from '@ant-design/icons';
+import successImage from '../images/Sucess.png'; 
+import errorImage from '../images/Error.png'; 
 
 const EditDriver = () => {
     const { driverId } = useParams();
@@ -16,15 +17,19 @@ const EditDriver = () => {
         PhoneNumber: '',
         GPSnumber: '',
         CompanyName: '',
-        Email: '',  // Added email field here
+        Email: '',
     });
     const [isLoading, setIsLoading] = useState(true);
+    
+    // Notification state variables
+    const [isNotificationVisible, setIsNotificationVisible] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
 
     // Fetch the driver's data based on driverId
     useEffect(() => {
         const fetchDriverData = async () => {
             try {
-                console.log(driverId);
                 const driverDocRef = doc(db, 'Driver', driverId);
                 const driverDoc = await getDoc(driverDocRef);
                 if (driverDoc.exists()) {
@@ -52,14 +57,14 @@ const EditDriver = () => {
         try {
             const driverDocRef = doc(db, 'Driver', driverId);
             await setDoc(driverDocRef, values);
-            notification.success({
-                message: 'Driver updated successfully!',
-            });
+            setNotificationMessage("Driver updated successfully!");
+            setIsSuccess(true);
+            setIsNotificationVisible(true);
         } catch (error) {
             console.error('Error updating driver:', error);
-            notification.error({
-                message: 'Error updating driver. Please try again.',
-            });
+            setNotificationMessage("Error updating driver");
+            setIsSuccess(false);
+            setIsNotificationVisible(true);
         }
     };
 
@@ -71,14 +76,6 @@ const EditDriver = () => {
         <div>
             <div className="driver-list-header-container">
                 <h1>Edit Driver List</h1>
-                <div className={'driver-header-action'}>
-                    <Button type="primary" id="add-driver-button" onClick={() => {
-                        navigate('/driverslist');
-                    }}>
-                        <BackwardOutlined /> 
-                        <span>Go Back</span>
-                    </Button>
-                </div>
             </div>
 
             <Card className={styles.card__Wrapper}>
@@ -132,7 +129,7 @@ const EditDriver = () => {
                         <Col span={12}>
                             <Form.Item
                                 label="Email"
-                                name="Email"  // Added email field
+                                name="Email"
                                 rules={[{ required: true, message: 'Please input the Email!' }]}
                             >
                                 <Input />
@@ -147,24 +144,22 @@ const EditDriver = () => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Company Name"
-                                name="CompanyName"
-                                rules={[{ required: true, message: 'Please input the Company Name!' }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                    </Row>
+
                     <Form.Item>
-                        <Button type="primary" htmlType="submit">
+                        <Button style={{ backgroundColor: '#059855' }} type="primary" htmlType="submit">
                             Update Driver
                         </Button>
                     </Form.Item>
                 </Form>
             </Card>
+
+            {isNotificationVisible && (
+                <div className={`notification-popup ${isSuccess ? 'success' : 'error'}`}>
+                    <span className="close-popup-btn" onClick={() => setIsNotificationVisible(false)}>&times;</span>
+                    <img src={isSuccess ? successImage : errorImage} alt={isSuccess ? 'Success' : 'Error'} />
+                    <p>{notificationMessage}</p>
+                </div>
+            )}
         </div>
     );
 };

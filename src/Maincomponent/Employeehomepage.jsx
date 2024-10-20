@@ -92,7 +92,7 @@ const EmployeeHome = () => {
         </header>
         <div className="text-box">
         <h1 style={{ color: '#059855' }}>SAIR Vision</h1>
-           <p style={{ fontSize: '20px' }}>
+           <p style={{ fontSize: '20px' ,color:"black" }}>
             SAIR initiative seeks to enhance road safety through advanced monitoring and ensure the safety of delivery motorcycle drivers.
             By equipping the General Department of Traffic (GDT), employers, and drivers with essential tools, it aims to reduce violations and accidents,
             promoting a safer environment for everyone on the road. The system ultimately fosters a culture of accountability and safety.

@@ -3,7 +3,6 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%; 
-  
 }
 
 p {
@@ -11,6 +10,8 @@ p {
   margin-left: 30px;
   margin-top: 10px;
   font-family:  'Open Sans';
+  margin-left: 3px;
+  font-size: 14px;
   
 }
 h1,h2{
@@ -19,13 +20,9 @@ h1,h2{
 }
 .profile-field label{
 margin-bottom: 30px;
-
-
+font-family:  'Open Sans';
 }
 
-#bachgroundimage {
-
-}
 
 
 label {
@@ -53,6 +50,7 @@ label {
   transition: background-color 0.3s ease;
   margin-bottom: 20px; 
   font-weight: bold;
+  font-family:  'Open Sans';
 }
 #signsubmit1:hover {
   background-color: #1c7a50;
@@ -73,6 +71,7 @@ label {
   height: 40;
   transition: background-color 0.3s ease;
   font-weight: bold;
+  font-family:  'Open Sans';
 
 }
 
@@ -82,7 +81,7 @@ label {
 .form-container{
  max-height: 400px;
  margin-top:54px;
- /* margin-left: 100px; */
+ font-family:  'Open Sans';
  
 } 
 
@@ -94,6 +93,7 @@ label {
   width: 100%;  /* Full viewport width */
   /* padding-left: 20px; */
   position: relative; /* Makes the container a reference point for absolute positioning */
+  font-family:  'Open Sans';
 }
 
 .top-right-image {
@@ -110,6 +110,7 @@ label {
   color: #059855;
   margin-left: 47px;
   font-size: 40px;
+  font-family:  'Open Sans';
 }
 
 .error-message {
@@ -119,13 +120,17 @@ label {
   padding: 0;
   line-height: 1;
   transition: opacity 0.2s ease;
+  font-family:  'Open Sans';
+  font-size: 14px;
 }
 
 .login-container .error-message.visible {
   display: block;
   margin-left: 30px;
   margin-top: -5px;
-  font-size: 12px;
+  font-size: 14px;
+  font-family:  'Open Sans';
+
 }
 
 .login-container input:hover {
@@ -148,6 +153,7 @@ label {
   width: 320px;
   height: 43px;
   transition: box-shadow 0.3s ease-in-out;
+  font-family:  'Open Sans';
 }
 .login-container select {
   border: 0.5px solid #3CC585;
@@ -157,6 +163,7 @@ label {
   background-color: white;
   margin-left: 119px;
   margin-bottom: 5px;
+  font-family:  'Open Sans';
 }
 
 /* Popup styling */
@@ -171,10 +178,11 @@ label {
     width: auto;
     height: auto; /* Adjust height to auto for better content fit */
     background-color: var(--primary);
-    color: white;
+    color: #059855;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
     padding: 20px; /* Optional: add some padding for the content */
     min-width: 500px;
+    font-family:  'Open Sans';
 }
 
 .popup-content {
@@ -185,12 +193,14 @@ label {
     align-items: center;
     justify-content: center;
     width: 100%;
+    font-family:  'Open Sans';
 }
 
 .popup-content form{
     display: grid;
     grid-template-columns: auto auto;
     gap: 10px;
+    font-family:  'Open Sans';
   
 }
 
@@ -207,12 +217,14 @@ label {
     justify-content: center;
     color: black;
     width: 100%;
+    font-family:  'Open Sans';
 }
 
 .popup-content h2 {
     font-size: 2rem; /* Increase the heading size */
     text-align: center; /* Center the title */
     color: #3CC585;
+    font-family:  'Open Sans';
 }
 
 
@@ -235,6 +247,7 @@ label {
     padding: 10px;
     grid-column: 1 / -1;
     margin-top: 10px;
+    font-family:  'Open Sans';
 }
 
 
@@ -242,18 +255,21 @@ label {
     height: auto; /* Maintain aspect ratio */
     display: flex;
     justify-content: space-between;
+    font-family:  'Open Sans';
 }
 
 
 .popup img {
   width: 50px;
   margin-bottom: 10px; /* Reduce margin to improve spacing */
+
 }
 
 .popup p {
   font-size: 16px;
   color: #333;
   margin: 0; /* Remove margin for better vertical alignment */
+  font-family:  'Open Sans';
 }
 
 .popup .close-btn {
@@ -277,6 +293,7 @@ label {
   color: #059855;
   margin-left: 116px;
   text-decoration: underline;
+  font-family:  'Open Sans';
 
 }
 
@@ -284,11 +301,13 @@ label {
   color: #059855;
   margin-left: 20px;
   text-decoration: underline;
+  font-family:  'Open Sans';
 }
 #signup2 {
   color: #059855;
   margin-left: -35px;
   text-decoration: underline;
+  font-family:  'Open Sans';
   margin-top: 10px;
 }
 
@@ -297,6 +316,7 @@ label {
   margin-left: 47px;
   text-decoration: underline;
   margin-top: 10px;
+  font-family:  'Open Sans';
 }
 
 .notification-popup {
@@ -315,17 +335,20 @@ label {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-family:  'Open Sans';
 }
 
 .notification-popup img {
   width: 50px;
   margin-bottom: 10px; /* Reduce margin to improve spacing */
+  font-family:  'Open Sans';
 }
 
 .notification-popup p {
   font-size: 16px;
   color: #333;
   margin: 0; /* Remove margin for better vertical alignment */
+  font-family:  'Open Sans';
 }
 
 .notification-popup .close-btn {
@@ -338,10 +361,12 @@ label {
   font-weight: bold;
   cursor: pointer;
   color: #333;
+  font-family:  'Open Sans';
 }
 
 .notification-popup .close-btn:hover {
   color: #ff0000; /* Optional: Red hover color for close button */
+  font-family:  'Open Sans';
 }
 
 
@@ -355,6 +380,7 @@ label {
   margin-top: 20px;
   color: white;
   margin-left: 115px;
+  font-family:  'Open Sans';
 }
 
 .password-container {
@@ -367,6 +393,7 @@ label {
   padding: 10px;
   padding-right: 40px; 
   box-sizing: border-box; 
+  font-family:  'Open Sans';
 }
 
 .password-toggle-icon {
@@ -386,7 +413,8 @@ label {
   cursor: pointer;
   font-size: 18px;
   color:gray;
-  position: 'absolute',
+  position: 'absolute';
+  font-family:  'Open Sans';
 }
                             
                            
@@ -400,6 +428,7 @@ label {
   cursor: pointer;
   font-size: 18px;
   color:gray;
+  font-family:  'Open Sans';
 }
 .password-toggle-iconprofile3 {
   position: absolute;
@@ -409,13 +438,14 @@ label {
   cursor: pointer;
   font-size: 18px;
   color:gray;
+  font-family:  'Open Sans';
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family:  'Open Sans';
 
 }
 nav {
@@ -425,6 +455,7 @@ nav {
   align-items: center;
   padding: 30px 2px;
   height: 5px;
+  font-family:  'Open Sans'; 
 
   box-shadow: 0px 7px 4px 0px rgba(0, 0, 0, 0.13);
 }
@@ -435,18 +466,19 @@ nav {
 .Header {
 min-height: 100vh;
 width: 100%;
-
+font-family:  'Open Sans';
 /* background-position: center;
 background-size: cover; */
 position: relative;
 }
 header{
 background-color: #fafaff;
+font-family:  'Open Sans';
 }
 
 .nav-links {
   flex: 1;
-
+  font-family:  'Open Sans';
   text-align: right;
 }
 
@@ -455,15 +487,18 @@ background-color: #fafaff;
   display: inline-block;
   padding: 8px 12px;
   position: relative;
+  font-family:  'Open Sans';
 }
 .nav-links ul li a {
   text-decoration: none;
   font-size: 13px;
+  font-family:  'Open Sans';
 }
 
 .nav-links ul li a {
   text-decoration: none;
   font-size: 15px;
+  font-family:  'Open Sans';
 }
 .nav-links ul li ::after {
   content: "";
@@ -472,10 +507,12 @@ background-color: #fafaff;
   background: #059855;
   display: block;
   margin: auto;
+  font-family:  'Open Sans';
   transition: 0.5s;
 }
 .nav-links ul li :hover::after {
   width: 100%;
+  font-family:  'Open Sans';
 }
 .logoutBu {
   padding-right: 70px;
@@ -483,11 +520,13 @@ background-color: #fafaff;
   background: transparent;
   border: none;
   cursor: pointer;
+  font-family:  'Open Sans';
 }
 
 .logout {
   width: 30px;  
   height: 30px;
+  font-family:  'Open Sans';
 }
 .text-box {
 width: 90%;
@@ -497,18 +536,21 @@ top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
 text-align: center;
+font-family:  'Open Sans';
 
 }
 .text-box h1 {
 font-size: 62px;
 color: #fafaff;
+font-family:  'Open Sans';
 }
 
 .text-box p {
 margin: 10px 0 40px;
 text-align: center;
 font-size: 14px;
-color: f1f1ff;
+color: #f1f1ff;
+font-family:  'Open Sans';
 }
 
 .hero-btn {
@@ -521,6 +563,7 @@ font-size: 13px;
 background: transparent;
 position: relative;
 cursor: pointer;
+font-family:  'Open Sans';
 }
 
 .hero-btn:hover {
@@ -528,6 +571,7 @@ border: 1px solid  #059855;
 background: #059855;
 color: #fafaff;
 transition: 1s;
+font-family:  'Open Sans';
 }
 
 /* Profile Container */
@@ -538,17 +582,20 @@ transition: 1s;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  font-family:  'Open Sans';
 }
 
 .profile-container h1 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #059855;
+  font-family:  'Open Sans';
 }
 
 .profile-container form {
   display: flex;
   flex-direction: column;
+  font-family:  'Open Sans';
 }
 
 
@@ -566,6 +613,7 @@ transition: 1s;
   width: 300px;
   text-align: center;
   z-index: 1000;
+  font-family:  'Open Sans';
 }
 
 .popup img, .notification-popup img {
@@ -576,45 +624,56 @@ transition: 1s;
 .popup p, .notification-popup p {
   font-size: 16px;
   color: #333;
+  font-family:  'Open Sans';
 }
 
 /* Error and Success Messages */
 .error-message, .password-requirements li {
   font-size: 12px;
   margin: 5px 0;
+  font-family:  'Open Sans';
 }
+
+
 
 .error-message {
   color: red;
+  font-family:  'Open Sans';
 }
 
 .success-message {
   color: green;
+  font-family:  'Open Sans';
 }
 
 .password-requirements {
   margin: 0;
   padding: 0;
   list-style-type: none;
+  font-family:  'Open Sans';
 }
 
 .password-requirements li {
   color: red;
+  font-family:  'Open Sans';
 }
 .password-requirements {
   margin: 0;
   padding-left: 18px; /* Adjust this value to align with the input field */
   font-size: 12px; /* Make the font size smaller */
   list-style-type: none;
+  font-family:  'Open Sans';
 }
 
 .password-message {
   font-size: 12px; /* Smaller font size */
   margin-top: 5px;
+  font-family:  'Open Sans';
 }
 
 .password-requirements li.valid {
   color: #059855;
+  font-family:  'Open Sans';
 }
 /* Profile Form Styling */
 .profile-container label {
@@ -624,6 +683,7 @@ transition: 1s;
   color: #333;
   margin-left: 0; /* Remove custom left margin */
   margin-top: 0; /* Remove custom top margin */
+  font-family:  'Open Sans';
 }
 
 .profile-container  input {
@@ -633,12 +693,14 @@ transition: 1s;
   border-radius: 8px; 
   font-size: 14px;
   transition: border-color 0.3s ease-in-out;
+  font-family:  'Open Sans';
 }
 
 /* Change border color on focus */
 .profile-container  input:focus {
   outline: none;
   border-color: #1c7a50; /* Darker green when focused */
+  font-family:  'Open Sans';
 
 }
 
@@ -648,20 +710,23 @@ transition: 1s;
   justify-content: space-between;
   gap: 20px; /* Space between the columns */
   margin-bottom: 20px;
+  font-family:  'Open Sans';
 }
 
 .profile-container .form-row div {
   flex: 1;
+  font-family:  'Open Sans';
 }
 
 
 .profile-container input:focus {
   outline: none;
   box-shadow: 0px 4px 8px rgba(60, 197, 133, 0.3);
+  font-family:  'Open Sans';
 }
 
 .editBtn,.profileCancel, .profilesave ,.profileVerify {
-  border-radius: 15px;
+  border-radius: 5px;
   background-color: #059855;
   border: none;
   padding: 10px 20px;
@@ -670,15 +735,18 @@ transition: 1s;
   margin-top: 20px;
   color: white;
   margin-right: 10px;
+  font-family:  'Open Sans';
 }
 .editBtn:hover ,.profilesave:hover ,.profileCancel:hover , .profileVerify.profileVerify:hover{
   background-color: #1c7a50;
+  font-family:  'Open Sans';
 }
 .profileLabel{
 color: #059855;
 }
 .profile-container label{
   color: #059855;
+  font-family:  'Open Sans';
  
 }
 .otp-inputs {
@@ -686,6 +754,7 @@ color: #059855;
   justify-content: center;
   gap: 10px;
   margin: 20px 0;
+  font-family:  'Open Sans';
 }
 
 .otp-input {
@@ -695,20 +764,24 @@ color: #059855;
   font-size: 18px;
   border: 1px solid #059855;
   border-radius: 8px;
+  font-family:  'Open Sans';
 }
 
 .phone-icon {
   width: 50px;
   height: 50px;
   margin-bottom: 10px;
+
 }
 .breadcrumb {
   margin: 20px 0;
   text-align: left;
   margin-left: 20px;
+  font-family:  'Open Sans';
 }
 .breadcrumb a {
   color: #059855;
   font-size: 1rem;
   text-decoration: underline;
+  font-family:  'Open Sans';
 }

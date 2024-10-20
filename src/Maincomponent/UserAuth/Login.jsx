@@ -166,14 +166,14 @@ const Login = () => {
 </div>
 
             <h1 style={{marginTop:'40px'}}>Welcome to SAIR!</h1>
-            <p style={{ marginLeft: '120px', marginTop: '38px', color:'#211d1d' }}>Please Select your Role</p><br></br>
+            <p style={{ marginLeft: '120px', marginTop: '38px', color:'#211d1d' , fontSize:"20px" }}>Please Select your Role</p><br></br>
 
 
             <select id="roleSelect" onChange={handleRoleChange}>
-                <option value="">-- Select a Role --</option>
-                <option value="gdtAdmin">GDT Admin</option>
-                <option value="gdtStaff">GDT Staff</option>
-                <option value="employer">Employer</option>
+                <option style={{fontSize:"15px"}} value="">-- Select a Role --</option>
+                <option style={{fontSize:"15px"}} value="gdtAdmin">GDT Admin</option>
+                <option style={{fontSize:"15px"}} value="gdtStaff">GDT Staff</option>
+                <option style={{fontSize:"15px"}} value="employer">Employer</option>
             </select>
             <br /><br />
 
@@ -182,7 +182,7 @@ const Login = () => {
                 <form id="dynamicForm" onSubmit={handleSubmit}>
                     {role === 'gdtAdmin' || role === 'gdtStaff' ? (
                         <div>
-                            <p >Please fill in the following information to log in to your account.</p>
+                            <p style={{fontSize:"20px"}} >Please fill in the following information to log in to your account.</p>
                             <br />
                             <label htmlFor="phoneNumber">Phone Number:</label><br />
                             <input 
@@ -205,7 +205,7 @@ const Login = () => {
                         </div>
                     ) : role === 'employer' ? (
                         <div >
-<p style={{ marginLeft: '24px', marginBottom: '1px' ,color:'#211d1d'}}>Please fill in the following information to log in to your account.</p>
+<p style={{ marginLeft: '24px', marginBottom: '1px' ,color:'#211d1d' ,fontSize:"20px"}}>Please fill in the following information to log in to your account.</p>
 <style>
         {`
           input::placeholder {

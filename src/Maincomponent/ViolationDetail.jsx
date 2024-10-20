@@ -6,7 +6,6 @@ import Map from './Map';
 import "../ViolationDetail.css";
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png'; 
-import { LoadScript, GoogleMap, Marker } from '@react-google-maps/api';
 
 
 const ViolationDetail = () => {

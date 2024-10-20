@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../firebase';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, doc, onSnapshot, getDoc } from 'firebase/firestore';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import SearchIcon from '../images/search.png';
+import { collection, doc, onSnapshot, getDoc } from 'firebase/firestore'; 
 import EyeIcon from '../images/eye.png';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../Violations.css';
-import SAIRLogo from '../images/SAIRlogo.png'; 
-import logoutIcon from '../images/logout.png'; 
+import SAIRLogo from '../images/SAIRlogo.png';
+import logoutIcon from '../images/logout.png';
+import { Table } from 'antd';
 
 const ViolationList = () => {
   const [violations, setViolations] = useState([]);
@@ -79,119 +78,132 @@ const ViolationList = () => {
       setIsDetailsPopupVisible(true);
     }
   };
+
+  function formatDate(date) {
+    var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+
+  const filteredData = violations
+    .filter(violation => {
+      const violationDate = new Date(violation.time); // Convert Firestore timestamp
+      const formattedViolationDate = formatDate(violationDate * 1000); 
+      return (
+        violation.id.includes(searchQuery) &&
+        (!searchDate || formattedViolationDate === searchDate) // Compare formatted dates
+      );
+    })
   
+  const columns = [
+    {
+      title: 'Violation ID',
+      dataIndex: 'ViolationID',
+      key: 'ViolationID',
+    },
+    {
+      title: 'Violation Location',
+      dataIndex: 'location',
+      key: 'location'
+    },
+    {
+      title: 'Driver Speed',
+      dataIndex: 'speed',
+      key: 'speed',
+    },
+    {
+      title: 'Details',
+      key: 'Details',
+      render: (text, record) => { 
+        return <Link to={record.id}>
+          <img
+            style={{ cursor: 'pointer' }}
+            src={EyeIcon}
+            alt="Details"
+          />
+        </Link>
+}
+    } 
+  ]; 
+
   return (
-    <div className="Header"> 
-    <header>
-      <nav>
-      <a onClick={() => navigate('/Employeehomepage')}>
-<img className="logo" src={SAIRLogo} alt="SAIR Logo"/>
-</a>
+    < >
+      <header>
+        <nav>
+          <a onClick={() => navigate('/Employeehomepage')}>
+            <img className="logo" src={SAIRLogo} alt="SAIR Logo" />
+          </a>
 
-        <div className="nav-links" id="navLinks">
-          <ul>
-            <li><a  onClick={() => navigate('/employer-home')}>Home</a></li>
-            <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
-            <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
-            <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-            <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
-            <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
-            <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
-          </ul>
+          <div className="nav-links" id="navLinks">
+            <ul>
+              <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
+              <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+              <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>
+              <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
+              <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+              <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
+              <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+            </ul>
+          </div>
+          <button className="logoutBu" onClick={handleLogout}>
+            <img className="logout" src={logoutIcon} alt="Logout" />
+          </button>
+        </nav>
+      </header>
+
+      <main>
+
+
+
+        <div className="breadcrumb">
+          <a onClick={() => navigate('/employer-home')}>Home</a>
+          <span> / </span>
+          <a onClick={() => navigate('/violations')}>Violations List</a>
         </div>
-        <button className="logoutBu" onClick={handleLogout}>
-          <img className="logout" src={logoutIcon} alt="Logout"/>
-        </button>
-      </nav>
-    </header>     <div class="breadcrumb">
-    <a onClick={() => navigate('/employer-home')}>Home</a>
-    <span> / </span>
-    <a onClick={() => navigate('/violations')}>Violations List</a>
-  </div>
-      <h1>Violations List</h1>
-      <div className="search-container">
-        <input
-          type="date"
-          value={searchDate}
-          onChange={(e) => setSearchDate(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Search by Violation ID"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+        <div className='search-header'>
+          <h2 className='title'>Violations List</h2>
+          <div className='search-inputs '>
 
-      {/* Violation Table */}
-      <table className="violation-table">
-        <thead>
-          <tr>
-            <th>Violation ID</th>
-            <th>Violation Location</th>
-            <th>Driver Speed</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {violations
-          .filter(violation => {
-            const violationDate = new Date(violation.time.seconds * 1000); // Convert Firestore timestamp
-            const formattedViolationDate = violationDate.toLocaleDateString('en-GB');
-            return (
-              violation.id.includes(searchQuery) &&
-              (!searchDate || formattedViolationDate === searchDate) // Compare formatted dates
-            );
-          })
-          .map((violation) => (
-            <tr key={violation.id}>
-              <td>{violation.id}</td>
-              <td>{violation.location}</td>
-              <td>{violation.speed}</td>
-              <td>
-                <Link to={violation.id}>
-                  <img
-                    style={{ cursor: 'pointer' }}
-                    src={EyeIcon}
-                    alt="Details" 
-                  />
-                </Link> 
-              </td>
-            </tr>
-          ))}
-      </tbody>
-      </table>
+            <div className="search-container">
+              <input
+                type="date"
+                value={searchDate}
+                onChange={(e) => setSearchDate(e.target.value)}
+              />
+            </div>
+            <div className="search-container">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="#059855" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+              </svg>
 
-      {/* Details Popup */}
-      {/* {isDetailsPopupVisible && currentViolation && (
-                <div className="popup-container">
-                    <div className="popup-content">
-                        <span className="close-popup-btn" onClick={() => setIsDetailsPopupVisible(false)}>&times;</span>
-                        <h3>Violation Details</h3>
-                        <p>Violation ID: {currentViolation.id}</p>
-                        <p>Date: {currentViolation.date}</p>
-                        <p>Time: {currentViolation.time}</p>
-                        <p>Driver Speed: {currentViolation.speed}</p>
-                        <p>Street Speed: {currentViolation.maxSpeed}</p>
-                        <p>Driver ID: {currentViolation.driverId}</p>
-                        <p>Driver Name: {currentViolation.driverName}</p>
-                        <p>Motorcycle Plate: {currentViolation.licensePlate}</p>
-                        <p>Price: {currentViolation.price}</p>
-                        <div style={{ height: "200px", width: "200px" }}>
-                            <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
-                                <GoogleMap
-                                    mapContainerStyle={{ height: "100%", width: "100%" }}
-                                    center={currentViolation.position}
-                                    zoom={15}
-                                >
-                                    <Marker position={currentViolation.position} />
-                                </GoogleMap>
-                            </LoadScript>
-                        </div>
-                    </div>
-                </div>
-            )} */}
-    </div>
+              <input
+                type="text"
+                placeholder="Search by Violation ID"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+        </div>
+
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        />
+
+      </main>
+    </>
   );
 };
 

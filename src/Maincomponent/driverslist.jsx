@@ -19,9 +19,14 @@ const DriverList = () => {
     const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
     const [availableMotorcycles, setAvailableMotorcycles] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-
-    const [isNotificationVisible, setIsNotificationVisible] = useState(false);
     const [notificationMessage, setNotificationMessage] = useState('');
+    const [isNotificationVisible, setIsNotificationVisible] = useState(false);
+    
+//this
+const [popupVisible, setPopupVisible] = useState(false);
+const [popupMessage, setPopupMessage] = useState('');
+const [popupImage, setPopupImage] = useState('');
+//to this
     const [isSuccess, setIsSuccess] = useState(true);
     const [isDeleteSuccess, setIsDeleteSuccess] = useState(false); // New state for delete success
 

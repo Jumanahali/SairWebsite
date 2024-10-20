@@ -1,33 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    collection,addDoc,onSnapshot,query,where,doc,getDoc} from 'firebase/firestore';
-
-import { db } from '../firebase';
-import { Form, Input, Button, notification, Card, Row, Col, Select, message } from 'antd';
-import styles from '../DriverList.module.css'; 
+    collection,
+    addDoc,
+    onSnapshot,
+    query,
+    where,
+    doc,
+    getDoc,
+} from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import {
+    Form,
+    Input,
+    Button,
+    notification,
+    Card,
+    Row,
+    Col,
+    Select,
+    message,
+} from 'antd';
+import successImage from '../images/Sucess.png'; 
+import errorImage from '../images/Error.png'; 
+import styles from '../DriverList.module.css';
 import { BackwardOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { generateRandomPassword } from '../utils/common';
-import { useEffect, useState } from 'react';
+import SAIRLogo from '../images/SAIRlogo.png'; 
+import logoutIcon from '../images/logout.png'; 
 
 const AddDriver = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [availableMotorcycles, setAvailableMotorcycles] = useState([]);
-    const [originalEmployerData, setOriginalEmployerData] = useState({});
+    const [Employer, setEmployer] = useState({ CompanyName: '' });
+    const [popupVisible, setPopupVisible] = useState(false);
+    const [popupMessage, setPopupMessage] = useState('');
+    const [popupImage, setPopupImage] = useState('');
 
-    const [Employer, setEmployer] = useState({
-        Fname: '',
-        Lname: '',
-        commercialNumber: '',
-        EmployeerEmail:'',
-        PhoneNumber: '',
-        CompanyName: '',
-        CompanyEmail: '',
-        currentPassword: '',
-        newPassword: '',
-        confirmNewPassword: '',
-    });
+
     useEffect(() => {
         const employerUID = sessionStorage.getItem('employerUID');
         const fetchEmployer = async () => {
@@ -36,69 +47,70 @@ const AddDriver = () => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 setEmployer(data);
-                setOriginalEmployerData(data); // Store original data for cancel functionality
             } else {
-               message.error("error");
+                message.error('Employer not found');
             }
-        }; fetchEmployer();
-
-
-    },[]);
+        };
+        fetchEmployer();
+    }, []);
 
     useEffect(() => {
         const fetchMotorcycles = async () => {
             const motorcycleQuery = query(
                 collection(db, 'Motorcycle'),
-                where('CompanyName', '==', Employer.CompanyName) ,where ('available','==',false)
+                where('CompanyName', '==', Employer.CompanyName),
+                where('available', '==', false)
             );
             const unsubscribe = onSnapshot(motorcycleQuery, (snapshot) => {
                 const bikes = snapshot.docs.map((doc) => ({
                     id: doc.id,
                     GPSnumber: doc.data().GPSnumber,
                 }));
-                console.log(bikes);
                 setAvailableMotorcycles(bikes);
             });
             return () => unsubscribe();
         };
-       if (Employer.CompanyName){
-        fetchMotorcycles();
-       }
-    },[Employer]);
+        if (Employer.CompanyName) {
+            fetchMotorcycles();
+        }
+    }, [Employer]);
+
     const handleAddDriver = async (values) => {
         try {
             let newErrors = {};
 
             // Phone number validation
-            if (!values.PhoneNumber.startsWith('+966')) {
-                newErrors.PhoneNumber = 'Phone number must start with +966.';
-            }
-            if (values.PhoneNumber.length !== 13) {
-                newErrors.PhoneNumber = 'Phone number must be exactly 13 digits.';
+            if (!values.PhoneNumber.startsWith('+9665') || values.PhoneNumber.length !== 13) {
+                newErrors.PhoneNumber = 'Phone number must start with +9665 and be followed by 8 digits.';
             }
 
             if (Object.keys(newErrors).length > 0) {
-                // If there are validation errors, set them on the form
-                form.setFields([
-                    {
-                        name: 'PhoneNumber',
-                        errors: [newErrors.PhoneNumber],
-                    },
-                ]);
+                form.setFields([{ name: 'PhoneNumber', errors: [newErrors.PhoneNumber] }]);
                 return; // Stop the submission
             }
+
+            // Determine GPS number and availability
+            const gpsNumber = values.GPSnumber === "None" ? null : values.GPSnumber;
+            const available = values.GPSnumber !== "None";
 
             // Generate random password
             const generatedPassword = generateRandomPassword();
 
-            // Add the driver to the Firestore database with the generated password
-            const newDriver = { ...values, Password: generatedPassword };
+            // Prepare the new driver object
+            const newDriver = { 
+                ...values, 
+                GPSnumber: gpsNumber, 
+                CompanyName: Employer.CompanyName,
+                Password: generatedPassword,
+                isDefaultPassword: true,
+                available: available
+            };
 
             // Store the new driver in Firestore
             await addDoc(collection(db, 'Driver'), newDriver);
 
             // Prepare the message for email
-            const message = `Your account has been created. Your password is: ${generatedPassword}`;
+            const emailMessage = `Your account has been created. Your password is: ${generatedPassword}`;
 
             // Call the backend API to send the email
             const response = await fetch('http://localhost:8080/send-email', {
@@ -107,21 +119,21 @@ const AddDriver = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: values.Email, // Email of the driver
+                    email: values.Email,
                     subject: 'Your Account Password',
-                    message: message, // The message to be sent
+                    message: emailMessage,
                 }),
             });
 
             const result = await response.json();
             if (result.success) {
-                notification.success({
-                    message: 'Driver added successfully! Password has been sent via email.',
-                });
+                setPopupMessage("Driver added successfully!");
+                setPopupImage(successImage);
+                setPopupVisible(true);
             } else {
-                notification.error({
-                    message: `Error sending email: ${result.error}`,
-                });
+                setPopupMessage("Error Addint driver");
+                setPopupImage(errorImage);
+                setPopupVisible(true);
             }
         } catch (error) {
             console.error('Error adding driver:', error);
@@ -131,107 +143,140 @@ const AddDriver = () => {
         }
     };
 
+    const handleLogout = () => {
+        auth.signOut()
+            .then(() => navigate('/'))
+            .catch((error) => console.error('Error LOGGING out:', error));
+    };
+
+    const handleClosePopup = () => {
+        setPopupVisible(false);
+    };
+
     return (
-        <div>
-            <div className="driver-list-header-container">
-                <h1>Add Driver</h1>
-                <div className={'driver-header-action'}>
-                    <Button type="primary" id="add-driver-button" onClick={() => {
-                        navigate('/driverslist');
-                    }}>
-                        <BackwardOutlined />
-                        <span>Go Back</span>
-                    </Button>
-                </div>
+        <div className="Header">
+            <header>
+                <nav>
+                    <a onClick={() => navigate('/Employeehomepage')}>
+                        <img className="logo" src={SAIRLogo} alt="SAIR Logo" />
+                    </a>
+                    <div className="nav-links" id="navLinks">
+                        <ul>
+                            <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
+                            <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+                            <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>
+                            <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
+                            <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                            <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
+                            <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+                        </ul>
+                    </div>
+                    <button className="logoutBu" onClick={handleLogout}>
+                        <img className="logout" src={logoutIcon} alt="Logout" />
+                    </button>
+                </nav>
+            </header>
+            <div className="breadcrumb">
+                <a onClick={() => navigate('/employer-home')}>Home</a>
+                <span> / </span>
+                <a onClick={() => navigate('/driverslist')}>Drivers List</a>
+                <span> / </span>
+                <a onClick={() => navigate('/add-driver')}>Add Driver</a>
             </div>
 
-            <Card className={styles.card__Wrapper}>
-                <h3>Add Driver</h3>
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleAddDriver}
-                >
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Driver ID"
-                                name="DriverID"
-                                rules={[{ required: true, message: 'Please input the Driver ID!' }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                label="First Name"
-                                name="Fname"
-                                rules={[{ required: true, message: 'Please input the First Name!' }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Last Name"
-                                name="Lname"
-                                rules={[{ required: true, message: 'Please input the Last Name!' }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Email"
-                                name="Email"
-                                rules={[{ required: true, type: 'email', message: 'Please input a valid Email!' }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Phone Number"
-                                name="PhoneNumber"
-                                rules={[{ required: true, message: 'Please input the Phone Number!' }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                label="GPS Number"
-                                name="GPSnumber"
-                            >
-                            <Select>
-                                <Select.Option value={null}>None</Select.Option>
-                                {availableMotorcycles?.map((item )=>(<Select.Option value={item.GPSnumber} >{item.GPSnumber}</Select.Option>))}
-                            </Select>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Company Name"
-                                name="CompanyName"
-                                rules={[{ required: true, message: 'Please input the Company Name!' }]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Add Driver
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Card>
+            <div>
+                <div className="driver-list-header-container">
+                    <h1>Add Driver</h1>
+                </div>
+
+                <Card className={styles.card__Wrapper}>
+                    <h3>Add Driver</h3>
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={handleAddDriver}
+                    >
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Driver ID"
+                                    name="DriverID"
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="First Name"
+                                    name="Fname"
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Last Name"
+                                    name="Lname"
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Email"
+                                    name="Email"
+                                    rules={[{ required: true, type: 'email', message: 'Please enter a valid email address.' }]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="Phone Number"
+                                    name="PhoneNumber"
+                                    rules={[{ required: true, message: 'Please input the Phone Number.' }]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label="GPS Number"
+                                    name="GPSnumber"
+                                >
+                                    <Select>
+                                        <Select.Option value="None">None</Select.Option>
+                                        {availableMotorcycles?.map((item) => (
+                                            <Select.Option key={item.id} value={item.GPSnumber}>
+                                                {item.GPSnumber}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Form.Item>
+                            <Button style={{ backgroundColor: "#059855" }} type="primary" htmlType="submit">
+                                Add Driver
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Card>
+            </div>
+            {popupVisible && (
+                <div className="popup">
+                    <button className="close-btn" onClick={handleClosePopup}>×</button>
+                    <img src={popupImage} alt="Popup" />
+                    <p>{popupMessage}</p>
+                </div>
+            )}
         </div>
     );
 };

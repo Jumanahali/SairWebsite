@@ -16,6 +16,8 @@ import DriverList from './Maincomponent/driverslist';
 import AddDriver from './Maincomponent/AddDriver';
 import EditDriver from './Maincomponent/EditDriver';
 import ViolationGeneral from './Maincomponent/Violationgeneral';
+import AddMotorcycle from './Maincomponent/AddMotorcycle';
+import EditMotorcycle from './Maincomponent/EditMotorcycle';
 
 function App() {
   return (
@@ -35,6 +37,8 @@ function App() {
         <Route path="/edit-driver/:driverId" element={<EditDriver />} />
         <Route path="/add-driver" element={<AddDriver />} />
         <Route path="/violations/:violationId" element={<ViolationGeneral />} />
+        <Route path="/edit-motorcycle/:motorcycleId" element={<EditMotorcycle />} />
+        <Route path="/add-motorcycle" element={<AddMotorcycle/>} />
 
       </Routes>
     </Router>
