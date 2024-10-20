@@ -4,7 +4,7 @@ import { doc, getDoc, getDocs, query, where, collection } from 'firebase/firesto
 import { useParams } from 'react-router-dom'
 import { db } from '../firebase';
 import Map from './Map';
-import "./ViolationDetail.css"
+import "../ViolationDetail.css"
 
 const ViolationGeneral = () => {
   const [currentViolation, setCurrentViolation] = useState({});

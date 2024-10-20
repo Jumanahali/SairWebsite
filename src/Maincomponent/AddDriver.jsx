@@ -1,16 +1,70 @@
 import React from 'react';
-import { collection, addDoc } from 'firebase/firestore';
+import {
+    collection,addDoc,onSnapshot,query,where,doc,getDoc} from 'firebase/firestore';
+
 import { db } from '../firebase';
-import { Form, Input, Button, notification, Card, Row, Col } from 'antd';
+import { Form, Input, Button, notification, Card, Row, Col, Select, message } from 'antd';
 import styles from '../DriverList.module.css'; 
 import { BackwardOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { generateRandomPassword } from '../utils/common';
+import { useEffect, useState } from 'react';
 
 const AddDriver = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    const [availableMotorcycles, setAvailableMotorcycles] = useState([]);
+    const [originalEmployerData, setOriginalEmployerData] = useState({});
 
+    const [Employer, setEmployer] = useState({
+        Fname: '',
+        Lname: '',
+        commercialNumber: '',
+        EmployeerEmail:'',
+        PhoneNumber: '',
+        CompanyName: '',
+        CompanyEmail: '',
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: '',
+    });
+    useEffect(() => {
+        const employerUID = sessionStorage.getItem('employerUID');
+        const fetchEmployer = async () => {
+            const docRef = doc(db, 'Employer', employerUID);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setEmployer(data);
+                setOriginalEmployerData(data); // Store original data for cancel functionality
+            } else {
+               message.error("error");
+            }
+        }; fetchEmployer();
+
+
+    },[]);
+
+    useEffect(() => {
+        const fetchMotorcycles = async () => {
+            const motorcycleQuery = query(
+                collection(db, 'Motorcycle'),
+                where('CompanyName', '==', Employer.CompanyName) ,where ('available','==',false)
+            );
+            const unsubscribe = onSnapshot(motorcycleQuery, (snapshot) => {
+                const bikes = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    GPSnumber: doc.data().GPSnumber,
+                }));
+                console.log(bikes);
+                setAvailableMotorcycles(bikes);
+            });
+            return () => unsubscribe();
+        };
+       if (Employer.CompanyName){
+        fetchMotorcycles();
+       }
+    },[Employer]);
     const handleAddDriver = async (values) => {
         try {
             let newErrors = {};
@@ -153,7 +207,10 @@ const AddDriver = () => {
                                 label="GPS Number"
                                 name="GPSnumber"
                             >
-                                <Input />
+                            <Select>
+                                <Select.Option value={null}>None</Select.Option>
+                                {availableMotorcycles?.map((item )=>(<Select.Option value={item.GPSnumber} >{item.GPSnumber}</Select.Option>))}
+                            </Select>
                             </Form.Item>
                         </Col>
                     </Row>
