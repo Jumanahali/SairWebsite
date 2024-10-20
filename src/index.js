@@ -3,12 +3,24 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
+import { ConfigProvider } from 'antd';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+       <ConfigProvider
+    theme={{
+      token: {
+        // Seed Token
+        colorPrimary: '#3CC585',
+        borderRadius: 5,
+      },
+     
+     
+    }}
+   >
+   <App />
+   </ConfigProvider>
   </React.StrictMode>
 );
 

@@ -1,5 +1,4 @@
 /* General reset for cleaner layout */
-/*
 * {
     margin: 0;
     padding: 0;
@@ -7,13 +6,18 @@
 }
 
 body {
-    margin: 0; 
-    overflow-x: hidden; 
+    margin: 0; /* Remove default margin */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.body{
+    padding: 1rem;
 }
  h1{
     color:#3CC585;
  } 
 
+/* Header Styling */
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -33,7 +37,6 @@ body {
 .profile-section-container {
     display: flex;
     align-items: center; 
-    margin-top: 60px;
 }
 
 #name {
@@ -42,18 +45,15 @@ body {
 }
 
 .logout-button {
-    margin-right: -530px;
     cursor: pointer;
-    background: none; 
-    border: none; 
-    width: 1000px;
-    margin-top: 0px;
+    background: none; /* Remove default button styles */
+    border: none; /* Remove border */
 
 }
 
 .logout-icon {
     height: 40px;
-    width: 40px;
+    width: 40px;/* Temporary border for debugging */
 }
 
 #profile-image {
@@ -63,6 +63,7 @@ body {
     width: 40px;
 }
 
+/* Navbar Styling */
 .navbar-container {
     display: flex;
     justify-content: left;
@@ -81,51 +82,80 @@ body {
     color: #3CC585;
 }
 
+/* Driver List Header */
 .driver-list-header-container {
     display: flex;
-    flex-direction: column; 
-    align-items: flex-start; 
+    justify-content: space-between;
+    align-items: center;
     margin-left: 9px;
     margin-top: 30px;
+    margin-bottom: 1rem;
+    padding: 10px 20px;
+}
+
+.driver-list-header-container h2{
+    margin: 5px;
 }
 
 
 #add-driver-button {
     background-color: #3CC585;
-    color: black;
+    color: white;
     border: none;
     border-radius: 200px;
     display: flex;
     align-items: center;
     cursor: pointer;
-    margin-top: -70px;
-    margin-left: 1060px;
-    margin-bottom: 20px;
+    margin-left: auto;
+    padding: 20px 10px;
+    
 }
 
-.add-driver-button img {
-    width: 30px;
+#add-driver-button span{
+    margin: 5px;
 }
 
 
+
+/* Search bar styling */
 .search-container {
     position: relative;
     display: flex;
     justify-content: center;
-    margin-left: 1040px;
-    margin-top: 1000px;
+    margin-left: 0;
+    flex-direction: row;
+    align-items: center;
+    border: 2px solid #3CC585;
+    border-radius: 20px;
+    padding: 0px;
+    width: fit-content;
+    margin: 0px;
+    margin-right: 10px;
 }
 
 .search-container input[type="text"] {
-    padding: 10px 15px 10px 40px; 
-    border: 2px solid #3CC585;
-    border-radius: 20px;
+    padding: 10px 15px; 
+    border: none;
+    margin: 0;
+    text-align: left;
     width: 200px;
     font-size: 1rem;
     outline: none;
     color: #666;
     transition: border 0.3s ease;
-    margin-top: 80px;
+    margin-bottom: 5px;
+    background: transparent;
+}
+
+.search-container .searchIcon{
+    margin-left: 10px;
+
+}
+
+.driver-header-action{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .search-container input[type="text"]::placeholder {
@@ -136,6 +166,7 @@ body {
     border-color: #3CC585; 
 }
 
+/* Search Icon */
 .search-container img {
     position: absolute;
     left: 10px;
@@ -145,8 +176,9 @@ body {
     height: 20px;
 }
 
+/* Table Styling */
 .driver-table {
-    width: 80%;
+    width: 100%;
     margin: 0 auto;
     border-collapse: collapse;
     margin-top: 20px;
@@ -158,11 +190,8 @@ body {
     text-align: center;
 }
 
-.driver-table th {
-    background-color: #f2f2f2;
-    border-bottom: 2px solid #3CC585; 
-}
 
+/* Popup */
 .popup-container {
     display: flex;
     justify-content: center;
@@ -172,54 +201,52 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: auto;
-    height: auto; 
-    background-color: white;
+    height: auto; /* Adjust height to auto for better content fit */
+    background-color: var(--primary);
+    color: white;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-    padding: 20px; 
+    padding: 20px; /* Optional: add some padding for the content */
+    min-width: 500px;
 }
 
 .popup-content {
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 20px; 
+    gap: 20px; /* Increased gap between elements */
     align-items: center;
     justify-content: center;
+    width: 100%;
+}
+
+.popup-content form{
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+  
 }
 
 .popup-content input, .popup-content select {
-    padding: 10px; 
-    font-size: 1.2rem; 
-    border: 2px solid #3CC585; 
-    border-radius: 10px; 
+    padding: 10px; /* Increased padding for inputs */
+    font-size: 1.2rem; /* Larger font size for inputs */
+    border: 2px solid #3CC585; /* Optional: add border */
+    border-radius: 10px; /* Make inputs slightly rounded */
     align-items: center;
     display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    margin: 10px;
     align-items: center;
     justify-content: center;
+    color: black;
+    width: 100%;
 }
 
 .popup-content h2 {
-    font-size: 2rem; 
-    text-align: center; 
+    font-size: 2rem; /* Increase the heading size */
+    text-align: center; /* Center the title */
     color: #3CC585;
 }
 
-.add-driver-button {
-    background-color: #3CC585;
-    color: black;
-    border: none;
-    padding: 15px;
-    font-size: 1.2rem; 
-    border-radius: 30px; 
-    cursor: pointer;
-    width: 160px; 
-    text-align: center;
-    margin-left: 1080px;
-    margin-top: -50px;
-    margin-bottom: 10px;
-}
 
 
 .close-popup-btn {
@@ -234,13 +261,23 @@ body {
     color: red;
 }
 
-
-.actions-container {
-    width: 70px; /* Set your desired width 
-    height: auto; /* Maintain aspect ratio 
+.popup-container button{
+    background-color: white;
+    color: var(--primary);
+    padding: 10px;
+    grid-column: 1 / -1;
+    margin-top: 10px;
 }
 
 
+.actions-container {
+    height: auto; /* Maintain aspect ratio */
+    display: flex;
+    justify-content: space-between;
+}
+
+
+/* Delete Confirmation Popup */
 #delete {
     display: flex;
     justify-content: center;
@@ -250,35 +287,39 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: auto;
-    height: auto; 
-    background-color: white;
+    height: auto; /* Adjust height to auto for better content fit */
+    background-color: var(--primary);
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-    padding: 20px;
+    padding: 20px; /* Optional: add some padding for the content */
 }
 
 #delete > div {
-    background-color: white;
+    background-color: var(--primary);
     padding: 20px;
     border-radius: 10px;
-    position: relative;
+    position: relative; /* This allows positioning the close button inside */
     text-align: center;
+    color: white;
 }
 
+/* Close button 'x' styling */
 #delete .delete-close-popup-btn {
     position: absolute;
-    top: -50px;
-    right: -5px;
-    font-size: 1.5rem;
+    top: -20px;
+    right: -35px;
+    font-size: 2rem;
     cursor: pointer;
 }
 
+/* Hover effect for the close button */
 #delete .delete-close-popup-btn:hover {
     color: red;
 }
 
+/* Style for the YES and NO buttons */
 #YES, #NO {
-    background-color: #3CC585; 
-    color: white;
+    background-color: white; /* Green color */
+    color: var(--primary);
     border: none;
     padding: 10px 20px;
     border-radius: 25px;
@@ -288,13 +329,16 @@ body {
     width: 100px;
 }
 
+/* Optional hover effect for the buttons */
 #YES:hover, #NO:hover {
-    background-color: #28a828;
+    background-color: whitesmoke;
 }
 
+/* Optional: Style the text inside the popup */
 #delete p {
     font-size: 18px;
     margin-bottom: 20px;
+    color: white;
 }
 
 #button{
@@ -302,24 +346,27 @@ body {
 }
 
 
+/* Notification Popup */
 .notification-popup {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: var(--primary);
     padding: 20px;
     border-radius: 10px;
+    color: white;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-    z-index: 1000; 
+    z-index: 1000; /* Ensure it appears above other elements */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 300px; 
+    min-width: 300px; /* Set a fixed width for consistency */
+}
 
 .notification-popup img {
-    width: 50px; 
+    width: 50px; /* Set the size of the icon */
     height: 50px;
 }
 
@@ -327,36 +374,37 @@ body {
     margin: 10px 0;
     font-size: 1.2rem; 
     text-align: center; 
+    color: white;
 }
 
 .notification-popup .close-popup-btn {
     align-self: flex-end;
     cursor: pointer;
     font-size: 1.5rem;
-    /*margin: -10px -10px 0 0;  
+    /*margin: -10px -10px 0 0;  Adjust to position in the corner */
 }
 
 .notification-popup .close-popup-btn:hover {
-    color: red; 
+    color: red; /* Change color on hover */
 }
 
 .notification-popup button {
-    background-color: #3CC585; 
-    color: white;
+    background-color: white; /* Button color */
+    color: var(--primary);
     border: none;
-    border-radius: 25px; 
+    border-radius: 25px; /* Rounded corners */
     padding: 10px 20px;
     cursor: pointer;
     font-size: 1rem;
     margin-top: 10px;
+    font-weight: bold;
 }
 
 .notification-popup button:hover {
-    background-color: #28a828; 
+    background-color: whitesmoke; 
 }
 
 .details-popup {
-    background-color: #fff;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -365,6 +413,9 @@ body {
 .details-table {
     width: 100%;
     border-collapse: collapse;
+    color: black;
+    border: 1px solid white;
+    background-color: white;
 }
 
 .details-table th, .details-table td {
@@ -376,5 +427,4 @@ body {
 .details-table th {
     background-color: #f2f2f2;
 }
-    */
 

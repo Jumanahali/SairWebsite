@@ -11,6 +11,10 @@ import Complaints from './Maincomponent/Complaints'; // Ensure this file name ma
 import Crashes from './Maincomponent/Crashes'; // Ensure this file name matches exactly
 import EmployeeProfile from './Maincomponent/Employeeprofilepage'; // Ensure this file name matches exactly
 import ViolationDetail from './Maincomponent/ViolationDetail';
+import 'antd/dist/reset.css';
+import DriverList from './Maincomponent/driverslist';
+import AddDriver from './Maincomponent/AddDriver';
+import EditDriver from './Maincomponent/EditDriver';
 
 function App() {
   return (
@@ -27,6 +31,8 @@ function App() {
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/crashes" element={<Crashes />} />
         <Route path="/employee-profile" element={<EmployeeProfile />} />
+        <Route path="/edit-driver/:driverId" element={<EditDriver />} />
+        <Route path="/add-driver" element={<AddDriver />} />
 
       </Routes>
     </Router>

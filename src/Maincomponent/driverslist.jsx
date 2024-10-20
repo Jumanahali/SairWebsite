@@ -1,104 +1,101 @@
 import React, { useEffect, useState } from 'react';
-import { db, auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { db } from '../firebase';
+import {  useNavigate } from 'react-router-dom';
 import {
-    collection,doc,onSnapshot,deleteDoc,addDoc,getDoc,query,where,setDoc} from 'firebase/firestore';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+    collection,doc,onSnapshot,deleteDoc,query,where} from 'firebase/firestore';
 import TrashIcon from '../images/Trash.png';
 import PencilIcon from '../images/pencil.png';
-import logoutIcon from '../images/logout.png'; 
-import ProfileImage from '../images/Profile.PNG';
-import SAIRLogo from '../images/SAIRlogo.png'; import AddIcon from '../images/add.png';
-import SearchIcon from '../images/search.png';
 import EyeIcon from '../images/eye.png'; 
 import '../Driverlist.css';
 import successImage from '../images/Sucess.png'; 
 import errorImage from '../images/Error.png'; 
-
+import { SearchOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { Button, Table } from 'antd';
 
 const DriverList = () => {
     const [driverData, setDriverData] = useState([]);
     const [isAddPopupVisible, setIsAddPopupVisible] = useState(false);
     const [driverToRemove, setDriverToRemove] = useState(null);
     const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
-    const [currentUserName, setCurrentUserName] = useState('');
     const [availableMotorcycles, setAvailableMotorcycles] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [driverToEdit, setDriverToEdit] = useState(null);
-    const [newDriver, setNewDriver] = useState({
-        DriverID: '',
-        Fname: '',
-        Lname: '',
-        PhoneNumber: '',
-        GPSnumber: null,
-        CompanyName: '', 
-    });
+
     const [isNotificationVisible, setIsNotificationVisible] = useState(false);
     const [notificationMessage, setNotificationMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(true);
-    const [violations, setViolations] = useState([]);
-    const [isDetailsPopupVisible, setIsDetailsPopupVisible] = useState(false);
-    const [currentDriverID, setCurrentDriverID] = useState('');
-    const [currentLocation, setCurrentLocation] = useState(null);
     const [isDeleteSuccess, setIsDeleteSuccess] = useState(false); // New state for delete success
 
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        auth.signOut().then(() => {
-            navigate('/'); 
-        }).catch((error) => {
-            console.error('Error LOGGING out:', error);
-        });
-    };
+
 
     const handleEditDriver = (driver) => {
-        setIsEditMode(true);
-        setIsAddPopupVisible(true);
-        setDriverToEdit(driver);
-        setNewDriver({
-            DriverID: driver.DriverID,
-            Fname: driver.Fname,
-            Lname: driver.Lname,
-            PhoneNumber: driver.PhoneNumber,
-            GPSnumber: driver.GPSnumber || '',
-            CompanyName: driver.CompanyName, 
-        });
+        console.log(driver);
+        navigate(`/edit-driver/${driver?.DriverID}`)
+       
     };
 
-    const generateRandomPassword = (length = 8) => {
-        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-        let password = "";
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * charset.length);
-            password += charset[randomIndex];
-        }
-        return password;
-    };
+   
+
+    const columns = [
+        {
+            title: 'Driver ID',
+            dataIndex: 'DriverID',
+            key: 'DriverID',
+        },
+        {
+            title: 'Driver Name',
+            dataIndex: 'DriverName',
+            key: 'DriverName',
+            render: (text, record) => `${record.Fname} ${record.Lname}`,
+        },
+        {
+            title: 'Phone Number',
+            dataIndex: 'PhoneNumber',
+            key: 'PhoneNumber',
+        },
+        {
+            title: 'Details',
+            key: 'Details',
+            render: (text, record) => (
+                <img
+                    style={{ cursor: 'pointer' }}
+                    src={EyeIcon}
+                    alt="Details"
+                    onClick={() => viewViolationDetails(record.DriverID)}
+                />
+            ),
+        },
+        {
+            title: 'Actions',
+            key: 'Actions',
+            render: (text, record) => (
+                <div>
+                    <img
+                        style={{ cursor: 'pointer', marginRight: 8 }}
+                        src={TrashIcon}
+                        alt="Delete"
+                        onClick={() => openDeleteConfirmation(record)}
+                    />
+                    <img
+                        style={{ cursor: 'pointer' }}
+                        src={PencilIcon}
+                        alt="Edit"
+                        onClick={() => handleEditDriver(record)}
+                    />
+                </div>
+            ),
+        },
+    ];
+
+
+    // Filter the data based on the search query
+    const filteredData = driverData.filter(driver => driver.DriverID.includes(searchQuery));
 
     useEffect(() => {
-        const employerUID = sessionStorage.getItem('employerUID');
+       
 
-        const fetchUserName = async () => {
-            if (employerUID) {
-                try {
-                    const userDocRef = doc(db, 'Employer', employerUID);
-                    const docSnap = await getDoc(userDocRef);
-                    if (docSnap.exists()) {
-                        setCurrentUserName(docSnap.data().Fname);
-                        setNewDriver((prevState) => ({
-                            ...prevState,
-                            CompanyName: docSnap.data().CompanyName, 
-                        }));
-                    } else {
-                        console.log("No such document!");
-                    }
-                } catch (error) {
-                    console.error('Error fetching employer data:', error);
-                }
-            }
-        };
+     
 
         const fetchDrivers = () => {
             const driverCollection = collection(db, 'Driver');
@@ -127,7 +124,7 @@ const DriverList = () => {
             return () => unsubscribe();
         };
 
-        fetchUserName();
+      
         fetchDrivers();
         fetchMotorcycles();
     }, []);
@@ -147,146 +144,26 @@ const DriverList = () => {
         setIsDeletePopupVisible(false);
     };
 
-    const handleAddDriverSubmit = async (e) => {
-        e.preventDefault();
-        if (!newDriver.DriverID || !newDriver.Fname || !newDriver.Lname || !newDriver.PhoneNumber) {
-            setIsSuccess(false);
-            setNotificationMessage('Please fill in all required fields');
-            setIsNotificationVisible(true);
-            return;
-        }
 
-        try {
-            if (isEditMode && driverToEdit) {
-                const driverDocRef = doc(db, 'Driver', driverToEdit.id);
-                await setDoc(driverDocRef, {
-                    DriverID: newDriver.DriverID,
-                    Fname: newDriver.Fname,
-                    Lname: newDriver.Lname,
-                    PhoneNumber: newDriver.PhoneNumber,
-                    GPSnumber: newDriver.GPSnumber || null,
-                    CompanyName: newDriver.CompanyName
-                });
-                setIsSuccess(true);
-                setNotificationMessage('Driver updated successfully!');
-            } else {
-                const generatedPassword = generateRandomPassword();
-                await addDoc(collection(db, 'Driver'), {
-                    DriverID: newDriver.DriverID,
-                    Fname: newDriver.Fname,
-                    Lname: newDriver.Lname,
-                    PhoneNumber: newDriver.PhoneNumber,
-                    GPSnumber: newDriver.GPSnumber || null,
-                    CompanyName: newDriver.CompanyName,
-                    Password: generatedPassword,
-                    isDefaultPassword: true
-                });
-                setIsSuccess(true);
-                setNotificationMessage('Driver added successfully!');
-            }
-            
-            setIsAddPopupVisible(false);
-        } catch (error) {
-            console.error('Error saving driver:', error);
-            setIsSuccess(false);
-            setNotificationMessage('Error saving driver. Please try again.');
-        }
-
-        setIsNotificationVisible(true);
-
-        setNewDriver({
-            DriverID: '',
-            Fname: '',
-            Lname: '',
-            PhoneNumber: '',
-            GPSnumber: null,
-            CompanyName: newDriver.CompanyName
-        });
-        setIsEditMode(false);
-        setDriverToEdit(null);
-    };
 
     const openDeleteConfirmation = (driver) => {
         setDriverToRemove(driver);
         setIsDeletePopupVisible(true);
     };
 
-    const openDetailsPopup = async (driverID) => {
-        setCurrentDriverID(driverID);
-        const violationQuery = query(
-            collection(db, 'Violation'),
-            where('DriverID', '==', driverID)
-        );
-        const unsubscribe = onSnapshot(violationQuery, (snapshot) => {
-            const violationsList = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            setViolations(violationsList);
-            // Set location for the first violation for demonstration
-            if (violationsList.length > 0 && violationsList[0].Location) {
-                setCurrentLocation({
-                    lat: violationsList[0].Location._lat,
-                    lng: violationsList[0].Location._long
-                });
-            }
-        });
-        setIsDetailsPopupVisible(true);
-
-        return () => unsubscribe();
+    const viewViolationDetails = async (driverID) => {
+       navigate('/violations/'+driverID)
     };
 
-    const handleNavigation = (path) => {
-        navigate(path);
-    };
+
 
     return (
-        <div className="Header"> 
-        <header>
-          <nav>
-          <a onClick={() => navigate('/Employeehomepage')}>
-    <img className="logo" src={SAIRLogo} alt="SAIR Logo"/>
-  </a>
-  
-            <div className="nav-links" id="navLinks">
-              <ul>
-                <li><a  onClick={() => navigate('/employer-home')}>Home</a></li>
-                <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
-                <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
-                <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-                <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
-                <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
-                <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
-              </ul>
-            </div>
-            <button className="logoutBu" onClick={handleLogout}>
-              <img className="logout" src={logoutIcon} alt="Logout"/>
-            </button>
-          </nav>
-        </header>     <div class="breadcrumb">
-        <a onClick={() => navigate('/employer-home')}>Home</a>
-        <span> / </span>
-        <a onClick={() => navigate('/driverslist')}>Drivers List</a>
-      </div>
-
+        <div className='body'>
             <div className="driver-list-header-container">
-                <h1>Drivers List</h1>
-                <button id="add-driver-button" onClick={() => {
-                    setIsAddPopupVisible(true);
-                    setIsEditMode(false); 
-                    setNewDriver({
-                        DriverID: '',
-                        Fname: '',
-                        Lname: '',
-                        PhoneNumber: '',
-                        GPSnumber: null,
-                        CompanyName: newDriver.CompanyName
-                    });
-                }}>
-                    <img src={AddIcon} alt="Add" /> Add Driver
-                </button>
-
-                <div className="search-container">
+                <h1>Driver List</h1>
+               <div className={'driver-header-action'}>
+               <div className="search-container">
+                <SearchOutlined className='searchIcon' />
                     <input
                         type="text"
                         placeholder="Search by ID"
@@ -294,37 +171,27 @@ const DriverList = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
+              
+                <Button  type="primary" id="add-driver-button" onClick={() => {
+                    navigate('/add-driver')
+                   
+                }}>
+                    <UsergroupAddOutlined /> 
+                    <span>Add Driver</span>
+                </Button>
+               </div>
+              
             </div>
 
-            <table className="driver-table">
-                <thead>
-                    <tr>
-                        <th>Driver ID</th>
-                        <th>Driver Name</th>
-                        <th>Phone Number</th>
-                        <th>Details</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {driverData
-                        .filter(driver => driver.DriverID.includes(searchQuery))
-                        .map((driver) => (
-                        <tr key={driver.id}>
-                            <td>{driver.DriverID}</td>
-                            <td>{driver.Fname} {driver.Lname}</td>
-                            <td>{driver.PhoneNumber}</td>
-                            <td className="details-container">
-                                <img style={{ cursor: 'pointer' }} src={EyeIcon} alt="Details" onClick={() => openDetailsPopup(driver.DriverID)} />
-                            </td>
-                            <td className="actions-container">
-                                <img style={{ cursor: 'pointer' }} src={TrashIcon} alt="Delete" onClick={() => openDeleteConfirmation(driver)} />
-                                <img style={{ cursor: 'pointer' }} src={PencilIcon} alt="Edit" onClick={() => handleEditDriver(driver)} />
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+           
+                <br/>
+
+                <Table 
+            columns={columns} 
+            dataSource={filteredData} 
+            rowKey="id" 
+            pagination={{ pageSize: 5 }}
+        />
 
             {isDeletePopupVisible && (
                 <div id="delete" className="popup-container">
@@ -337,70 +204,7 @@ const DriverList = () => {
                 </div>
             )}
 
-            {isAddPopupVisible && (
-                <div className="popup-container">
-                    <div className="popup-content">
-                        <span className="close-popup-btn" onClick={() => setIsAddPopupVisible(false)}>&times;</span>
-                        <h3>{isEditMode ? 'Edit Driver' : 'Add Driver'}</h3>
-                        <form onSubmit={handleAddDriverSubmit}>
-                            <input
-                                type="text"
-                                placeholder='Driver ID'
-                                value={newDriver.DriverID}
-                                onChange={(e) => setNewDriver((prevState) => ({
-                                    ...prevState,
-                                    DriverID: e.target.value
-                                }))}
-                            />
-                            <input
-                                type="text"
-                                placeholder='First Name'
-                                value={newDriver.Fname}
-                                onChange={(e) => setNewDriver((prevState) => ({
-                                    ...prevState,
-                                    Fname: e.target.value
-                                }))}
-                            />
-                            <input
-                                type="text"
-                                placeholder='Last Name'
-                                value={newDriver.Lname}
-                                onChange={(e) => setNewDriver((prevState) => ({
-                                    ...prevState,
-                                    Lname: e.target.value
-                                }))}
-                            />
-                            <input
-                                type="text"
-                                placeholder='Phone Number'
-                                value={newDriver.PhoneNumber}
-                                onChange={(e) => setNewDriver((prevState) => ({
-                                    ...prevState,
-                                    PhoneNumber: e.target.value
-                                }))}
-                            />
-                            <select
-                                value={newDriver.GPSnumber}
-                                onChange={(e) => setNewDriver((prevState) => ({
-                                    ...prevState,
-                                    GPSnumber: e.target.value
-                                }))}
-                            >
-                                <option value="">Select Motorcycle</option>
-                                <option value="null">None</option>
-                                {availableMotorcycles.map((motorcycle) => (
-                                    <option key={motorcycle.id} value={motorcycle.GPSnumber}>
-                                        {motorcycle.GPSnumber}
-                                    </option>
-                                ))}
-                            </select>
-                            <button id='button' type="submit">
-                                {isEditMode ? 'Update Driver' : 'Add Driver'}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
+           
 
             {isNotificationVisible && (
                 <div className={`notification-popup ${isSuccess ? 'success' : 'error'}`}>
@@ -410,75 +214,6 @@ const DriverList = () => {
                 </div>
             )}
 
-{isDetailsPopupVisible && (
-    <div className="popup-container details-popup">
-        <div className="popup-content">
-            <span className="close-popup-btn" onClick={() => setIsDetailsPopupVisible(false)}>&times;</span>
-            <h3>Violations for Driver ID: {currentDriverID}</h3>
-            {violations.length > 0 ? (
-                <table className="details-table">
-                    <thead>
-                        <tr>
-                            <th>Speed</th>
-                            <th>Street Speed</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Price</th>
-                            <th>Location</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {violations.map((violation) => {
-                            const date = violation.DateTime?.seconds 
-                                ? new Date(violation.DateTime.seconds * 1000).toLocaleDateString() 
-                                : 'N/A';
-                            const time = violation.DateTime?.seconds 
-                                ? new Date(violation.DateTime.seconds * 1000).toLocaleTimeString() 
-                                : 'N/A';
-
-                            return (
-                                <tr key={violation.id}>
-                                    <td>{violation.Speed}</td>
-                                    <td>{violation.MaxSpeed || 'N/A'}</td>
-                                    <td>{date}</td>
-                                    <td>{time}</td>
-                                    <td>{violation.Price}</td>
-                                    <td>
-                                        {violation.Location ? (
-                                            <div>
-                                                <LoadScript googleMapsApiKey="AIzaSyD3Hwzp5W-Rcdoe0tlWnrHCQZ_67nN1iHI">
-                                                    <GoogleMap
-                                                        mapContainerStyle={{ height: "200px", width: "200px" }}
-                                                        center={{
-                                                            lat: violation.Location.latitude, 
-                                                            lng: violation.Location.longitude, 
-                                                        }}
-                                                        zoom={15}
-                                                    >
-                                                        <Marker
-                                                            position={{
-                                                                lat: violation.Location.latitude,
-                                                                lng: violation.Location.longitude,
-                                                            }}
-                                                        />
-                                                    </GoogleMap>
-                                                </LoadScript>
-                                            </div>
-                                        ) : (
-                                            <p>No location data available</p> 
-                                        )}
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            ) : (
-                <p>No violations found for this driver.</p>
-            )}
-        </div>
-    </div>
-)}
         </div>
     );
 };
