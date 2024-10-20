@@ -31,7 +31,7 @@ const DriverList = () => {
 
     const handleEditDriver = (driver) => {
         console.log(driver);
-        navigate(`/edit-driver/${driver?.DriverID}`)
+        navigate(`/edit-driver/${driver?.id}`)
        
     };
 
@@ -53,6 +53,11 @@ const DriverList = () => {
             title: 'Phone Number',
             dataIndex: 'PhoneNumber',
             key: 'PhoneNumber',
+        },
+        {
+            title: 'Email',
+            dataIndex: 'Email',
+            key: 'Email',
         },
         {
             title: 'Details',
@@ -104,6 +109,7 @@ const DriverList = () => {
                     id: doc.id,
                     ...doc.data(),
                 }));
+                //console.log(driverList);
                 setDriverData(driverList);
             });
             return () => unsubscribe();

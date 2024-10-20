@@ -15,6 +15,7 @@ import 'antd/dist/reset.css';
 import DriverList from './Maincomponent/driverslist';
 import AddDriver from './Maincomponent/AddDriver';
 import EditDriver from './Maincomponent/EditDriver';
+import ViolationGeneral from './Maincomponent/Violationgeneral';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/employee-profile" element={<EmployeeProfile />} />
         <Route path="/edit-driver/:driverId" element={<EditDriver />} />
         <Route path="/add-driver" element={<AddDriver />} />
+        <Route path="/violations/:violationId" element={<ViolationGeneral />} />
 
       </Routes>
     </Router>
