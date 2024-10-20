@@ -1,3 +1,4 @@
+import { createUserWithEmailAndPassword } from 'firebase/auth'; // Import Firebase auth method
 import React, { useEffect, useState } from 'react';
 import {
     collection,
@@ -91,19 +92,28 @@ const AddDriver = () => {
 
             // Determine GPS number and availability
             const gpsNumber = values.GPSnumber === "None" ? null : values.GPSnumber;
-            const available = values.GPSnumber !== "None";
+            const available = values.GPSnumber !== "None" ? false : true;
 
             // Generate random password
             const generatedPassword = generateRandomPassword();
 
+            // Create the user in Firebase Authentication
+        const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            values.Email,
+            generatedPassword
+        );
+
+        // Get the new user's UID
+        const user = userCredential.user;
             // Prepare the new driver object
             const newDriver = { 
                 ...values, 
                 GPSnumber: gpsNumber, 
                 CompanyName: Employer.CompanyName,
-                Password: generatedPassword,
                 isDefaultPassword: true,
-                available: available
+                available: available,
+                UID: user.uid 
             };
 
             // Store the new driver in Firestore
