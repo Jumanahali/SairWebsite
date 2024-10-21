@@ -123,7 +123,7 @@ const ViolationList = () => {
       title: 'Details',
       key: 'Details',
       render: (text, record) => { 
-        return <Link to={record.id}>
+        return <Link to={`/violation/general/${record.id}`}>
           <img
             style={{ cursor: 'pointer' }}
             src={EyeIcon}

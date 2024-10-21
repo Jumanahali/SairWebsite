@@ -4,9 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { collection, doc, onSnapshot, deleteDoc, addDoc, getDoc } from 'firebase/firestore';
 import TrashIcon from '../images/Trash.png';
 import PencilIcon from '../images/pencil.png';
-import ProfileImage from '../images/Profile.PNG';
-import AddIcon from '../images/addmotorcycle.png';
-import SearchIcon from '../images/search.png';
 import EyeIcon from '../images/eye.png';
 import '../motorcyclelist.css';
 import successImage from '../images/Sucess.png';
@@ -25,6 +22,7 @@ const MotorcycleList = () => {
   const [companyName, setCompanyName] = useState(''); // State for company name
   const [searchQuery, setSearchQuery] = useState('');
   const [newMotorcycle, setNewMotorcycle] = useState({
+    MotorcycleID: '',
     GPSnumber: '',
     LicensePlate: '',
     DriverID: null,
@@ -142,6 +140,7 @@ const MotorcycleList = () => {
 
     try {
       await addDoc(collection(db, 'Motorcycle'), {
+        MotorcycleID: newMotorcycle.MotorcycleID,
         GPSnumber: newMotorcycle.GPSnumber,
         LicensePlate: newMotorcycle.LicensePlate,
         DriverID: newMotorcycle.DriverID || null,
@@ -158,6 +157,7 @@ const MotorcycleList = () => {
 
     setIsNotificationVisible(true);
     setNewMotorcycle({
+      MotorcycleID: '',
       GPSnumber: '',
       LicensePlate: '',
       DriverID: null,
@@ -169,6 +169,11 @@ const MotorcycleList = () => {
  
 
   const columns = [
+    {
+      title: 'Motorcycle ID', // Column for Motorcycle ID from DB
+      dataIndex: 'MotorcycleID', // Use the MotorcycleID from DB
+      key: 'MotorcycleID',
+    },
     {
       title: 'GPS Number',
       dataIndex: 'GPSnumber',

@@ -331,7 +331,7 @@ body {
 #delete .delete-close-popup-btn {
     position: absolute;
     top: -20px;
-    right: -65px;
+    right: -45px;
     font-size: 2rem;
     cursor: pointer;
 }

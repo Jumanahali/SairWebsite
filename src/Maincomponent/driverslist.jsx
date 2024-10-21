@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
-import {  useNavigate } from 'react-router-dom';
+import {  useNavigate, useParams } from 'react-router-dom';
 import {
     collection,doc,onSnapshot,deleteDoc,query,where} from 'firebase/firestore';
 import TrashIcon from '../images/Trash.png';
@@ -31,7 +31,7 @@ const [popupImage, setPopupImage] = useState('');
     const [isDeleteSuccess, setIsDeleteSuccess] = useState(false); // New state for delete success
 
     const navigate = useNavigate();
-
+    const { driverId } = useParams();
 
 
     const handleEditDriver = (driver) => {
@@ -163,8 +163,8 @@ const [popupImage, setPopupImage] = useState('');
     };
 
     const viewViolationDetails = async (driverID) => {
-       navigate('/violations/'+driverID)
-    };
+        navigate(`/violation/detail/${driverID}`);
+     };
 
 
 

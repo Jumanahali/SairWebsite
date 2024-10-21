@@ -13,75 +13,81 @@ const AddMotorcycle = () => {
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(true);
-  const [availableGPSNumbers, setAvailableGPSNumbers] = useState([{ value: "null", label: "None" }]);
+  const [availableDrivers, setAvailableDrivers] = useState([]);
 
+  const generateMotorcycleID = async (gpsNumber) => {
+    let uniqueID = '';
+    let isUnique = false;
+
+    while (!isUnique) {
+      // Generate Motorcycle ID by concatenating GPS number and 3 random digits
+      const randomDigits = Math.floor(100 + Math.random() * 900).toString(); // Generate 3 random digits
+      uniqueID = `${gpsNumber}${randomDigits}`;
+
+      // Check if the ID already exists in the 'Motorcycle' collection
+      const q = query(collection(db, 'Motorcycle'), where('MotorcycleID', '==', uniqueID));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        isUnique = true; // No duplicate found, ID is unique
+      }
+    }
+
+    return uniqueID;
+  };
 
   const handleAddMotorcycle = async (values) => {
     try {
-
       console.log(values);
 
+      // Generate unique Motorcycle ID based on GPS Number
+      const motorcycleID = await generateMotorcycleID(values.GPSnumber);
+      const motorcycleData = { ...values, MotorcycleID: motorcycleID }; // Add generated ID to values
+
       // Store the new motorcycle in Firestore
-      const s = await addDoc(collection(db, 'Motorcycle'), values);
-
+      const s = await addDoc(collection(db, 'Motorcycle'), motorcycleData);
       console.log(s);
-
 
       setIsSuccess(true);
       setNotificationMessage('Motorcycle added successfully.');
-
-      // navigate('/motorcycleslist'); 
     } catch (error) {
       console.error('Error adding motorcycle:', error);
       setIsSuccess(false);
       setNotificationMessage('Error adding motorcycle. Please try again.');
-
     } finally {
       setIsNotificationVisible(true);
-
     }
   };
 
   useEffect(() => {
-    // fetch available GPS numbers
-    const fetchAvailableGPSNumbers = async () => {
-      const employerUID = sessionStorage.getItem('employerUID')
-
-      const employerDocRef = doc(db, 'Employer', employerUID); // Use the UID to fetch the document
+    // Fetch available drivers who are not assigned to any motorcycle
+    const fetchAvailableDrivers = async () => {
+      const employerUID = sessionStorage.getItem('employerUID');
+      const employerDocRef = doc(db, 'Employer', employerUID);
       const docSnap = await getDoc(employerDocRef);
 
       if (docSnap.exists()) {
         const { CompanyName } = docSnap.data();
-        console.log("Employer Data:", CompanyName); // Log the fetched data
-        const dq = query(collection(db, 'Driver'), where('CompanyName', '==', CompanyName));
+        console.log("Employer Data:", CompanyName);
+        const dq = query(collection(db, 'Driver'), where('CompanyName', '==', CompanyName), where('available', '==', false));
 
         const unsubscribe = onSnapshot(dq, (drivers) => {
-
-          drivers.docs.forEach((doc) => {
+          const driverOptions = drivers.docs.map((doc) => {
             const driverData = doc.data();
-            console.log("Driver Data:", driverData); // Log the fetched data
-            if (driverData.CompanyName === CompanyName && driverData.available && driverData.GPSnumber) {
-              console.log("Driver GPS Number:", driverData.GPSnumber);
-              setAvailableGPSNumbers((prev) => [...prev, { value: driverData.GPSnumber, label: driverData.GPSnumber }]);
-            }
-          }
-          );
-
+            console.log("Driver Data:", driverData);
+            return { value: driverData.DriverID, label: driverData.DriverID };
+          });
+          setAvailableDrivers(driverOptions);
         });
-
 
         return () => unsubscribe();
       } else {
         console.log("No company document!");
       }
-
     };
 
-    fetchAvailableGPSNumbers();
-
-  }, [form])
-
-  console.log(availableGPSNumbers);
+    fetchAvailableDrivers();
+  }, [form]);
 
   return (
     <div>
@@ -104,14 +110,16 @@ const AddMotorcycle = () => {
           layout="vertical"
           onFinish={handleAddMotorcycle}
         >
+          {/* Motorcycle ID field is removed since it will be auto-generated */}
+          
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Motorcycle ID"
-                name="MotorcycleID"
-                rules={[{ required: true, message: 'Please input the Motorcycle ID!' }]}
+                label="Driver ID"
+                name="DriverID"
+                rules={[{ required: true, message: 'Please select the Driver ID.' }]}
               >
-                <Input />
+                <Select options={availableDrivers} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -120,7 +128,7 @@ const AddMotorcycle = () => {
                 name="GPSnumber"
                 rules={[{ required: true, message: 'Please input the GPS Number.' }]}
               >
-                <Select options={availableGPSNumbers} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>

@@ -30,13 +30,13 @@ function App() {
         <Route path="/driverslist" element={<DriversList />} />
         <Route path="/motorcycleslist" element={<MotorcyclesList />} />
         <Route path="/violations" element={<Violations />} />
-        <Route path="/violations/:violationId" element={<ViolationDetail />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/crashes" element={<Crashes />} />
         <Route path="/employee-profile" element={<EmployeeProfile />} />
         <Route path="/edit-driver/:driverId" element={<EditDriver />} />
         <Route path="/add-driver" element={<AddDriver />} />
-        <Route path="/violations/:violationId" element={<ViolationGeneral />} />
+        <Route path="/violation/general/:violationId" element={<ViolationGeneral />} />
+        <Route path="/violation/detail/:driverId" element={<ViolationDetail />} /> 
         <Route path="/edit-motorcycle/:motorcycleId" element={<EditMotorcycle />} />
         <Route path="/add-motorcycle" element={<AddMotorcycle/>} />
 
