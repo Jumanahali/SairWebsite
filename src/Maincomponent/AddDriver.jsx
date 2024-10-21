@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth'; // Import Firebase auth method
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import {
     collection,
@@ -39,7 +39,6 @@ const AddDriver = () => {
     const [popupMessage, setPopupMessage] = useState('');
     const [popupImage, setPopupImage] = useState('');
 
-
     useEffect(() => {
         const employerUID = sessionStorage.getItem('employerUID');
         const fetchEmployer = async () => {
@@ -57,23 +56,23 @@ const AddDriver = () => {
 
     useEffect(() => {
         const fetchMotorcycles = async () => {
-            const motorcycleQuery = query(
-                collection(db, 'Motorcycle'),
-                where('CompanyName', '==', Employer.CompanyName),
-                where('available', '==', false)
-            );
-            const unsubscribe = onSnapshot(motorcycleQuery, (snapshot) => {
-                const bikes = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    GPSnumber: doc.data().GPSnumber,
-                }));
-                setAvailableMotorcycles(bikes);
-            });
-            return () => unsubscribe();
+            if (Employer.CompanyName) {
+                const motorcycleQuery = query(
+                    collection(db, 'Motorcycle'),
+                    where('CompanyName', '==', Employer.CompanyName),
+                    where('available', '==', false) // Ensure 'available' field exists
+                );
+                const unsubscribe = onSnapshot(motorcycleQuery, (snapshot) => {
+                    const bikes = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        GPSnumber: doc.data().GPSnumber,
+                    }));
+                    setAvailableMotorcycles(bikes);
+                });
+                return () => unsubscribe();
+            }
         };
-        if (Employer.CompanyName) {
-            fetchMotorcycles();
-        }
+        fetchMotorcycles();
     }, [Employer]);
 
     const handleAddDriver = async (values) => {
@@ -92,20 +91,20 @@ const AddDriver = () => {
 
             // Determine GPS number and availability
             const gpsNumber = values.GPSnumber === "None" ? null : values.GPSnumber;
-            const available = values.GPSnumber !== "None" ? false : true;
+            const available = values.GPSnumber === "None";
 
             // Generate random password
             const generatedPassword = generateRandomPassword();
 
             // Create the user in Firebase Authentication
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            values.Email,
-            generatedPassword
-        );
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                values.Email,
+                generatedPassword
+            );
 
-        // Get the new user's UID
-        const user = userCredential.user;
+            // Get the new user's UID
+            const user = userCredential.user;
             // Prepare the new driver object
             const newDriver = { 
                 ...values, 
@@ -141,7 +140,7 @@ const AddDriver = () => {
                 setPopupImage(successImage);
                 setPopupVisible(true);
             } else {
-                setPopupMessage("Error Addint driver");
+                setPopupMessage("Error adding driver");
                 setPopupImage(errorImage);
                 setPopupVisible(true);
             }
@@ -263,7 +262,7 @@ const AddDriver = () => {
                                 >
                                     <Select>
                                         <Select.Option value="None">None</Select.Option>
-                                        {availableMotorcycles?.map((item) => (
+                                        {availableMotorcycles.map((item) => (
                                             <Select.Option key={item.id} value={item.GPSnumber}>
                                                 {item.GPSnumber}
                                             </Select.Option>

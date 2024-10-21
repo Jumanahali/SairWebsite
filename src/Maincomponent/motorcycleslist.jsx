@@ -11,21 +11,22 @@ import errorImage from '../images/Error.png';
 import SAIRLogo from '../images/SAIRlogo.png';
 import logoutIcon from '../images/logout.png';
 import { Button, Table } from 'antd';
-import { SearchOutlined, UsergroupAddOutlined } from '@ant-design/icons';
-import { BsScooter } from 'react-icons/bs';
-import { GiScooter } from 'react-icons/gi';
+import { SearchOutlined } from '@ant-design/icons'; // Correctly import SearchOutlined
+import { GiScooter } from 'react-icons/gi'; 
+
 const MotorcycleList = () => {
   const [motorcycleData, setMotorcycleData] = useState([]);
   const [driverData, setDriverData] = useState([]);
   const [isAddPopupVisible, setIsAddPopupVisible] = useState(false);
   const [currentUserName, setCurrentUserName] = useState('');
-  const [companyName, setCompanyName] = useState(''); // State for company name
+  const [companyName, setCompanyName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [newMotorcycle, setNewMotorcycle] = useState({
     MotorcycleID: '',
     GPSnumber: '',
     LicensePlate: '',
     DriverID: null,
+    
   });
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
@@ -44,7 +45,6 @@ const MotorcycleList = () => {
   };
 
   useEffect(() => {
-
     const employerUID = sessionStorage.getItem('employerUID');
 
     const fetchUserName = async () => {
@@ -62,6 +62,7 @@ const MotorcycleList = () => {
         }
       }
     };
+
     const fetchMotorcycles = () => {
       const motorcycleCollection = collection(db, 'Motorcycle');
       const unsubscribe = onSnapshot(motorcycleCollection, (snapshot) => {
@@ -94,7 +95,7 @@ const MotorcycleList = () => {
           const docSnap = await getDoc(companyDocRef);
           if (docSnap.exists()) {
             const companyData = docSnap.data();
-            setCompanyName(companyData.CompanyName); // Set the company name
+            setCompanyName(companyData.CompanyName);
           } else {
             console.log("No such document!");
           }
@@ -103,22 +104,22 @@ const MotorcycleList = () => {
         }
       }
     };
+
     fetchUserName();
     fetchMotorcycles();
     fetchDrivers();
     fetchCompanyData();
   }, []);
 
-
-  const openDeleteConfirmation = (driver) => {
-    setMotorcycleToRemove(driver);
+  const openDeleteConfirmation = (motorcycle) => {
+    setMotorcycleToRemove(motorcycle);
     setIsDeletePopupVisible(true);
   };
 
   const handleDeleteMotorcycle = async (motorcycleId) => {
     try {
       await deleteDoc(doc(db, 'Motorcycle', motorcycleId));
-      setIsSuccess(true); 
+      setIsSuccess(true);
       setNotificationMessage('Motorcycle deleted successfully!');
     } catch (error) {
       console.error('Error deleting motorcycle:', error);
@@ -126,7 +127,7 @@ const MotorcycleList = () => {
       setNotificationMessage('Error deleting motorcycle. Please try again.');
     }
     setIsNotificationVisible(true);
-      setIsDeletePopupVisible(false);
+    setIsDeletePopupVisible(false);
   };
 
   const handleAddMotorcycleSubmit = async (e) => {
@@ -144,7 +145,7 @@ const MotorcycleList = () => {
         GPSnumber: newMotorcycle.GPSnumber,
         LicensePlate: newMotorcycle.LicensePlate,
         DriverID: newMotorcycle.DriverID || null,
-        CompanyName: companyName, // Save the company name from the Employer collection
+        CompanyName: companyName,
       });
       setIsSuccess(true);
       setNotificationMessage('Motorcycle added successfully!');
@@ -162,16 +163,16 @@ const MotorcycleList = () => {
       LicensePlate: '',
       DriverID: null,
     });
-  }; 
+  };
 
-  const filteredData = motorcycleData
-    .filter(motorcycle => motorcycle.GPSnumber.includes(searchQuery))
- 
+  const filteredData = motorcycleData.filter(motorcycle => 
+    motorcycle.GPSnumber && motorcycle.GPSnumber.includes(searchQuery)
+  );
 
   const columns = [
     {
-      title: 'Motorcycle ID', // Column for Motorcycle ID from DB
-      dataIndex: 'MotorcycleID', // Use the MotorcycleID from DB
+      title: 'Motorcycle ID',
+      dataIndex: 'MotorcycleID',
       key: 'MotorcycleID',
     },
     {
@@ -182,20 +183,20 @@ const MotorcycleList = () => {
     {
       title: 'License Plate',
       dataIndex: 'LicensePlate',
-      key: 'LicensePlate', 
+      key: 'LicensePlate',
     },
     {
-      title: 'Motorcycle Type ',
+      title: 'Motorcycle Type',
       dataIndex: 'Type',
       key: 'Type',
     },
     {
-      title: 'Motorcycle Model ',
+      title: 'Motorcycle Model',
       dataIndex: 'Model',
       key: 'Model',
-    }, 
+    },
     {
-      title: 'Motorcycle Brand ',
+      title: 'Motorcycle Brand',
       dataIndex: 'Brand',
       key: 'Brand',
     },
@@ -207,7 +208,6 @@ const MotorcycleList = () => {
           style={{ cursor: 'pointer' }}
           src={EyeIcon}
           alt="Details"
-        // onClick={() => viewViolationDetails(record.DriverID)}
         />
       ),
     },
@@ -220,27 +220,25 @@ const MotorcycleList = () => {
             style={{ cursor: 'pointer', marginRight: 8 }}
             src={TrashIcon}
             alt="Delete"
-          onClick={() => openDeleteConfirmation(record)}
+            onClick={() => openDeleteConfirmation(record)}
           />
           <img
             style={{ cursor: 'pointer' }}
             src={PencilIcon}
             alt="Edit"
-          // onClick={() => handleEditDriver(record)}
           />
         </div>
       ),
     },
   ];
- console.log('motorcycleData', motorcycleData);
+
   return (
-    <  >
+    <>
       <header>
         <nav>
           <a onClick={() => navigate('/Employeehomepage')}>
             <img className="logo" src={SAIRLogo} alt="SAIR Logo" />
           </a>
-
           <div className="nav-links" id="navLinks">
             <ul>
               <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
@@ -258,7 +256,6 @@ const MotorcycleList = () => {
         </nav>
       </header>
       <main>
-
         <div className="breadcrumb">
           <a onClick={() => navigate('/employer-home')}>Home</a>
           <span> / </span>
@@ -293,7 +290,6 @@ const MotorcycleList = () => {
           rowKey="id"
           pagination={{ pageSize: 5 }}
         />
-
 
         {isAddPopupVisible && (
           <div className="popup-container">
@@ -346,7 +342,6 @@ const MotorcycleList = () => {
             </div>
           </div>
         )}
-
 
         {isNotificationVisible && (
           <div className={`notification-popup ${isSuccess ? 'success' : 'error'}`}>

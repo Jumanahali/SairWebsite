@@ -78,18 +78,21 @@ auth.signOut().then(() => {
         </nav>
       </header>
       <div className="breadcrumb">
-        <a onClick={() => navigate('/employer-home')}>Home</a>
-        <span> / </span>
-        <a onClick={() => navigate('/violations')}>Violations List</a>
-      </div>
+                <a onClick={() => navigate('/employer-home')}>Home</a>
+                <span> / </span>
+                <a onClick={() => navigate('/driverslist')}>Driver List</a>
+                <span> / </span>
+                <a onClick={() => navigate('/violation/detail/:driverId')}>Violation Details</a>
+            </div>
       <main>
         <h2 className="title">Violation Details for Driver ID: {driverId}</h2>
         {violations.length > 0 ? (
           violations.map((violation, index) => (
             <div key={violation.id}>
               <hr />
-              <h3>Violation {index + 1}</h3>
-              <h3>Motorcycle License Plate</h3>
+              <h3 style={{ color: "#059855", fontSize: "20px", fontWeight: "bold" }}>
+  Violation {index + 1}
+</h3>              <h3>Motorcycle License Plate</h3>
               <p>{motorcycleData.LicensePlate || 'Not Available'}</p>
               <h3>Violation ID</h3>
               <p>{violation.ViolationID}</p>

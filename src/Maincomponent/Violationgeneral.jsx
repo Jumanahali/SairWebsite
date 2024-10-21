@@ -72,6 +72,8 @@ const ViolationGeneral = () => {
         <a onClick={() => navigate('/employer-home')}>Home</a>
         <span> / </span>
         <a onClick={() => navigate('/violations')}>Violations List</a>
+        <span> / </span>
+        <a onClick={() => navigate('/violation/general/:violationId')}>Violations detils</a>
       </div>
       <main>
         <h2 className="title">Violation Details</h2>
