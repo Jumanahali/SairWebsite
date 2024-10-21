@@ -143,7 +143,7 @@ const Login = () => {
       }
 
       if (!userFound) {
-        setPopupMessage("Incorrect commercial Number or password");
+        setPopupMessage("Incorrect email or password");
         setPopupImage(errorImage);
         setPopupVisible(true);
       }
@@ -220,10 +220,10 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
-                placeholder='Enter your Commercial Registration'
+                placeholder='Enter your Company Email'
                 value={email}
                 onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
-                onBlur={(e) => e.target.placeholder = 'Enter your Commercial Registration'} // Restore placeholder on blur if empty
+                onBlur={(e) => e.target.placeholder = 'Enter your Company Email'} // Restore placeholder on blur if empty
                 onChange={(e) => setEmail(e.target.value )}
               />
               <label htmlFor="password"></label><br />
