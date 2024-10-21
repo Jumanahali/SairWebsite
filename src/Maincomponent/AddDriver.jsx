@@ -29,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateRandomPassword } from '../utils/common';
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png'; 
+import { sendEmail } from '../utils/email';
 
 const AddDriver = () => {
     const navigate = useNavigate();
@@ -122,20 +123,15 @@ const AddDriver = () => {
             const emailMessage = `Your account has been created. Your password is: ${generatedPassword}`;
 
             // Call the backend API to send the email
-            const response = await fetch('http://localhost:8080/send-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: values.Email,
-                    subject: 'Your Account Password',
-                    message: emailMessage,
-                }),
-            });
+          const response = sendEmail(
+            {
+              email: values.Email,
+              subject: 'Account Created',
+              message: emailMessage,
+            }
+            )
 
-            const result = await response.json();
-            if (result.success) {
+          if (response.success) {
                 setPopupMessage("Driver added successfully!");
                 setPopupImage(successImage);
                 setPopupVisible(true);
