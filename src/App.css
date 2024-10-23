@@ -450,36 +450,40 @@ label {
 }
 nav {
   display: flex;
-  padding: 2% 6%;
+  padding: 3px 2%; /* Combine paddings */
   justify-content: space-between;
   align-items: center;
-  padding: 30px 2px;
-  height: 5px;
-  font-family:  'Open Sans'; 
+  height: auto; /* Adjusted to auto for better flexibility */
+  font-family: 'Open Sans'; 
+  margin-top: 30px;
+  box-shadow: 0px 7px 4px rgba(0, 0, 0, 0.13);
+}
 
-  box-shadow: 0px 7px 4px 0px rgba(0, 0, 0, 0.13);
-}
-.logo{
-  width: 150px;
+.logo {
+  width: 220px;
   padding-left: 20px; 
+  margin-top: -15px; /* Consider removing this for better layout */
 }
+
 .Header {
-min-height: 100vh;
-width: 100%;
-font-family:  'Open Sans';
-/* background-position: center;
-background-size: cover; */
-position: relative;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
 }
-header{
-background-color: #fafaff;
-font-family:  'Open Sans';
+
+header {
+  background-color: #fafaff;
+  margin-top: -23px;
 }
 
 .nav-links {
   flex: 1;
-  font-family:  'Open Sans';
   text-align: right;
+}
+
+.nav-links ul {
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
 }
 
 .nav-links ul li {
@@ -487,46 +491,55 @@ font-family:  'Open Sans';
   display: inline-block;
   padding: 8px 12px;
   position: relative;
-  font-family:  'Open Sans';
-}
-.nav-links ul li a {
-  text-decoration: none;
-  font-size: 13px;
-  font-family:  'Open Sans';
+  margin-right: 30px;
 }
 
 .nav-links ul li a {
   text-decoration: none;
   font-size: 15px;
-  font-family:  'Open Sans';
+  font-family: 'Open Sans';
+  position: relative; /* For positioning the underline */
 }
-.nav-links ul li ::after {
+
+.nav-links ul li a.active {
+  text-decoration: none; /* Remove default underline */
+  position: relative; /* For custom underline */
+}
+
+.nav-links ul li a.active::after {
   content: "";
-  width: 0%;
-  height: 2px;
-  background: #059855;
-  display: block;
-  margin: auto;
-  font-family:  'Open Sans';
-  transition: 0.5s;
+  width: 100%; /* Full width underline */
+  height: 3px; /* Thickness of underline */
+  background: #059855; /* Underline color */
+  position: absolute;
+  bottom: -5px; /* Position it below the text */
+  left: 0;
+  transition: 0.3s; /* Transition for smooth effect */
 }
-.nav-links ul li :hover::after {
-  width: 100%;
-  font-family:  'Open Sans';
+
+.nav-links ul li a:hover::after {
+  content: "";
+  width: 100%; /* Full width on hover */
+  height: 2px; /* Customize height for hover effect */
+  background: #059855; /* Underline color */
+  position: absolute;
+  bottom: -5px; /* Position it below the text */
+  left: 0;
+  transition: width 0.5s; /* Smooth transition */
 }
+
 .logoutBu {
   padding-right: 70px;
-  padding-left:  200px;;
+  padding-left: 200px;
   background: transparent;
   border: none;
   cursor: pointer;
-  font-family:  'Open Sans';
+  font-family: 'Open Sans';
 }
 
 .logout {
   width: 30px;  
   height: 30px;
-  font-family:  'Open Sans';
 }
 .text-box {
 width: 90%;

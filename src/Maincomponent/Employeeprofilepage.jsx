@@ -373,7 +373,7 @@ console.log(newPhoneNumber);
               <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
               <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
               <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
-              <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
+              <li><a class="active" onClick={() => navigate('/employee-profile')}>Profile</a></li>
             </ul>
           </div>
           <button className="logoutBu" onClick={handleLogout}>

@@ -3,13 +3,6 @@ import { useNavigate } from 'react-router-dom'; // For navigation
 import '../App.css'; 
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png'; 
-import profileIcon from '../images/Profile.PNG'; 
-import driversIcon from '../images/drivers.png'; 
-import motorcyclesIcon from '../images/motorcyle.png'; 
-import violationsIcon from '../images/violation.png';
-import complaintsIcon from '../images/complaint.png'; 
-import crashesIcon from '../images/crash.png';
-import back from '../images/back.jpg'; 
 import { auth, db } from '../firebase'; 
 import { doc, getDoc } from 'firebase/firestore'; 
 import homeBackground from '../images/homebackground7.png'; // Ensure this path is correct
@@ -76,7 +69,7 @@ const EmployeeHome = () => {
             </a>
             <div className="nav-links" id="navLinks">
               <ul>
-                <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
+                <li><a class="active" onClick={() => navigate('/employer-home')}>Home</a></li>
                 <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
                 <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>
                 <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
@@ -91,14 +84,23 @@ const EmployeeHome = () => {
           </nav>
         </header>
         <div className="text-box">
+          <br/>
         <h1 style={{ color: '#059855' }}>SAIR Vision</h1>
            <p style={{ fontSize: '20px' ,color:"black" }}>
-            SAIR initiative seeks to enhance road safety through advanced monitoring and ensure the safety of delivery motorcycle drivers.
-            By equipping the General Department of Traffic (GDT), employers, and drivers with essential tools, it aims to reduce violations and accidents,
-            promoting a safer environment for everyone on the road. The system ultimately fosters a culture of accountability and safety.
-            Through these measures, SAIR empowers all stakeholders to contribute to a safer and more efficient delivery ecosystem.
+           The SAIR initiative aims to enhance road safety and protect delivery motorcycle drivers by providing 
+           the General Department of Traffic (GDT), employers, and drivers with essential monitoring tools. 
+           This initiative seeks to reduce violations and accidents, fostering a safer environment for all 
+           road users. Ultimately, SAIR promotes a culture of accountability and empowers stakeholders to 
+           contribute to a safer and more efficient delivery ecosystem.
+           </p>
+           <br/><br/><br/><br/>
+          <h1 style={{ color: '#059855' }}>SAIR Mission</h1>
+           <p style={{ fontSize: '20px' ,color:"black" }}>
+           The mission of the SAIR initiative is to enhance road safety and reduce traffic violations by providing 
+           advanced monitoring technologies. We aim to equip the General Department of Traffic (GDT), 
+           employers, and delivery motorcycle drivers with essential tools to ensure compliance and create 
+           a safer, more efficient delivery ecosystem for all road users.
           </p>
-          <a onClick={() => handleNavigation('/violations')} className="hero-btn">View Violations</a>
         </div>
       </div>
     </div>

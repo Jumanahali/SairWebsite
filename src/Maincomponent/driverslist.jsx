@@ -167,7 +167,7 @@ const DriverList = () => {
                             <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
                             <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
                             <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-                            <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                            <li><a class="active" onClick={() => navigate('/driverslist')}>Drivers List</a></li>
                             <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
                             <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
                         </ul>
