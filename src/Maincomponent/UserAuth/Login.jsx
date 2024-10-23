@@ -8,6 +8,7 @@ import successImage from '../../images/Sucess.png';
 import errorImage from '../../images/Error.png';
 import backgroundImage from '../../images/sairbackground.png';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { Form, Input } from 'antd';
 
 
 
@@ -72,17 +73,19 @@ const Login = () => {
     }));
   };
 
-  const validateCommercialNumber = (commercialValue) => {
-    const numberRegex = /^\d{10}$/;
-    const commercialError = numberRegex.test(commercialValue) ? '' : 'Commercial registration number must be exactly 10 digits long.';
-    setErrors((prev) => ({
-      ...prev,
-      commercialError,
-    }));
-  };
+  //const validateCommercialNumber = (commercialValue) => {
+   // const numberRegex = /^\d{10}$/;
+    //const commercialError = numberRegex.test(commercialValue) ? '' : 'Commercial registration number must be exactly 10 digits long.';
+    //setErrors((prev) => ({
+    //  ...prev,
+      //commercialError,
+   // }));
+ // };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
+
+    
 
     try {
       const auth = getAuth();
@@ -143,7 +146,7 @@ const Login = () => {
       }
 
       if (!userFound) {
-        setPopupMessage("Incorrect email or password");
+        setPopupMessage("Incorrect Email or password");
         setPopupImage(errorImage);
         setPopupVisible(true);
       }
@@ -181,7 +184,7 @@ const Login = () => {
       <div className="form-container" style={{
         display: role ? 'block' : 'none', marginLeft: '100px'
       }}>
-        <form id="dynamicForm" onSubmit={handleSubmit}>
+        <Form id="dynamicForm" onSubmit={handleSubmit}>
           {role === 'gdtAdmin' || role === 'gdtStaff' ? (
             <div>
               <p style={{ fontSize: "20px" }} >Please fill in the following information to log in to your account.</p>
@@ -217,20 +220,33 @@ const Login = () => {
         `}
               </style>
 
-              <input
+                <Form.Item 
+                  name="Email"
+                  rules={[{ required: true, type: 'email', message: 'Please enter a valid email address.' }]}
+                >
+                  <Input 
+                    type="email" 
+                    placeholder='Enter your Email'
+                    value={email}
+                    onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
+                    onBlur={(e) => e.target.placeholder = 'Enter your Email'} // Restore placeholder on blur if empty
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </Form.Item>
+                
+              {/* <input
                 type="email"
                 id="email"
-                placeholder='Enter your Company Email'
+                placeholder='Enter your Commercial Registration'
                 value={email}
                 onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
-                onBlur={(e) => e.target.placeholder = 'Enter your Company Email'} // Restore placeholder on blur if empty
+                onBlur={(e) => e.target.placeholder = 'Enter your Commercial Registration'} // Restore placeholder on blur if empty
                 onChange={(e) => setEmail(e.target.value )}
-              />
+              /> */}
               <label htmlFor="password"></label><br />
               <div className="password-container">
                 <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
+                  type={showPassword ? "text" : "password"} 
                   name="password"
                   placeholder='Enter your password'
                   value={password}
@@ -265,8 +281,8 @@ const Login = () => {
               </a>
             )}
           </div>
-          <button id='signsubmit2' type="submit">Log in</button>
-        </form>
+          <button id='signsubmit2' onClick={handleSubmit} type="submit">Log in</button>
+        </Form>
       </div>
 
       {popupVisible && (

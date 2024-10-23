@@ -192,7 +192,7 @@ const SignUp = () => {
       }
 
       // Create user with Firebase Authentication using email
-      const userCredential = await createUserWithEmailAndPassword(auth, `${user.commercialNumber}@sair.com`, user.Password);
+      const userCredential = await createUserWithEmailAndPassword(auth, `${user.EmployeerEmail}`, user.Password);      
       const newUser = userCredential.user;
 
       // Add user data to Firestore
