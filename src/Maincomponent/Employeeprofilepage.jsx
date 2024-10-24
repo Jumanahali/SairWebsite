@@ -115,6 +115,7 @@ const Profile = () => {
 
 
     const handlePhoneNumberChange = (e) => {
+      console.log(e.target.value);
 
 
         let newPhoneNumber = e.target.value;
@@ -140,13 +141,28 @@ const Profile = () => {
        
 console.log(newPhoneNumber);
          // Only validate if there is more than just the prefix ('+966')
-         const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
+        // const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
+         var phoneError='';
+         if(validatePhoneNumber(newPhoneNumber) === ''){
+          phoneError = '';
+         }
+         else if(validatePhoneNumber(newPhoneNumber) === '0'){
+          phoneError = '';
+          var str = newPhoneNumber+"";
+          str = str.substring(str.indexOf('5'));
+          var st = '+966'+str;
+          setEmployer({ ...Employer, PhoneNumber: st });
+
+         }
+         else{
+          phoneError=validatePhoneNumber(newPhoneNumber);
+         }
 
         // setValidationMessages((prev) => ({
         //     ...prev,
         //     phoneError: phoneError 
         // }));//removed when empty
-        setValidationMessages((prev) => ({ ...prev, phoneError: validatePhoneNumber(phoneError) }));
+        setValidationMessages((prev) => ({ ...prev, phoneError: phoneError }));
 
   //      setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
 
@@ -160,7 +176,23 @@ console.log(newPhoneNumber);
 
     const validatePhoneNumber = (phoneNumber) => {
         const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
-        return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +9665 and be followed by 8 digits.';
+        const phoneRegex1 = /^\+96605\d{8}$/; // Example for a specific format
+        if(phoneRegex.test(phoneNumber)){
+
+          return '';
+
+        }
+        else if(phoneRegex1.test(phoneNumber)){
+
+          return '0';
+
+        }
+        else{
+
+          return'Phone number must start with +9665 and be followed by 8 digits.';
+
+        }
+
     };
 
     const validateCommercialNumber = (number) => {
@@ -172,9 +204,69 @@ console.log(newPhoneNumber);
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email) ? '' : 'Please enter a valid email address.';
     };
+//Hi
+    const handleVerifyCurrentPassword2 = async (e) => {
+
+      console.log(e.target.value);
+      Employer.currentPassword=e.target.value;
+        if (!e.target.value) {
+            setValidationMessages((prev) => ({
+                ...prev,
+                currentPasswordEmpty: 'Please enter your current password to verify.',
+                currentPasswordError: '',
+                currentPasswordsuccess:'',
+            }));
+            return;
+        }
+        else if(e.target.value.length >= 10){
+            console.log(e.target.value.length);
 
 
+        
+       
+    
+        const auth = getAuth();
+        const user = auth.currentUser;
+    
+        try {
+            const credential = EmailAuthProvider.credential(
+                user.email,
+                e.target.value
+            );
+    
+            await reauthenticateWithCredential(user, credential);
+            setCurrentPassValid(true);
+            setValidationMessages((prev) => ({
+                ...prev,
+                currentPasswordError: '',
+                currentPasswordEmpty: '',
+                currentPasswordsuccess:'Current password verified successfully',
+            }));
+        } catch (error) {
+            console.error("Error verifying current password:", error);
+            setCurrentPassValid(false);
+            setValidationMessages((prev) => ({
+                ...prev,
+                currentPasswordError: 'Incorrect current password. Please try again.',
+                currentPasswordEmpty: '',
+                currentPasswordsuccess:'',
+            }));
+        }
+    }
+
+    else{
+        setValidationMessages((prev) => ({
+            ...prev,
+            currentPasswordError: 'Incorrect current password. Please try again.',
+            currentPasswordEmpty: '',
+            currentPasswordsuccess:'',
+        }));
+    }
+
+
+    };
     const handleVerifyCurrentPassword = async () => {
+        console.log(Employer.currentPassword);
         if (!Employer.currentPassword) {
             setValidationMessages((prev) => ({
                 ...prev,
@@ -184,6 +276,11 @@ console.log(newPhoneNumber);
             }));
             return;
         }
+        else if(Employer.currentPassword.length >= 10){
+            console.log(Employer.currentPassword.length);
+
+
+        
        
     
         const auth = getAuth();
@@ -213,6 +310,16 @@ console.log(newPhoneNumber);
                 currentPasswordsuccess:'',
             }));
         }
+    }
+
+    else{
+        setValidationMessages((prev) => ({
+            ...prev,
+            currentPasswordError: 'Incorrect current password. Please try again.',
+            currentPasswordEmpty: '',
+            currentPasswordsuccess:'',
+        }));
+    }
     };
     
     
@@ -262,6 +369,7 @@ console.log(newPhoneNumber);
         const user = auth.currentUser;
     
         try {
+          console.log(Employer);
             // Update the Firestore document first (except password)
             const docRef = doc(db, 'Employer', employerUID);
             const updateData = { ...Employer };
@@ -435,7 +543,7 @@ console.log(newPhoneNumber);
         placeholder='+966'
         value={`${Employer.PhoneNumber}`}
         onChange={handlePhoneNumberChange}
-        onFocus={handleFocus}
+       
         required
         disabled={!editMode}
       />
@@ -450,11 +558,8 @@ console.log(newPhoneNumber);
         type="text"
         name="commercialNumber"
         value={Employer.commercialNumber}
-        onChange={handleChange}
-        disabled={!editMode}
-        required
+        readOnly
       />
-      {validationMessages.commercialNumberError && <p style={{ color: 'red' }}>{validationMessages.commercialNumberError}</p>}
     </div>
     <div>
       <label className="profileLabel">Company Name</label>
@@ -493,12 +598,12 @@ console.log(newPhoneNumber);
             type={showCurrentPassword ? "text" : "password"}
             name="currentPassword"
             value={Employer.currentPassword}
-            onChange={handleChange}
+            onChange={handleVerifyCurrentPassword2}
             required={Employer.newPassword ? true : false}
           />
-          <button type="button" className='profileVerify' onClick={handleVerifyCurrentPassword}>
+          {/* <button type="button" className='profileVerify' onKeyUp={handleVerifyCurrentPassword}>
             Verify
-          </button>
+          </button> */}
    
           <span onClick={() => togglePasswordVisibility('current')} className="password-toggle-iconprofile1">
             <i className={showCurrentPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
@@ -526,7 +631,10 @@ console.log(newPhoneNumber);
             </p>
           )}
         </div>
-        <div  style={{ position: 'relative' }}>
+
+      </div>
+      <div className="form-row">
+      <div  style={{ position: 'relative' }}>
           <label className="profileLabel">New Password</label>
           <input
             type={showNewPassword ? "text" : "password"}
@@ -550,7 +658,6 @@ console.log(newPhoneNumber);
           </div>
         </div>
       </div>
-
       <div className="form-row">
         <div style={{ position: 'relative' }}>
           <label className="profileLabel">Confirm New Password</label>
