@@ -41,7 +41,7 @@ const ForgetPassword = () => {
     }
 
     try {
-      const q = query(collection(db, 'Employer'), where('EmployeerEmail', '==', email));
+      const q = query(collection(db, 'Employer'), where('CompanyEmail', '==', email));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {

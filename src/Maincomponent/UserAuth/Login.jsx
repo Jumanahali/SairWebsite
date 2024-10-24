@@ -198,7 +198,7 @@ const Login = () => {
                 id="phoneNumber"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9+]/g, ''))}
-              /><br />
+              />
               <span className={`error-message ${errors.phoneStartError ? 'visible' : ''}`}>{errors.phoneStartError}</span><br />
               <span className={`error-message ${errors.phoneLengthError ? 'visible' : ''}`}>{errors.phoneLengthError}</span><br />
               <label htmlFor="password">Password:</label><br />
@@ -224,7 +224,7 @@ const Login = () => {
         `}
               </style>
 
-                <Form.Item 
+                {/* <Form.Item 
                   name="Email"
                
                 >
@@ -237,9 +237,9 @@ const Login = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                </Form.Item>
+                </Form.Item> */}
                 
-              {/* <input
+              <input
                 type="email"
                 id="email"
                 placeholder='Enter your Commercial Registration'
@@ -247,7 +247,7 @@ const Login = () => {
                 onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
                 onBlur={(e) => e.target.placeholder = 'Enter your Commercial Registration'} // Restore placeholder on blur if empty
                 onChange={(e) => setEmail(e.target.value )}
-              /> */}
+              /><br></br>
               <label htmlFor="password"></label><br />
               <div className="password-container">
                 <input
