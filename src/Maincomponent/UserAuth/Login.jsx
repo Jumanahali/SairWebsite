@@ -84,7 +84,10 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     // event.preventDefault();
-
+    if (!email || !password ) {
+        
+        return;
+      }
     
 
     try {
@@ -120,7 +123,7 @@ const Login = () => {
       }
 
       if (role === 'employer') {
-        const q = query(collection(db, 'Employer'), where('EmployeerEmail', '==', email));
+        const q = query(collection(db, 'Employer'), where('CompanyEmail', '==', email));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
@@ -195,7 +198,7 @@ const Login = () => {
                 id="phoneNumber"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9+]/g, ''))}
-              /><br />
+              />
               <span className={`error-message ${errors.phoneStartError ? 'visible' : ''}`}>{errors.phoneStartError}</span><br />
               <span className={`error-message ${errors.phoneLengthError ? 'visible' : ''}`}>{errors.phoneLengthError}</span><br />
               <label htmlFor="password">Password:</label><br />
@@ -216,25 +219,27 @@ const Login = () => {
           input::placeholder {
             font-size: 14px;
             padding-left: 15px;
+
           }
         `}
               </style>
 
-                <Form.Item 
+                {/* <Form.Item 
                   name="Email"
-                  rules={[{ required: true, type: 'email', message: 'Please enter a valid email address.' }]}
+               
                 >
                   <Input 
                     type="email" 
-                    placeholder='Enter your Email'
+                    placeholder='Enter your Company Email'
                     value={email}
                     onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
                     onBlur={(e) => e.target.placeholder = 'Enter your Email'} // Restore placeholder on blur if empty
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
-                </Form.Item>
+                </Form.Item> */}
                 
-              {/* <input
+              <input
                 type="email"
                 id="email"
                 placeholder='Enter your Commercial Registration'
@@ -242,7 +247,7 @@ const Login = () => {
                 onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
                 onBlur={(e) => e.target.placeholder = 'Enter your Commercial Registration'} // Restore placeholder on blur if empty
                 onChange={(e) => setEmail(e.target.value )}
-              /> */}
+              /><br></br>
               <label htmlFor="password"></label><br />
               <div className="password-container">
                 <input

@@ -70,13 +70,14 @@ const SignUp = () => {
         ...prev,
         emailError: value === '' ? '' : emailError,
       }));
-    } else if (name === 'EmployeerEmail') {
-      const emailperError = validateEmail(value);
-      setValidationMessages((prev) => ({
-        ...prev,
-        emailperError: value === '' ? '' : emailperError,
-      }));
-    }
+    } 
+    // else if (name === 'EmployeerEmail') {
+    //   const emailperError = validateEmail(value);
+    //   setValidationMessages((prev) => ({
+    //     ...prev,
+    //     emailperError: value === '' ? '' : emailperError,
+    //   }));
+    // }
     if (name === 'Password') {
       // Check password requirements
       setPasswordRequirements({
@@ -100,39 +101,45 @@ const SignUp = () => {
   };
 
   const handlePhoneNumberChange = (e) => {
+        console.log(e.target.value);
+        let newPhoneNumber = e.target.value;
+        if (newPhoneNumber.startsWith('+966')) {
+                                                    
+          setUser({ ...user, PhoneNumber: newPhoneNumber }); // Store only the digits
 
+        }
+        else{
+            newPhoneNumber = '+966' + newPhoneNumber.slice(3);
+           
 
-    let newPhoneNumber = e.target.value;
+            setUser({ ...user, PhoneNumber: newPhoneNumber }); // Store only the digits
+        }
+       
+       
+         // Only validate if there is more than just the prefix ('+966')
+        // const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
+        let phoneError = '';
+        if (newPhoneNumber.length > 4) {     
+         if(validatePhoneNumber(newPhoneNumber) === ''){
+          phoneError = '';
+         }
+         else if(validatePhoneNumber(newPhoneNumber) === '0'){
+          phoneError = '';
+          var str = newPhoneNumber+"";
+          str = str.substring(str.indexOf('5'));
+          var st = '+966'+str;
+          setUser({ ...user, PhoneNumber: st });
 
-    //user.PhoneNumber='+966'+ e.target.value;
-
-    // setPhoneNumber({phoneNumber:'+966'+ e.target.value});
-    // user.PhoneNumber.value='+966'+ e.target.value;
-
-    // Allow only digits after the prefix
-    if (newPhoneNumber.startsWith('+966')) {
-      setUser({ ...user, PhoneNumber: newPhoneNumber }); // Store only the digits
+         }
+         else{
+          phoneError=validatePhoneNumber(newPhoneNumber);
+         }
 
     }
-    else {
-      newPhoneNumber = '+966' + newPhoneNumber.slice(3);
-
-
-      setUser({ ...user, PhoneNumber: newPhoneNumber }); // Store only the digits 
-    }
-
-
-    console.log(newPhoneNumber);
-    // Only validate if there is more than just the prefix ('+966')
-    const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
-
     setValidationMessages((prev) => ({
-      ...prev,
-      phoneError: phoneError
-    }));
-    //      setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
-
-
+        ...prev,
+        phoneError: phoneError 
+    })); 
   };
 
   const handleFocus = (e) => {
@@ -148,8 +155,27 @@ const SignUp = () => {
   };
 
   const validatePhoneNumber = (phoneNumber) => {
+    // const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
+    // return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +9665 and be followed by 8 digits.';
     const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
-    return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +9665 and be followed by 8 digits.';
+    const phoneRegex1 = /^\+96605\d{8}$/; // Example for a specific format
+    if(phoneRegex.test(phoneNumber)){
+
+      return '';
+
+    }
+    else if(phoneRegex1.test(phoneNumber)){
+
+      return '0';
+
+    }
+    else{
+
+      return'Phone number must start with +9665 and be followed by 8 digits.';
+
+    }
+
+  
   };
 
   const validateCommercialNumber = (number) => {
@@ -192,7 +218,7 @@ const SignUp = () => {
       }
 
       // Create user with Firebase Authentication using email
-      const userCredential = await createUserWithEmailAndPassword(auth, `${user.EmployeerEmail}`, user.Password);      
+      const userCredential = await createUserWithEmailAndPassword(auth, `${user.CompanyEmail}`, user.Password);      
       const newUser = userCredential.user;
 
       // Add user data to Firestore
@@ -202,7 +228,7 @@ const SignUp = () => {
         commercialNumber: user.commercialNumber,
         PhoneNumber: user.PhoneNumber,
         CompanyName: user.CompanyName,
-        EmployeerEmail: user.EmployeerEmail,
+        // EmployeerEmail: user.EmployeerEmail,
         CompanyEmail: user.CompanyEmail,
         uid: newUser.uid,
       });
@@ -217,7 +243,10 @@ const SignUp = () => {
       }, 3000);
     } catch (error) {
       console.error('Error signing up:', error);
-      setPopupMessage('Signup failed. Please try again.');
+      if (error.code === 'auth/email-already-in-use') {
+        setPopupMessage('The company email is already used. Please use a different email.');
+      } else{
+      setPopupMessage('Signup failed. Please try again.');}
       setPopupImage(errorImage);
       setPopupVisible(true);
     } finally {
@@ -268,7 +297,9 @@ const SignUp = () => {
           className='form-container'
           style={{ marginLeft: '100px', paddingBottom: '20px' }}
           onSubmit={handleSignUp}
-        >                        <div className="profile-field">
+          
+
+        >   <div className="profile-field">
             <label>First Name</label><br></br>
             <input
               type="text"
@@ -289,21 +320,9 @@ const SignUp = () => {
 
               required
               style={{ borderColor: getBorderColor('Lname') }}
-            />
+            />  
           </div>
-          <div className="profile-field">
-            <label>Email</label><br></br>
-            <input
-              type="email"
-              name="EmployeerEmail"
-              value={user.EmployeerEmail}
-              onChange={handleChange}
-              required
-              style={{ borderColor: getBorderColor('EmployeerEmail') }}
-            />
-            {validationMessages.emailperError && <p style={{ color: 'red' }}>{validationMessages.emailperError}</p>}
-
-          </div>
+         
           <div className="profile-field">
             <label>Phone Number</label><br />
             <input
@@ -312,11 +331,11 @@ const SignUp = () => {
               placeholder='+966'
               value={`${user.PhoneNumber}`}
               onChange={handlePhoneNumberChange}
-              onFocus={handleFocus}
+              pattern="\+9665\d{8}"
               required
               style={{ borderColor: getBorderColor('PhoneNumber') }}
             />
-            {validationMessages.phoneError && <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>}
+            {validationMessages.phoneError && <p style={{ color: 'red' ,marginLeft:'22px'}}>{validationMessages.phoneError}</p>}
           </div>
 
 
@@ -331,7 +350,7 @@ const SignUp = () => {
               required
               style={{ borderColor: getBorderColor('commercialNumber') }}
             />
-            {validationMessages.commercialNumberError && <p style={{ color: 'red' }}>{validationMessages.commercialNumberError}</p>}
+            {validationMessages.commercialNumberError && <p style={{ color: 'red' ,marginLeft:'22px'}}>{validationMessages.commercialNumberError}</p>}
           </div>
 
           <div className="profile-field">
@@ -356,7 +375,7 @@ const SignUp = () => {
               required
               style={{ borderColor: getBorderColor('CompanyEmail') }}
             />
-            {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
+            {validationMessages.emailError && <p style={{ color: 'red' ,marginLeft:'22px'}}>{validationMessages.emailError}</p>}
 
           </div>
           <div style={{ position: 'relative', marginBottom: '20px' }}>
@@ -375,7 +394,7 @@ const SignUp = () => {
               className="password-toggle-iconsignup"
               style={{
                 position: 'absolute',
-                top: '63px',
+                top: '60px',
                 left: '309px',
                 transform: 'translateY(-50%)',
                 cursor: 'pointer',
@@ -419,7 +438,7 @@ const SignUp = () => {
               className="password-toggle-iconsignup2"
               style={{
                 position: 'absolute',
-                top: '64px',
+                top: '60px',
                 left: '309px',
                 transform: 'translateY(-50%)',
                 cursor: 'pointer',
@@ -429,7 +448,7 @@ const SignUp = () => {
             >
               <i className={showConfirmNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
             </span>
-            {validationMessages.confirmPasswordError && <p style={{ color: 'red' }}>{validationMessages.confirmPasswordError}</p>}
+            {validationMessages.confirmPasswordError && <p style={{ color: 'red' ,marginLeft:'22px'}}>{validationMessages.confirmPasswordError}</p>}
           </div>
           <div style={{ marginTop: '20px', textAlign: 'center', position: 'relative' }}>
             <a
