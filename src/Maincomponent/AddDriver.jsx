@@ -24,7 +24,6 @@ import {
 import successImage from '../images/Sucess.png'; 
 import errorImage from '../images/Error.png'; 
 import styles from '../DriverList.module.css';
-import { BackwardOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { generateRandomPassword } from '../utils/common';
 import SAIRLogo from '../images/SAIRlogo.png'; 
@@ -118,9 +117,6 @@ const AddDriver = () => {
 
             // Store the new driver in Firestore
             await addDoc(collection(db, 'Driver'), newDriver);
-
-            // Prepare the message for email
-            const emailMessage = `Your account has been created. Your password is: ${generatedPassword}`;
 
             // Call the backend API to send the email
           const response = sendEmail(
