@@ -40,6 +40,8 @@ const Profile = () => {
 
     const [loading, setLoading] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
+    const [popupVisible, setPopupVisible] = useState(false);
+    const [popupImage, setPopupImage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -116,16 +118,7 @@ const Profile = () => {
 
     const handlePhoneNumberChange = (e) => {
       console.log(e.target.value);
-
-
         let newPhoneNumber = e.target.value;
-      
-        //user.PhoneNumber='+966'+ e.target.value;
-       
-       // setPhoneNumber({phoneNumber:'+966'+ e.target.value});
-      // user.PhoneNumber.value='+966'+ e.target.value;
-
-        // Allow only digits after the prefix
         if (newPhoneNumber.startsWith('+966')) {
                                                     
          setEmployer({ ...Employer, PhoneNumber: newPhoneNumber }); // Store only the digits
@@ -142,7 +135,8 @@ const Profile = () => {
 console.log(newPhoneNumber);
          // Only validate if there is more than just the prefix ('+966')
         // const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
-         var phoneError='';
+        let phoneError = '';
+        if (newPhoneNumber.length > 4) {    
          if(validatePhoneNumber(newPhoneNumber) === ''){
           phoneError = '';
          }
@@ -156,17 +150,12 @@ console.log(newPhoneNumber);
          }
          else{
           phoneError=validatePhoneNumber(newPhoneNumber);
-         }
+         }}
 
-        // setValidationMessages((prev) => ({
-        //     ...prev,
-        //     phoneError: phoneError 
-        // }));//removed when empty
-        setValidationMessages((prev) => ({ ...prev, phoneError: phoneError }));
-
-  //      setUser({ ...user, PhoneNumber: newPhoneNumber.replace('+966', '') }); // Store only the digits
-
-
+        setValidationMessages((prev) => ({
+            ...prev,
+            phoneError: phoneError 
+        }));//removed when empty 
     };
 
     const handleFocus = (e) => {
@@ -398,7 +387,9 @@ console.log(newPhoneNumber);
                 newPassword: '',
                 confirmNewPassword: '',
             }));
-            setPopupMessage('Profile updated successfully.');
+            setPopupMessage("Information Updated successfully.");
+            setPopupImage(successImage);
+            setPopupVisible(true);
             setEditMode(false);
         } catch (error) {
             console.error("Error updating profile:", error);
@@ -440,6 +431,9 @@ console.log(newPhoneNumber);
     setCurrentPassValid(false); // Reset current password verification
 
     };
+    const handleClosePopup = () => {
+        setPopupVisible(false);
+      };
     
 
     const togglePasswordVisibility = (type) => {
@@ -524,18 +518,6 @@ console.log(newPhoneNumber);
 
   <div className="form-row">
     <div>
-      <label className="profileLabel">Email</label>
-      <input
-        type="email"
-        name="EmployeerEmail"
-        value={Employer.EmployeerEmail}
-        onChange={handleChange}
-        disabled={!editMode}
-        required
-      />
-      {validationMessages.emailperError && <p style={{ color: 'red' }}>{validationMessages.emailperError}</p>}
-    </div>
-    <div>
       <label className="profileLabel">Phone Number</label>
       <input
         type="tel"
@@ -543,15 +525,12 @@ console.log(newPhoneNumber);
         placeholder='+966'
         value={`${Employer.PhoneNumber}`}
         onChange={handlePhoneNumberChange}
-       
-        required
         disabled={!editMode}
+         pattern="\+9665\d{8}"
+        required
       />
-      {validationMessages.phoneError && <p style={{ color: 'red' }}>{validationMessages.phoneError}</p>}
+      {validationMessages.phoneError && <p style={{ color: 'red' ,marginTop:'3px'}}>{validationMessages.phoneError}</p>}
     </div>
-  </div>
-
-  <div className="form-row">
     <div>
       <label className="profileLabel">Commercial Number</label>
       <input
@@ -561,6 +540,10 @@ console.log(newPhoneNumber);
         readOnly
       />
     </div>
+  </div>
+
+  <div className="form-row">
+    
     <div>
       <label className="profileLabel">Company Name</label>
       <input
@@ -585,7 +568,7 @@ console.log(newPhoneNumber);
         disabled={!editMode}
         required
       />
-      {validationMessages.emailError && <p style={{ color: 'red' }}>{validationMessages.emailError}</p>}
+      {validationMessages.emailError && <p style={{ color: 'red' ,marginTop:'3px'}}>{validationMessages.emailError}</p>}
     </div>
   </div>
 
@@ -673,7 +656,7 @@ console.log(newPhoneNumber);
             <i className={showConfirmNewPassword ? 'far fa-eye' : 'far fa-eye-slash'}></i>
           </span>
           {validationMessages.confirmNewPasswordError && (
-            <p style={{ color: 'red' }}>{validationMessages.confirmNewPasswordError}</p>
+            <p style={{ color: 'red' ,marginTop:'3px'}}>{validationMessages.confirmNewPasswordError}</p>
           )}
         </div>
       </div>
@@ -701,13 +684,15 @@ console.log(newPhoneNumber);
 }
 </form>
 
+{popupVisible && (
+          <div className="popup">
+            <button className="close-btn" onClick={handleClosePopup}>×</button>
+            <img src={popupImage} alt="Popup" />
+            <p>{popupMessage}</p>
+          </div>
+        )}
 
-
-            {popupMessage && (
-                <div className="popup">
-                    <p>{popupMessage}</p>
-                </div>
-            )}
+            
          </div></div>
           );
           };

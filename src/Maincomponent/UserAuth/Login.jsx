@@ -84,7 +84,10 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     // event.preventDefault();
-
+    if (!email || !password ) {
+        
+        return;
+      }
     
 
     try {
@@ -120,7 +123,7 @@ const Login = () => {
       }
 
       if (role === 'employer') {
-        const q = query(collection(db, 'Employer'), where('EmployeerEmail', '==', email));
+        const q = query(collection(db, 'Employer'), where('CompanyEmail', '==', email));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
@@ -216,21 +219,23 @@ const Login = () => {
           input::placeholder {
             font-size: 14px;
             padding-left: 15px;
+
           }
         `}
               </style>
 
                 <Form.Item 
                   name="Email"
-                  rules={[{ required: true, type: 'email', message: 'Please enter a valid email address.' }]}
+               
                 >
                   <Input 
                     type="email" 
-                    placeholder='Enter your Email'
+                    placeholder='Enter your Company Email'
                     value={email}
                     onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
                     onBlur={(e) => e.target.placeholder = 'Enter your Email'} // Restore placeholder on blur if empty
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </Form.Item>
                 

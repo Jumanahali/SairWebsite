@@ -7,7 +7,7 @@ body, html {
 
 p {
   color: #211d1d;
-  margin-left: 30px;
+  margin-left: 22px;
   margin-top: 10px;
   font-family:  'Open Sans';
   margin-left: 3px;
@@ -291,7 +291,7 @@ label {
 /* Links in Login Styles */
 #forget {
   color: #059855;
-  margin-left: 116px;
+  margin-left: 122px;
   text-decoration: underline;
   font-family:  'Open Sans';
 
@@ -299,7 +299,7 @@ label {
 
 #signup {
   color: #059855;
-  margin-left: 20px;
+  margin-left: 33px;
   text-decoration: underline;
   font-family:  'Open Sans';
 }
@@ -407,7 +407,7 @@ label {
 }
 .password-toggle-iconprofile1 {
   position: absolute;
-  top: 45px;
+  top: 40px;
   right:11px;
   transform: translateY(-50%);
   cursor: pointer;
@@ -422,7 +422,7 @@ label {
                   
 .password-toggle-iconprofile2 {
   position: absolute;
-  top: 45px;
+  top: 40px;
   right:10px;
   transform: translateY(-50%);
   cursor: pointer;
@@ -432,7 +432,7 @@ label {
 }
 .password-toggle-iconprofile3 {
   position: absolute;
-  top: 47px;
+  top: 40px;
   right:10px;
   transform: translateY(-50%);
   cursor: pointer;
