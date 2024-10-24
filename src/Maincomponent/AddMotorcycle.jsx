@@ -218,7 +218,7 @@ const AddMotorcycle = () => {
             </Row>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" >
                 Add Motorcycle
               </Button>
             </Form.Item>

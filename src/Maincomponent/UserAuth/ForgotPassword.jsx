@@ -10,12 +10,12 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState('');
-  const [validationMessages, setValidationMessages] = useState({
-    emailError: '',
-  });
+  const [validationMessages, setValidationMessages] = useState({ emailError: '' });
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [popupImage, setPopupImage] = useState('');
+  const [canRequestAgain, setCanRequestAgain] = useState(true); // Track if the user can request again
+  const [timer, setTimer] = useState(60); // Timer for 1 minute
   const navigate = useNavigate();
 
   function validEmail(email) {
@@ -36,8 +36,8 @@ const ForgetPassword = () => {
   };
 
   const handleResetPassword = async () => {
-    if (!validEmail(email)) {
-      return; // Prevent submission if invalid
+    if (!validEmail(email) || !canRequestAgain) {
+      return; // Prevent submission if invalid or if timer is active
     }
 
     try {
@@ -48,18 +48,14 @@ const ForgetPassword = () => {
         setValidationMessages({ emailError: 'The email does not exist.' });
       } else {
         const auth = getAuth();
-        sendPasswordResetEmail(auth, email)
-          .then(() => {
-            setPopupVisible(true);
-            setPopupImage(successImage);
-            setPopupMessage("Password reset email sent!");
-            setTimeout(() => {
-              navigate('/');
-            }, 2000);
-          })
-          .catch((error) => {
-            console.error('Error sending email:', error);
-          });
+        await sendPasswordResetEmail(auth, email);
+        setPopupVisible(true);
+        setPopupImage(successImage);
+        setPopupMessage("Password reset email sent!");
+
+        // Start the timer
+        setCanRequestAgain(false);
+        setTimer(60);
       }
     } catch (error) {
       setPopupMessage('Failed to verify email. Please try again.');
@@ -68,39 +64,64 @@ const ForgetPassword = () => {
     }
   };
 
+  useEffect(() => {
+    let interval;
+    if (!canRequestAgain && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => {
+          if (prevTimer <= 1) {
+            setCanRequestAgain(true); // Allow requesting again
+            clearInterval(interval); // Clear the interval
+            return 0;
+          }
+          return prevTimer - 1; // Decrement timer
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval); // Clean up
+  }, [canRequestAgain, timer]);
 
-  
   return (
     <div className="f-container">
-        <div className='f-inner'>
-          <h1 className='f-title'>Forgot Password?</h1>
-          <p className='info'>
-            Don't worry! It occurs. Please enter your email that is linked with your account.
+      <div className='f-inner'>
+        <h1 className='f-title'>Forgot Password?</h1>
+        <p className='info'>
+          Don't worry! It occurs. Please enter your email that is linked with your account.
+        </p>
+        <label style={{ visibility: "hidden" }}>
+          Enter your email
+        </label>
+
+        <input
+          className='email'
+          type="email"
+          value={email}
+          placeholder="Enter your email"
+          onChange={handleEmailChange}
+          style={{ borderColor: validationMessages.emailError ? 'red' : 'green' }}
+        />
+
+        {validationMessages.emailError && (
+          <p style={{ color: 'red', textAlign: 'left', marginLeft: '90px' }}>{validationMessages.emailError}</p>
+        )}
+        <br/><br/>
+        {!canRequestAgain && (
+          <p style={{ color: '#059855', textAlign: 'center'}}>
+            You can request again in {timer} seconds.
           </p>
-          <label style={{ visibility: "hidden" }}>
-            Enter your email
-          </label>
+        )}
+        <button 
+          className='send-code' 
+          onClick={handleResetPassword} 
+          disabled={!canRequestAgain} // Disable button if not allowed
+          style={{ cursor: 'pointer', opacity: canRequestAgain ? 1 : 0.5 }} // Change opacity
+        >
+          Send Reset Email
+        </button>
 
-          <input
-            className='email'
-            type="email"
-            value={email}
-            placeholder="Enter your email"
-            onChange={handleEmailChange}
-            style={{ borderColor: validationMessages.emailError ? 'red' : 'green' }}
-          />
+       
 
-          {validationMessages.emailError && (
-            <p style={{ color: 'red', textAlign:'left' , marginLeft:'90px' }}>{validationMessages.emailError}</p>
-          )}
-
-          <button className='send-code'
-            onClick={handleResetPassword}  >
-            Send Reset Email
-          </button>
-
-        </div>
-      
+      </div>
 
       {popupVisible && (
         <div className="popup">

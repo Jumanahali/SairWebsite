@@ -210,7 +210,7 @@ const Login = () => {
             </div>
           ) : role === 'employer' ? (
             <div >
-              <p style={{ marginLeft: '24px', marginBottom: '1px', color: '#211d1d', fontSize: "20px" }}>Please fill in the following information to log in to your account.</p>
+              <p style={{ marginLeft: '24px', marginBottom: '1px', color: '#211d1d', fontSize: "18px" }}>Please fill in the following information to log in to your account.</p>
               <style>
                 {`
           input::placeholder {

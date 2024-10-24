@@ -13,6 +13,9 @@ import logoutIcon from '../images/logout.png';
 import { Button, Table } from 'antd';
 import { SearchOutlined } from '@ant-design/icons'; // Correctly import SearchOutlined
 import { GiScooter } from 'react-icons/gi'; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMotorcycle } from '@fortawesome/free-solid-svg-icons';
+
 
 const MotorcycleList = () => {
   const [motorcycleData, setMotorcycleData] = useState([]);

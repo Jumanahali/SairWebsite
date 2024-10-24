@@ -450,7 +450,7 @@ label {
 }
 nav {
   display: flex;
-  padding: 3px 2%; /* Combine paddings */
+  padding: 3px 0%; /* Combine paddings */
   justify-content: space-between;
   align-items: center;
   height: auto; /* Adjusted to auto for better flexibility */
@@ -491,7 +491,7 @@ header {
   display: inline-block;
   padding: 8px 12px;
   position: relative;
-  margin-right: 30px;
+  margin-right: 10px;
 }
 
 .nav-links ul li a {
@@ -541,26 +541,41 @@ header {
   width: 30px;  
   height: 30px;
 }
-.text-box {
-width: 90%;
-color: #fafaff;
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-text-align: center;
-font-family:  'Open Sans';
+
+.home-container {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack items vertically */
+  justify-content: space-between; /* Space items apart */
+  width: 50%; /* Set container width */
+  height: 200px; /* Set a height for the container */
+  position: absolute; /* Maintain positioning */
+  top: 30%; /* Center vertically */
+  left: 27%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for centering */
 
 }
+
+.text-box {
+  color: #fafaff;
+  text-align: left;
+  font-family: 'Open Sans';
+  margin: 0 10px; /* Add some margin for spacing */
+  flex: 1; /* Allow the boxes to grow and fill available space */
+}
+
+
+
+
+
 .text-box h1 {
 font-size: 62px;
-color: #fafaff;
+color: #059855;
 font-family:  'Open Sans';
 }
 
 .text-box p {
 margin: 10px 0 40px;
-text-align: center;
+text-align: left;
 font-size: 14px;
 color: #f1f1ff;
 font-family:  'Open Sans';

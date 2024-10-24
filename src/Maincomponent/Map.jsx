@@ -1,10 +1,11 @@
 import React from 'react';
 import { LoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
 
-const Map = ({ lat, lng }) => {
+const Map = ({ lat, lng, placeName }) => { // Add placeName as a prop
   const containerStyle = {
-    width: '100%',
-    height: '400px', // Make sure this is defined and visible
+    width: '50%',
+    height: '400px',
+    margin: '0 auto', // Center the map horizontally
   };
 
   const center = {
@@ -12,9 +13,16 @@ const Map = ({ lat, lng }) => {
     lng: lng,
   };
 
-  // Function to run when map is loaded (optional, for debugging or extra functionality)
   const onLoad = (map) => {
     console.log('Map Loaded:', map);
+  };
+
+  // Function to open Google Maps in a new tab
+  const handleMarkerClick = () => {
+    console.log(`Opening Google Maps at: ${lat}, ${lng}`); // Log the coordinates
+    const encodedPlaceName = encodeURIComponent(placeName); // Encode the place name
+    const googleMapsUrl = `https://www.google.com/maps/place/${encodedPlaceName}/@${lat},${lng},17z`;
+    window.open(googleMapsUrl, '_blank'); // Open in a new tab
   };
 
   return (
@@ -22,14 +30,19 @@ const Map = ({ lat, lng }) => {
       googleMapsApiKey="AIzaSyBFbAxhllak_ia6wXY5Nidci_cLmUQkVhc"
       onError={(e) => console.error('Error loading maps', e)}
     >
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={14}
-        onLoad={onLoad}
-      >
-        <MarkerF position={center} />
-      </GoogleMap>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={center}
+          zoom={14}
+          onLoad={onLoad}
+        >
+          <MarkerF 
+            position={center} 
+            onClick={handleMarkerClick} // Add click event to marker
+          />
+        </GoogleMap>
+      </div>
     </LoadScript>
   );
 };
