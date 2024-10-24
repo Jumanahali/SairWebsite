@@ -54,7 +54,7 @@ const ViolationGeneral = () => {
           <div className="nav-links" id="navLinks">
             <ul>
               <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
-              <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+              <li><a class="active" onClick={() => navigate('/violations')}>Violations List</a></li>
               <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
               <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
               <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
@@ -73,7 +73,7 @@ const ViolationGeneral = () => {
         <span> / </span>
         <a onClick={() => navigate('/violations')}>Violations List</a>
         <span> / </span>
-        <a onClick={() => navigate('/violation/general/:violationId')}>Violations detils</a>
+        <a onClick={() => navigate('/violation/general/:violationId')}>Violation Details</a>
       </div>
       <main>
         <h2 className="title">Violation Details</h2>

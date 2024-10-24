@@ -145,7 +145,7 @@ const ViolationList = () => {
           <div className="nav-links" id="navLinks">
             <ul>
               <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
-              <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
+              <li><a class="active" onClick={() => navigate('/violations')}>Violations List</a></li>
               <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>
               <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
               <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
@@ -160,9 +160,6 @@ const ViolationList = () => {
       </header>
 
       <main>
-
-
-
         <div className="breadcrumb">
           <a onClick={() => navigate('/employer-home')}>Home</a>
           <span> / </span>

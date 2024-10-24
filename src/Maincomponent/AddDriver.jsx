@@ -126,8 +126,19 @@ const AddDriver = () => {
           const response = sendEmail(
             {
               email: values.Email,
-              subject: 'Account Created',
-              message: emailMessage,
+              subject: 'Welcome to SAIR!',
+              message: `Congratulations! 
+
+You are now a driver at ${Employer.CompanyName}.
+              
+We are excited to have you with us! 
+
+Your password is: ${generatedPassword}
+
+To ensure your safety, we have set up your account in SAIR Mobile app. Download SAIR now from Google play to monitor regulations and keep us informed about any crashes.
+
+Best Regards,
+SAIR Team`,
             }
             )
 
