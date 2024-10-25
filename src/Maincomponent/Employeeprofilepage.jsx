@@ -14,7 +14,6 @@ const Profile = () => {
         Fname: '',
         Lname: '',
         commercialNumber: '',
-        EmployeerEmail:'',
         PhoneNumber: '',
         CompanyName: '',
         CompanyEmail: '',
@@ -91,9 +90,6 @@ const Profile = () => {
                 break;
             case 'commercialNumber':
                 setValidationMessages((prev) => ({ ...prev, commercialNumberError: validateCommercialNumber(value) }));
-                break;
-            case 'EmployeerEmail':
-                setValidationMessages((prev) => ({ ...prev, emailperError: validateEmail(value) }));
                 break;
             case 'CompanyEmail':
                 setValidationMessages((prev) => ({ ...prev, emailError: validateEmail(value) }));

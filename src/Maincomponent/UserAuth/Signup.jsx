@@ -15,7 +15,6 @@ const SignUp = () => {
     Fname: '',
     Lname: '',
     commercialNumber: '',
-    EmployeerEmail: '',
     PhoneNumber: '',
     CompanyName: '',
     CompanyEmail: '',
@@ -268,8 +267,6 @@ const SignUp = () => {
       return validationMessages.confirmPasswordError ? 'red' : user.confirmPassword ? 'green' : '';
     } else if (field === 'CompanyEmail') {
       return validationMessages.emailError ? 'red' : !validationMessages.emailError && user.CompanyEmail ? 'green' : '';
-    } else if (field === 'EmployeerEmail') {
-      return validationMessages.emailperError ? 'red' : !validationMessages.emailperError && user.EmployeerEmail ? 'green' : '';
     } else if (field === 'commercialNumber') {
       return validationMessages.commercialNumberError ? 'red' : !validationMessages.commercialNumberError && user.commercialNumber ? 'green' : '';
     } else {
