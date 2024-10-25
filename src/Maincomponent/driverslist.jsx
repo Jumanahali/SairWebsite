@@ -64,7 +64,7 @@ const DriverList = () => {
                     style={{ cursor: 'pointer' }}
                     src={EyeIcon}
                     alt="Details"
-                    onClick={() => viewViolationDetails(record.DriverID)}
+                    onClick={() => viewDriverDetails(record.DriverID)}
                 />
             ),
         },
@@ -90,8 +90,15 @@ const DriverList = () => {
         },
     ];
 
-    const filteredData = driverData.filter(driver => driver.DriverID.includes(searchQuery));
-
+    const filteredData = driverData.filter(driver => {
+        // Combine first and last names for a more flexible search
+        const fullName = `${driver.Fname} ${driver.Lname}`.toLowerCase();
+        const driverID = driver.DriverID.toLowerCase();
+        const query = searchQuery.toLowerCase();
+    
+        return driverID.includes(query) || fullName.includes(query);
+    });
+    
     useEffect(() => {
         const fetchDrivers = () => {
             const driverCollection = collection(db, 'Driver');
@@ -144,9 +151,11 @@ const DriverList = () => {
         setIsDeletePopupVisible(true);
     };
 
-    const viewViolationDetails = async (driverID) => {
-        navigate(`/violation/detail/${driverID}`);
+    const viewDriverDetails = (driverID) => {
+        console.log('Navigating to details for driver ID:', driverID); // Add this line
+        navigate(`/driver-details/${driverID}`);
     };
+    
     const handleLogout = () => {
         auth.signOut().then(() => {
           navigate('/'); // Redirect to login page (Login.jsx)
@@ -187,12 +196,15 @@ const DriverList = () => {
                     <h1>Driver List</h1>
                     <div className={'driver-header-action'}>
                         <div className="search-container">
-                            <SearchOutlined className='searchIcon' />
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="#059855" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
                             <input
                                 type="text"
-                                placeholder="Search by ID"
+                                placeholder="Search by Driver ID or Driver Name"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                style={{width:"300px"}}
                             />
                         </div>
                         <Button type="primary" id="add-driver-button" onClick={() => navigate('/add-driver')}>

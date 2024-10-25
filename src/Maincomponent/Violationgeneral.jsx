@@ -1,10 +1,9 @@
-
-import { useEffect, useState } from 'react'
-import { doc, getDoc, getDocs, query, where, collection } from 'firebase/firestore'
-import { useParams , useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { doc, getDoc, getDocs, query, where, collection } from 'firebase/firestore';
+import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import Map from './Map';
-import "../ViolationDetail.css"
+import "../ViolationDetail.css";
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png';  
 
@@ -12,13 +11,13 @@ const ViolationGeneral = () => {
   const [currentViolation, setCurrentViolation] = useState({});
   const [currentMotorCycle, setCurrentMotorCycle] = useState({});
   const { violationId } = useParams();
-  const navigate = useNavigate(); // Ensure navigate is defined
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchViolationDetails = async () => {
       try {
-        // Fetch violation details
-        const violationDocRef = doc(db, 'te2', violationId);
+        // Fetch violation details from the new "Violation" collection
+        const violationDocRef = doc(db, 'Violation', violationId);
         const violationDoc = await getDoc(violationDocRef);
 
         if (violationDoc.exists()) {
@@ -54,7 +53,7 @@ const ViolationGeneral = () => {
           <div className="nav-links" id="navLinks">
             <ul>
               <li><a onClick={() => navigate('/employer-home')}>Home</a></li>
-              <li><a class="active" onClick={() => navigate('/violations')}>Violations List</a></li>
+              <li><a className="active" onClick={() => navigate('/violations')}>Violations List</a></li>
               <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
               <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
               <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
@@ -73,15 +72,18 @@ const ViolationGeneral = () => {
         <span> / </span>
         <a onClick={() => navigate('/violations')}>Violations List</a>
         <span> / </span>
-        <a onClick={() => navigate('/violation/general/:violationId')}>Violation Details</a>
+        <a onClick={() => navigate(`/violation/general/${violationId}`)}>Violation Details</a>
       </div>
       <main>
         <h2 className="title">Violation Details</h2>
         {currentViolation.GPSnumber && currentMotorCycle && (
           <>
             <hr />
-            <h3>Driver ID</h3>
-            <p>{currentViolation.DriverID}</p>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+  Driver ID
+  <span style={{ fontSize: '12px', color: 'gray', marginTop:"10px" }}>Residency Number</span>
+</h3>
+            <p>{currentViolation.driverID}</p>
             <h3>Motorcycle License Plate</h3>
             <p>{currentMotorCycle.LicensePlate}</p>
             <h3>GPS Serial Number</h3>
@@ -96,11 +98,11 @@ const ViolationGeneral = () => {
         )}
         <hr />
         <h3>Violation ID</h3>
-        <p>{currentViolation.ViolationID}</p>
+        <p>{currentViolation.violationID}</p>
         <h3>Street Speed</h3>
-        <p>{currentViolation.MaxSpeed}</p>
+        <p>{currentViolation.streetMaxSpeed}</p>
         <h3>Motorcycle Speed</h3>
-        <p>{currentViolation.speed}</p>
+        <p>{currentViolation.driverSpeed}</p>
         <h3>Violation Price</h3>
         <p>{currentViolation.price} SAR</p>
         <h3>Time</h3>
@@ -111,7 +113,13 @@ const ViolationGeneral = () => {
         <h3>Violation Location</h3>
         <p>{currentViolation.location}</p>
         <div className="map">
-          {currentViolation?.position && <Map lat={currentViolation.position?.y} lng={currentViolation.position?.x} placeName={currentViolation.location} />}
+          {currentViolation.position && (
+            <Map 
+              lat={currentViolation.position.latitude} 
+              lng={currentViolation.position.longitude} 
+              placeName={currentViolation.location} 
+            />
+          )}
         </div>
       </main>
     </div>

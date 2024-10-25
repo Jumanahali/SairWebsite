@@ -50,7 +50,7 @@ const ViolationList = () => {
   // Fetch Violations Data
   useEffect(() => {
     const fetchViolations = () => {
-      const violationCollection = collection(db, 'te2');
+      const violationCollection = collection(db, 'Violation');
       const unsubscribe = onSnapshot(violationCollection, (snapshot) => {
         const violationList = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -66,20 +66,17 @@ const ViolationList = () => {
 
   // Filtering logic based on searchQuery and searchDate
   const filteredViolations = violations.filter((violation) => {
-    const driverName = drivers[violation.DriverID] || '';
+    const driverName = drivers[violation.driverID] || '';
     const licensePlate = motorcycles[violation.GPSnumber] || '';
 
-    // Check if the violation has a valid date and compare it to the search date
-    const violationDate = violation.date || '';
-
-    // Log to check date values
-    console.log('Violation Date:', violationDate, 'Search Date:', searchDate);
+    // Convert timestamp to date string for comparison
+    const violationDate = violation.timestamp ? new Date(violation.timestamp.toDate()).toISOString().split('T')[0] : '';
 
     // Check if the search query matches either driver name or license plate
     const matchesSearchQuery = driverName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       licensePlate.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Check if the date matches exactly (both are in mm/dd/yyyy format)
+    // Check if the date matches exactly (both are in yyyy-mm-dd format)
     const matchesSearchDate = searchDate ? violationDate === searchDate : true;
 
     return matchesSearchQuery && matchesSearchDate;
@@ -88,28 +85,28 @@ const ViolationList = () => {
   const columns = [
     {
       title: 'Violation ID',
-      dataIndex: 'ViolationID',
-      key: 'ViolationID',
+      dataIndex: 'violationID',
+      key: 'violationID',
     },
     {
       title: 'Driver Name',
       key: 'driverName',
       render: (text, record) => {
-        const driverName = drivers[record.DriverID];
-        return driverName || 'Unknown';
+        const driverName = drivers[record.driverID];
+        return driverName;
       },
     },
     {
       title: 'Motorcycle License Plate',
       key: 'motorcyclePlate',
       render: (text, record) => {
-        return motorcycles[record.GPSnumber] || 'Unknown';
+        return motorcycles[record.GPSnumber] ;
       },
     },
     {
       title: 'Speed',
-      dataIndex: 'speed',
-      key: 'speed',
+      dataIndex: 'driverSpeed',
+      key: 'driverSpeed',
     },
     {
       title: 'Details',
@@ -158,8 +155,8 @@ const ViolationList = () => {
           <span> / </span>
           <a onClick={() => navigate('/violations')}>Violations List</a>
         </div>
-        <h2 className='title'>Violations List</h2>
         <div className='search-inputs'>
+        <h2 className='title' style={{ marginRight: '520px' }}>Violations List</h2>
           <div className="search-container">
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
               <path stroke="#059855" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />

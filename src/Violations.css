@@ -15,15 +15,15 @@ h2.title {
 }
 
 .search-inputs {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+    display: flex; 
+    justify-content: flex-end; 
+    margin: 20px; 
 }
 
 .search-container {
-  padding: 10px 12px;
-  border-radius:  999999px;
-
+    padding: 10px 12px;
+    border-radius: 999999px;
+     margin: 0 3px;
 }
 .search-container svg {
   height: 1.5rem;

@@ -10,9 +10,6 @@ body {
     overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-.body{
-    padding: 1rem;
-}
  h1{
     color:#059855;
     font-family:  'Open Sans';
