@@ -168,9 +168,17 @@ const MotorcycleList = () => {
     });
   };
 
-  const filteredData = motorcycleData.filter(motorcycle => 
-    motorcycle.GPSnumber && motorcycle.GPSnumber.includes(searchQuery)
-  );
+  const filteredData = motorcycleData.filter((motorcycle) => {
+    const searchLower = searchQuery.toLowerCase().trim();
+    
+    return (
+      (motorcycle.MotorcycleID && motorcycle.MotorcycleID.toLowerCase().includes(searchLower)) ||
+      (motorcycle.LicensePlate && motorcycle.LicensePlate.toLowerCase().includes(searchLower)) ||
+      (motorcycle.Type && motorcycle.Type.toLowerCase().includes(searchLower)) || // Optional: Search by Type
+      (motorcycle.Brand && motorcycle.Brand.toLowerCase().includes(searchLower)) // Optional: Search by Brand
+    );
+  });
+  
 
   const columns = [
     {
@@ -179,12 +187,7 @@ const MotorcycleList = () => {
       key: 'MotorcycleID',
     },
     {
-      title: 'GPS Number',
-      dataIndex: 'GPSnumber',
-      key: 'GPSnumber',
-    },
-    {
-      title: 'License Plate',
+      title: 'Motorcycle License Plate',
       dataIndex: 'LicensePlate',
       key: 'LicensePlate',
     },
@@ -192,11 +195,6 @@ const MotorcycleList = () => {
       title: 'Motorcycle Type',
       dataIndex: 'Type',
       key: 'Type',
-    },
-    {
-      title: 'Motorcycle Model',
-      dataIndex: 'Model',
-      key: 'Model',
     },
     {
       title: 'Motorcycle Brand',
@@ -269,19 +267,38 @@ const MotorcycleList = () => {
           <h1>Motorcycles List</h1>
           <div className={'driver-header-action'}>
             <div className="search-container">
-              <SearchOutlined className='searchIcon' />
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="#059855" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
               <input
-                type="text"
-                placeholder="Search by ID"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+  type="text"
+  placeholder="Search by Motorcycle ID or License Plate"
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  style={{ width: '330px', padding: '8px', borderRadius: '4px'}}
+/>
+              
             </div>
 
-            <Button type="primary" id="add-driver-button" onClick={() => {
+            <Button type="primary" id="add-driver-button" style={{ width: '180px'}}
+            onClick={() => {
               navigate('/add-motorcycle')
             }}>
-              <GiScooter height={200} />
+            <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="white"
+              strokeLinecap="round"
+              strokeWidth="2"
+              d="M12 5v14M5 12h14"
+            />
+          </svg>
               <span>Add Motorcycle</span>
             </Button>
           </div>

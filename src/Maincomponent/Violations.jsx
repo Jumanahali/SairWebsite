@@ -100,7 +100,7 @@ const ViolationList = () => {
       },
     },
     {
-      title: 'Motorcycle Plate',
+      title: 'Motorcycle License Plate',
       key: 'motorcyclePlate',
       render: (text, record) => {
         return motorcycles[record.GPSnumber] || 'Unknown';

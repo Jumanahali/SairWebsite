@@ -7,7 +7,8 @@ import {
     query,
     where,
     doc,
-    getDoc,
+    getDoc, getDocs,
+    updateDoc,
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import {
@@ -60,7 +61,7 @@ const AddDriver = () => {
                 const motorcycleQuery = query(
                     collection(db, 'Motorcycle'),
                     where('CompanyName', '==', Employer.CompanyName),
-                    where('available', '==', false) // Ensure 'available' field exists
+                    where('available', '==', true) // Ensure 'available' field exists
                 );
                 const unsubscribe = onSnapshot(motorcycleQuery, (snapshot) => {
                     const bikes = snapshot.docs.map((doc) => ({
@@ -78,33 +79,34 @@ const AddDriver = () => {
     const handleAddDriver = async (values) => {
         try {
             let newErrors = {};
-
+    
             // Phone number validation
             if (!values.PhoneNumber.startsWith('+9665') || values.PhoneNumber.length !== 13) {
                 newErrors.PhoneNumber = 'Phone number must start with +9665 and be followed by 8 digits.';
             }
-
+    
             if (Object.keys(newErrors).length > 0) {
                 form.setFields([{ name: 'PhoneNumber', errors: [newErrors.PhoneNumber] }]);
                 return; // Stop the submission
             }
-
+    
             // Determine GPS number and availability
             const gpsNumber = values.GPSnumber === "None" ? null : values.GPSnumber;
             const available = values.GPSnumber === "None";
-
+    
             // Generate random password
             const generatedPassword = generateRandomPassword();
-
+    
             // Create the user in Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 values.Email,
                 generatedPassword
             );
-
+    
             // Get the new user's UID
             const user = userCredential.user;
+    
             // Prepare the new driver object
             const newDriver = { 
                 ...values, 
@@ -114,39 +116,53 @@ const AddDriver = () => {
                 available: available,
                 UID: user.uid 
             };
-
+    
             // Store the new driver in Firestore
             await addDoc(collection(db, 'Driver'), newDriver);
-
-            // Call the backend API to send the email
-          const response = sendEmail(
-            {
-              email: values.Email,
-              subject: 'Welcome to SAIR!',
-              message: `Congratulations! 
-
-You are now a driver at ${Employer.CompanyName}.
-              
-We are excited to have you with us! 
-
-Your password is: ${generatedPassword}
-
-To ensure your safety, we have set up your account in SAIR Mobile app. Download SAIR now from Google play to monitor regulations and keep us informed about any crashes.
-
-Best Regards,
-SAIR Team`,
+    
+            // If a motorcycle is assigned, update its availability to false
+            if (gpsNumber) {
+                const q = query(
+                    collection(db, 'Motorcycle'),
+                    where('GPSnumber', '==', gpsNumber)
+                );
+                const querySnapshot = await getDocs(q);
+    
+                if (!querySnapshot.empty) {
+                    const motorcycleDocRef = querySnapshot.docs[0].ref; // Get the document reference
+                    await updateDoc(motorcycleDocRef, { available: false });
+                } else {
+                    console.error(`No motorcycle found with GPS number: ${gpsNumber}`);
+                }
             }
-            )
-
-          if (response.success) {
+    
+            // Call the backend API to send the email
+            const response = sendEmail({
+                email: values.Email,
+                subject: 'Welcome to SAIR!',
+                message: `Congratulations! 
+    
+    You are now a driver at ${Employer.CompanyName}.
+                  
+    We are excited to have you with us! 
+    
+    Your password is: ${generatedPassword}
+    
+    To ensure your safety, we have set up your account in SAIR Mobile app. Download SAIR now from Google play to monitor regulations and keep us informed about any crashes.
+    
+    Best Regards,  
+    SAIR Team`,
+            });
+    
+            if (response.success) {
                 setPopupMessage("Driver added successfully!");
                 setPopupImage(successImage);
-                setPopupVisible(true);
             } else {
                 setPopupMessage("Error adding driver");
                 setPopupImage(errorImage);
-                setPopupVisible(true);
             }
+    
+            setPopupVisible(true);
         } catch (error) {
             console.error('Error adding driver:', error);
             notification.error({
@@ -154,6 +170,7 @@ SAIR Team`,
             });
         }
     };
+    
 
     const handleLogout = () => {
         auth.signOut()
