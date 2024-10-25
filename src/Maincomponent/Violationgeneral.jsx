@@ -111,7 +111,7 @@ const ViolationGeneral = () => {
         <h3>Violation Location</h3>
         <p>{currentViolation.location}</p>
         <div className="map">
-          {currentViolation?.position && <Map lat={currentViolation.position?.y} lng={currentViolation.position?.x} />}
+          {currentViolation?.position && <Map lat={currentViolation.position?.y} lng={currentViolation.position?.x} placeName={currentViolation.location} />}
         </div>
       </main>
     </div>

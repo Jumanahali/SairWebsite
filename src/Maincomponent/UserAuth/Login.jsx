@@ -213,7 +213,7 @@ const Login = () => {
             </div>
           ) : role === 'employer' ? (
             <div >
-              <p style={{ marginLeft: '24px', marginBottom: '1px', color: '#211d1d', fontSize: "20px" }}>Please fill in the following information to log in to your account.</p>
+              <p style={{ marginLeft: '24px', marginBottom: '1px', color: '#211d1d', fontSize: "18px" }}>Please fill in the following information to log in to your account.</p>
               <style>
                 {`
           input::placeholder {
@@ -242,10 +242,10 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
-                placeholder='Enter your Commercial Registration'
+                placeholder='Enter your Company email'
                 value={email}
                 onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
-                onBlur={(e) => e.target.placeholder = 'Enter your Commercial Registration'} // Restore placeholder on blur if empty
+                onBlur={(e) => e.target.placeholder = 'Enter your Company email'} // Restore placeholder on blur if empty
                 onChange={(e) => setEmail(e.target.value )}
               /><br></br>
               <label htmlFor="password"></label><br />

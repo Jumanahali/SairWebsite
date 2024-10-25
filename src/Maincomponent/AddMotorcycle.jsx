@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, addDoc, where, query, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, where, query, doc, getDoc, getDocs, onSnapshot , updateDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase'; // Ensure auth is imported
 import { Form, Input, Button, notification, Card, Row, Col, Select } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +53,8 @@ const AddMotorcycle = () => {
     try {
       const driverID = values.DriverID === "None" ? null : values.DriverID;
       const motorcycleID = await generateMotorcycleID(values.GPSnumber);
-      const available = driverID === null; // Determine availability based on driver selection
+      const available = driverID === null;
+  
       const motorcycleData = {
         ...values,
         MotorcycleID: motorcycleID,
@@ -61,8 +62,27 @@ const AddMotorcycle = () => {
         CompanyName: Employer.CompanyName,
         available: available,
       };
-
+  
+      // Add the motorcycle to the Motorcycle collection
       await addDoc(collection(db, 'Motorcycle'), motorcycleData);
+  
+      // If a driver was selected, update their availability to false
+      if (driverID) {
+        // Query the driver document using DriverID field
+        const q = query(
+          collection(db, 'Driver'),
+          where('DriverID', '==', driverID)
+        );
+        const querySnapshot = await getDocs(q);
+  
+        if (!querySnapshot.empty) {
+          const driverDocRef = querySnapshot.docs[0].ref; // Get the document reference
+          await updateDoc(driverDocRef, { available: false });
+        } else {
+          console.error(`No driver found with DriverID: ${driverID}`);
+        }
+      }
+  
       setIsSuccess(true);
       setNotificationMessage('Motorcycle added successfully.');
     } catch (error) {
@@ -73,6 +93,7 @@ const AddMotorcycle = () => {
       setIsNotificationVisible(true);
     }
   };
+  
 
   useEffect(() => {
     const fetchAvailableDrivers = async () => {
@@ -82,7 +103,7 @@ const AddMotorcycle = () => {
 
       if (docSnap.exists()) {
         const { CompanyName } = docSnap.data();
-        const dq = query(collection(db, 'Driver'), where('CompanyName', '==', CompanyName), where('available', '==', false));
+        const dq = query(collection(db, 'Driver'), where('CompanyName', '==', CompanyName), where('available', '==', true));
 
         const unsubscribe = onSnapshot(dq, (drivers) => {
           const driverOptions = drivers.docs.map((doc) => {
@@ -218,7 +239,7 @@ const AddMotorcycle = () => {
             </Row>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" >
                 Add Motorcycle
               </Button>
             </Form.Item>
