@@ -89,7 +89,9 @@ const ViolationDetail = () => {
         <span> / </span>
         <a onClick={() => navigate('/driverslist')}>Driver List</a>
         <span> / </span>
-        <a onClick={() => navigate(`/violation/detail/${driverId}`)}>Violation Details</a>
+        <a onClick={() => navigate('/driver-details/:driverId')}>Drivers Details</a>
+        <span> / </span>
+         <a onClick={() => navigate(`/violation/detail/${driverId}`)}>Violation Details</a>
       </div>
       <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
         <h2 className="title">Violation Details for Driver ID: {driverId}</h2>

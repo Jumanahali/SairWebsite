@@ -96,7 +96,7 @@ const DriverDetails = () => {
                             <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
                             <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
                             <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-                            <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                            <li><a className="active" onClick={() => navigate('/driverslist')}>Drivers List</a></li>
                             <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
                             <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
                         </ul>
@@ -112,7 +112,8 @@ const DriverDetails = () => {
                 <span> / </span>
                 <a onClick={() => navigate('/driverslist')}>Drivers List</a>
                 <span> / </span>
-                <span>Driver Details</span>
+                <a onClick={() => navigate('/driver-details/:driverId')}>Drivers Details</a>
+
             </div>
 
             <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
@@ -189,9 +190,25 @@ const DriverDetails = () => {
             </main>
 
             {isPopupVisible && (
-    <div className="popup-container">
+    <div className="popup-container" style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 'auto',
+        height: 'auto', // Adjust height to auto for better content fit
+        backgroundColor: 'var(--primary)',
+        color: '#059855',
+        boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.2)',
+        padding: '5px', // Optional: add some padding for the content
+        minWidth: '100px',
+        fontFamily: 'Open Sans',
+    }}>
         <div>
-            <span className="close-popup-btn" onClick={() => setIsPopupVisible(false)}>&times;</span>
+            <span className="close-popup-btn1" onClick={() => setIsPopupVisible(false)}>&times;</span>
             <p>This driver has no violations.</p>
         </div>
     </div>
