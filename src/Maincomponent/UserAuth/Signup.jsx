@@ -271,7 +271,7 @@ const SignUp = () => {
 
       </div>
       <div >
-        <h1 style={{ marginTop: '40px' }}>Welcome to SAIR! </h1> <p style={{ fontSize: '30px', color: '#059855', marginTop: '6px', marginLeft: '47px' }}>Your easy solution for managing <br />delivery drivers.</p>
+        <h1 style={{ marginTop: '40px', fontWeight:"bold" }}>Welcome to SAIR! </h1> <p style={{ fontSize: '30px', color: '#059855', marginTop: '6px', marginLeft: '47px' }}>Your easy solution for managing <br />delivery drivers.</p>
 
 
 
