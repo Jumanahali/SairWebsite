@@ -256,7 +256,7 @@ const MotorcycleList = () => {
           </button>
         </nav>
       </header>
-      <main>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
         <div className="breadcrumb">
           <a onClick={() => navigate('/employer-home')}>Home</a>
           <span> / </span>
@@ -328,7 +328,7 @@ const MotorcycleList = () => {
                 />
                 <input
                   type="text"
-                  placeholder='License Plate'
+                  placeholder=' Motorcycle License Plate'
                   value={newMotorcycle.LicensePlate}
                   onChange={(e) => setNewMotorcycle((prevState) => ({
                     ...prevState,

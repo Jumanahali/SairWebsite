@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png';  
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 
 const DriverDetails = () => {
     const { driverId } = useParams();
@@ -51,7 +53,7 @@ const DriverDetails = () => {
 
         const fetchViolations = async (driverID) => {
             try {
-                const violationsQuery = query(collection(db, 'Violation'), where('DriverID', '==', driverID));
+                const violationsQuery = query(collection(db, 'Violation'), where('driverID', '==', driverID));
                 const violationsSnapshot = await getDocs(violationsQuery);
                 const violationsData = violationsSnapshot.docs.map(doc => ({
                     id: doc.id,
@@ -78,6 +80,9 @@ const DriverDetails = () => {
         }
     };
 
+    const goBack = () => {
+        navigate(-1); // Navigate back to the previous page
+    };
     return (
         <div className="Header"> 
             <header>
@@ -110,14 +115,14 @@ const DriverDetails = () => {
                 <span>Driver Details</span>
             </div>
 
-            <main>
+            <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
                 <h2 className="title">Driver Details</h2>
                 <hr />
                 {error ? (
                     <p>{error}</p>
                 ) : driverDetails ? (
                     <>
-                        <h3>Driver ID</h3>
+                        <h3>Driver ID </h3>
                         <p>{driverDetails.DriverID}</p>
                         <h3>Name</h3>
                         <p>{`${driverDetails.Fname} ${driverDetails.Lname}`}</p>
@@ -129,9 +134,14 @@ const DriverDetails = () => {
                         <p>{driverDetails.GPSnumber}</p>
                         <h3>Company Name</h3>
                         <p>{driverDetails.CompanyName}</p>
-                        <hr />
+                    <br/>
 
-                        <h3>Motorcycles Details</h3>
+                        <h3 style={{
+        color: '#059855',
+        fontSize: '32px',
+        margin: '20px 0',
+    }}>Motorcycles Details</h3>
+                        <hr />
                         {motorcycles.length > 0 ? (
                             motorcycles.map((motorcycle, index) => (
                                 <div key={index}>
@@ -154,9 +164,26 @@ const DriverDetails = () => {
                             <p>No motorcycles associated with this driver.</p>
                         )}
                         
-                        <button onClick={handleViewViolations}>
+                        <button onClick={handleViewViolations} style={{
+        backgroundColor: '#059855',
+        color: 'white',
+        border: 'none',
+        borderRadius: '50px',
+        alignItems: 'center',
+        cursor: 'pointer',
+        padding: '20px 10px',
+        width: 'auto',
+        height: '60px',
+        fontFamily: 'Open Sans',
+    }}>    <i className="fas fa-eye" style={{ marginRight: '8px' }}></i>
+
                             View Violations
                         </button>
+                
+                        <Button onClick={goBack} style={{ float: 'right', margin: '10px', width: 'auto',
+        height: '60px', fontSize:'15px' }}>                    
+    <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
+</Button>
                     </>
                 ) : null}
             </main>

@@ -162,89 +162,252 @@ const AddMotorcycle = () => {
         <div className="driver-list-header-container">
           <h1>Add Motorcycle</h1>
         </div>
+        <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginTop:'-30px',
+    marginBottom: '20px' 
+}}>
+        <Card
+    style={{ width: '900px' ,height:'450px'}}
+>
 
-        <Card style={{ margin: "1.5rem" }}>
-          <h3>Add Motorcycle</h3>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleAddMotorcycle}
-          >
-            <Row gutter={16}>
-              <Col span={12}>
+    <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleAddMotorcycle}
+        style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px', // Space between form items
+            marginBottom: '20px',
+            fontFamily: 'Open Sans',
+        }}
+    >
+        <Row gutter={16}>
+            <Col span={12}>
                 <Form.Item
-                  label="Driver ID"
-                  name="DriverID"
-                  rules={[{ required: true, message: 'Please select the Driver ID.' }]}
+                    label={
+                        <span style={{
+                            display: 'block',
+                            marginBottom: '5px',
+                            fontWeight: 'bold',
+                            color: '#059855',
+                            fontFamily: 'Open Sans',
+                            fontSize: '16px',
+                        }}>
+                            Driver ID (National ID / Residency Number)
+                        </span>
+                    }
+                    name="DriverID"
+                    rules={[{ required: true, message: 'Please select the Driver ID.' }]}
                 >
-                  <Select placeholder="Select a Driver ID">
-                    <Select.Option value="None">None</Select.Option>
-                    {availableDrivers.map((item) => (
-                      <Select.Option key={item.value} value={item.value}>
-                        {item.label}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                    <Select
+                        placeholder="Select a Driver ID"
+                        style={{
+                            width: '100%',
+                            height: '45px',
+                            border: '1px solid #059855', // Green border
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            transition: 'border-color 0.3s ease-in-out',
+                            fontFamily: 'Open Sans',
+                        }}
+                        dropdownStyle={{
+                            boxShadow: 'none',
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                    >
+                        <Select.Option value="None">None</Select.Option>
+                        {availableDrivers.map((item) => (
+                            <Select.Option key={item.value} value={item.value}>
+                                {item.label}
+                            </Select.Option>
+                        ))}
+                    </Select>
                 </Form.Item>
-              </Col>
-              <Col span={12}>
+            </Col>
+            <Col span={12}>
                 <Form.Item
-                  label="GPS Number"
-                  name="GPSnumber"
-                  rules={[{ required: true, message: 'Please input the GPS Number.' }]}
+                    label={
+                        <span style={{
+                            display: 'block',
+                            marginBottom: '5px',
+                            fontWeight: 'bold',
+                            color: '#059855',
+                            fontFamily: 'Open Sans',
+                            fontSize: '16px',
+                        }}>
+                            GPS Number
+                        </span>
+                    }
+                    name="GPSnumber"
+                    rules={[{ required: true, message: 'Please input the GPS Number.' }]}
                 >
-                  <Input />
+                    <Input
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            border: '1px solid #059855', // Green border
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            transition: 'border-color 0.3s ease-in-out',
+                            fontFamily: 'Open Sans',
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                    />
                 </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
+            </Col>
+        </Row>
+        <Row gutter={16}>
+            <Col span={12}>
                 <Form.Item
-                  label="Motorcycle Model"
-                  name="Model"
-                  rules={[{ required: true, message: 'Please input the Motorcycle Model.' }]}
+                    label={
+                        <span style={{
+                            display: 'block',
+                            marginBottom: '5px',
+                            fontWeight: 'bold',
+                            color: '#059855',
+                            fontFamily: 'Open Sans',
+                            fontSize: '16px',
+                        }}>
+                            Motorcycle Model
+                        </span>
+                    }
+                    name="Model"
+                    rules={[{ required: true, message: 'Please input the Motorcycle Model.' }]}
                 >
-                  <Input />
+                    <Input
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            border: '1px solid #059855', // Green border
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            transition: 'border-color 0.3s ease-in-out',
+                            fontFamily: 'Open Sans',
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                    />
                 </Form.Item>
-              </Col>
-              <Col span={12}>
+            </Col>
+            <Col span={12}>
                 <Form.Item
-                  label="Type"
-                  name="Type"
-                  rules={[{ required: true, message: 'Please input Type.' }]}
+                    label={
+                        <span style={{
+                            display: 'block',
+                            marginBottom: '5px',
+                            fontWeight: 'bold',
+                            color: '#059855',
+                            fontFamily: 'Open Sans',
+                            fontSize: '16px',
+                        }}>
+                            Motorcycle Type
+                        </span>
+                    }
+                    name="Type"
+                    rules={[{ required: true, message: 'Please input Type.' }]}
                 >
-                  <Input />
+                    <Input
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            border: '1px solid #059855', // Green border
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            transition: 'border-color 0.3s ease-in-out',
+                            fontFamily: 'Open Sans',
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                    />
                 </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
+            </Col>
+        </Row>
+        <Row gutter={16}>
+            <Col span={12}>
                 <Form.Item
-                  label="Motorcycle Brand"
-                  name="Brand"
-                  rules={[{ required: true, message: 'Please input Brand.' }]}
+                    label={
+                        <span style={{
+                            display: 'block',
+                            marginBottom: '5px',
+                            fontWeight: 'bold',
+                            color: '#059855',
+                            fontFamily: 'Open Sans',
+                            fontSize: '16px',
+                        }}>
+                            Motorcycle Brand
+                        </span>
+                    }
+                    name="Brand"
+                    rules={[{ required: true, message: 'Please input Brand.' }]}
                 >
-                  <Input />
+                    <Input
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            border: '1px solid #059855', // Green border
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            transition: 'border-color 0.3s ease-in-out',
+                            fontFamily: 'Open Sans',
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                    />
                 </Form.Item>
-              </Col>
-              <Col span={12}>
+            </Col>
+            <Col span={12}>
                 <Form.Item
-                  label="License Plate"
-                  name="LicensePlate"
-                  rules={[{ required: true, message: 'Please input the License Plate.' }]}
+                    label={
+                        <span style={{
+                            display: 'block',
+                            marginBottom: '5px',
+                            fontWeight: 'bold',
+                            color: '#059855',
+                            fontFamily: 'Open Sans',
+                            fontSize: '16px',
+                        }}>
+                            License Plate
+                        </span>
+                    }
+                    name="LicensePlate"
+                    rules={[{ required: true, message: 'Please input the License Plate.' }]}
                 >
-                  <Input />
+                    <Input
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            border: '1px solid #059855', // Green border
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            transition: 'border-color 0.3s ease-in-out',
+                            fontFamily: 'Open Sans',
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                    />
                 </Form.Item>
-              </Col>
-            </Row>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" >
+            </Col>
+        </Row>
+        <Form.Item>
+            <Button
+                type="primary"
+                htmlType="submit"
+                style={{
+                    backgroundColor: "#059855",
+                }}
+            >
                 Add Motorcycle
-              </Button>
-            </Form.Item>
-          </Form>
-        </Card>
+            </Button>
+        </Form.Item>
+    </Form>
+</Card>
+</div>
 
         {isNotificationVisible && (
           <div className={`notification-popup ${isSuccess ? 'success' : 'error'}`}>

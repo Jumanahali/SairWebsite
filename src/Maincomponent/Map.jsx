@@ -1,11 +1,12 @@
 import React from 'react';
 import { LoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
+import { AlignLeftOutlined } from '@ant-design/icons';
 
-const Map = ({ lat, lng, placeName }) => { // Add placeName as a prop
+const Map = ({ lat, lng, placeName }) => { 
   const containerStyle = {
     width: '50%',
     height: '400px',
-    margin: '0 auto', // Center the map horizontally
+     //margin: '10px 100px',Center the map horizontally
   };
 
   const center = {

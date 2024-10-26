@@ -6,6 +6,8 @@ import Map from './Map';
 import "../ViolationDetail.css";
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png';  
+import { Button } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 const ViolationGeneral = () => {
   const [currentViolation, setCurrentViolation] = useState({});
@@ -43,6 +45,9 @@ const ViolationGeneral = () => {
     // Implement your logout logic here
   };
 
+  const goBack = () => {
+    navigate(-1); // Navigate back to the previous page
+};
   return (
     <div className="Header"> 
       <header>
@@ -74,14 +79,14 @@ const ViolationGeneral = () => {
         <span> / </span>
         <a onClick={() => navigate(`/violation/general/${violationId}`)}>Violation Details</a>
       </div>
-      <main>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
         <h2 className="title">Violation Details</h2>
         {currentViolation.GPSnumber && currentMotorCycle && (
           <>
             <hr />
             <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-  Driver ID
-  <span style={{ fontSize: '12px', color: 'gray', marginTop:"10px" }}>Residency Number</span>
+  Driver ID 
+  <span style={{ fontSize: '12px', color: 'gray', marginTop:"8px" }}>(National ID / Residency Number)</span>
 </h3>
             <p>{currentViolation.driverID}</p>
             <h3>Motorcycle License Plate</h3>
@@ -121,6 +126,10 @@ const ViolationGeneral = () => {
             />
           )}
         </div>
+        <Button onClick={goBack} style={{ float: 'right', margin: '10px', width: 'auto',
+        height: '60px', fontSize:'15px' }}>                  
+    <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
+</Button>
       </main>
     </div>
   );

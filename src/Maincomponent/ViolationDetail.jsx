@@ -6,6 +6,8 @@ import Map from './Map';
 import "../ViolationDetail.css";
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png'; 
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 
 const ViolationDetail = () => {
   const [violations, setViolations] = useState([]);
@@ -56,7 +58,9 @@ const ViolationDetail = () => {
       console.error('Error LOGGING out:', error);
     });
   };
-
+  const goBack = () => {
+    navigate(-1); // Navigate back to the previous page
+};
   return (
     <div className="Header"> 
       <header>
@@ -87,7 +91,7 @@ const ViolationDetail = () => {
         <span> / </span>
         <a onClick={() => navigate(`/violation/detail/${driverId}`)}>Violation Details</a>
       </div>
-      <main>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
         <h2 className="title">Violation Details for Driver ID: {driverId}</h2>
         {violations.map((violation, index) => (
           <div key={violation.id}>
@@ -112,12 +116,18 @@ const ViolationDetail = () => {
             <h3>Violation Location</h3>
             <p>{violation.location}</p>
             <div className="map">
-              {violation.position && <Map lat={violation.position.latitude} lng={violation.position.longitude} />}
+              {violation.position && 
+              <Map lat={violation.position.latitude} lng={violation.position.longitude} />}
             </div>
             <hr />
           </div>
         ))}
+            <Button onClick={goBack} style={{ float: 'right', width: 'auto',
+        height: '60px', fontSize:'15px', marginTop:'-8px' }}>           
+    <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
+</Button>
       </main>
+  
     </div>
   );
 };

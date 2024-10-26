@@ -87,10 +87,12 @@ const ViolationList = () => {
       title: 'Violation ID',
       dataIndex: 'violationID',
       key: 'violationID',
+      align: 'center',
     },
     {
       title: 'Driver Name',
       key: 'driverName',
+      align: 'center',
       render: (text, record) => {
         const driverName = drivers[record.driverID];
         return driverName;
@@ -99,6 +101,7 @@ const ViolationList = () => {
     {
       title: 'Motorcycle License Plate',
       key: 'motorcyclePlate',
+      align: 'center',
       render: (text, record) => {
         return motorcycles[record.GPSnumber] ;
       },
@@ -107,10 +110,12 @@ const ViolationList = () => {
       title: 'Speed',
       dataIndex: 'driverSpeed',
       key: 'driverSpeed',
+      align: 'center',
     },
     {
       title: 'Details',
       key: 'Details',
+      align: 'center',
       render: (text, record) => (
         <Link to={`/violation/general/${record.id}`}>
           <img style={{ cursor: 'pointer' }} src={EyeIcon} alt="Details" />
@@ -182,6 +187,7 @@ const ViolationList = () => {
           dataSource={filteredViolations}
           rowKey="id"
           pagination={{ pageSize: 5 }}
+          style={{ width: '1200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: '0 auto' }}
         />
       </main>
     </>

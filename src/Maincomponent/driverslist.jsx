@@ -221,6 +221,7 @@ const DriverList = () => {
                     dataSource={filteredData} 
                     rowKey="id" 
                     pagination={{ pageSize: 5 }}
+                    style={{ width: '1200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: '0 auto' }}
                 />
 
                 {isDeletePopupVisible && (
