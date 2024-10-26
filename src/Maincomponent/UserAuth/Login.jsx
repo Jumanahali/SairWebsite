@@ -118,7 +118,7 @@ const Login = () => {
               navigate(role === 'gdtAdmin' ? '/Adminhomepage' : '/Staffhomepage');
             }, 1500);
           } catch (error) {
-            setPopupMessage('Incorrect password for Admin/Staff.');
+            setPopupMessage('Invalid password for Admin/Staff.');
             setPopupImage(errorImage);
             setPopupVisible(true);
           }
@@ -157,19 +157,19 @@ const Login = () => {
               navigate('/employer-home');
             }, 1500);
           } catch (error) {
-            setPopupMessage('Incorrect email or password.');
+            setPopupMessage('Invalid email or password.');
             setPopupImage(errorImage);
             setPopupVisible(true);
           }
         } else {
-          setPopupMessage('Incorrect email or password.');
+          setPopupMessage('Invalid email or password.');
           setPopupImage(errorImage);
           setPopupVisible(true);
         }
       }
   
       if (!userFound) {
-        setPopupMessage("Incorrect Email or password.");
+        setPopupMessage("Invalid Email or password.");
         setPopupImage(errorImage);
         setPopupVisible(true);
       }

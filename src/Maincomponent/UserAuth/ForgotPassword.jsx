@@ -45,7 +45,7 @@ const ForgetPassword = () => {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        setValidationMessages({ emailError: 'The email does not exist.' });
+        setValidationMessages({ emailError: 'The email is not invalid' });
       } else {
         const auth = getAuth();
         await sendPasswordResetEmail(auth, email);
