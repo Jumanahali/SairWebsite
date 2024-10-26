@@ -184,6 +184,10 @@ const SignUp = () => {
       setLoading(false);
       return;
     }
+
+    if(setPasswordRequirements){
+        return;
+    }
     try {
       // Check if the commercialNumber already exists
       const existingUserQuery = await getDocs(query(collection(db, 'Employer'), where('commercialNumber', '==', user.commercialNumber)));
