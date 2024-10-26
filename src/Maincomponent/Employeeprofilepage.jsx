@@ -180,35 +180,38 @@ const Profile = () => {
             }));
             return;
         }
-        else if(e.target.value.length >= 10){
+        else if(e.target.value.length >= 8){
             console.log(e.target.value.length);
         const auth = getAuth();
         const user = auth.currentUser;
     
         try {
-            const credential = EmailAuthProvider.credential(
-                user.email,
-                e.target.value
-            );
-    
+            const credential = EmailAuthProvider.credential(user.email, e.target.value);
             await reauthenticateWithCredential(user, credential);
+        
             setCurrentPassValid(true);
             setValidationMessages((prev) => ({
                 ...prev,
                 currentPasswordError: '',
                 currentPasswordEmpty: '',
-                currentPasswordsuccess:'Current password verified successfully',
+                currentPasswordsuccess: 'Current password verified successfully',
             }));
         } catch (error) {
             console.error("Error verifying current password:", error);
+        
+            // Log the error code and message for troubleshooting
+            console.log("Error Code:", error.code);
+            console.log("Error Message:", error.message);
+        
             setCurrentPassValid(false);
             setValidationMessages((prev) => ({
                 ...prev,
                 currentPasswordError: 'Incorrect current password. Please try again.',
                 currentPasswordEmpty: '',
-                currentPasswordsuccess:'',
+                currentPasswordsuccess: '',
             }));
         }
+        
     }
 
     else{
@@ -283,7 +286,11 @@ const Profile = () => {
             currentPasswordsuccess: '',
             confirmNewPasswordError: '',
         }));
-    
+        setShowCurrentPassword(false);
+        setShowNewPassword(false);
+        setShowConfirmNewPassword(false);
+
+
         // Validate new password and confirm password
         if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
             setValidationMessages((prev) => ({
@@ -303,7 +310,7 @@ const Profile = () => {
         const auth = getAuth();
         const user = auth.currentUser;
 
-        
+        setCurrentPassValid(false);
     
         try {
 
@@ -331,13 +338,13 @@ const Profile = () => {
                 await updatePassword(user, Employer.newPassword);
             }
     
-            // Clear password fields after a successful update
-            setEmployer((prevState) => ({
-                ...prevState,
-                currentPassword: '',
-                newPassword: '',
-                confirmNewPassword: '',
-            }));
+           // Clear the current password in the form's state
+        setEmployer((prev) => ({
+            ...prev,
+            currentPassword: "",
+            newPassword: "",
+            confirmNewPassword: ""
+        }));
     
             setPopupMessage('Information Updated successfully.');
             setPopupImage(successImage);
@@ -383,7 +390,13 @@ const Profile = () => {
         special: false,
     });
     setCurrentPassValid(false); // Reset current password verification
-
+ // Clear the current password in the form's state
+ setEmployer((prev) => ({
+    ...prev,
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: ""
+}));
     };
     const handleClosePopup = () => {
         setPopupVisible(false);
@@ -511,7 +524,7 @@ const Profile = () => {
           <input
             type={showCurrentPassword ? "text" : "password"}
             name="currentPassword"
-            value={Employer.currentPassword}
+            // value={Employer.currentPassword}
             onChange={handleVerifyCurrentPassword2}
             required={Employer.newPassword ? true : false}
           />
@@ -553,7 +566,7 @@ const Profile = () => {
           <input
             type={showNewPassword ? "text" : "password"}
             name="newPassword"
-            value={Employer.newPassword}
+            // value={Employer.newPassword}
             onChange={handleChange}
             disabled={!currentPassValid}
             className='newPass'
@@ -578,7 +591,7 @@ const Profile = () => {
           <input
             type={showConfirmNewPassword ? "text" : "password"}
             name="confirmNewPassword"
-            value={Employer.confirmNewPassword}
+            // value={Employer.confirmNewPassword}
             onChange={handleChange}
             disabled={!currentPassValid}
             className='confPass'
