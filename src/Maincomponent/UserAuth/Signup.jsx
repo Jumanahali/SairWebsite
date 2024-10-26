@@ -185,7 +185,7 @@ const SignUp = () => {
       return;
     }
 
-    if(setPasswordRequirements){
+    if(!setPasswordRequirements){
         return;
     }
     try {
