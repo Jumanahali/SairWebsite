@@ -233,7 +233,7 @@ const AddDriver = () => {
         style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px', // Space between form items
+            gap: '20px', 
             marginBottom: '20px',
             fontFamily: 'Open Sans',
         }}
@@ -311,44 +311,60 @@ const AddDriver = () => {
         </Row>
         <Row gutter={16}>
             <Col span={12}>
-                <Form.Item
-                    label={
-                        <span style={{
-                            display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: 'bold',
-                            color: '#059855',
-                            marginLeft: '0',
-                            marginTop: '0',
-                            fontFamily: 'Open Sans',
-                            fontSize: '16px'
-                        }}>
-                            Phone Number
-                        </span>
-                    }
-                    name="PhoneNumber"
-                    rules={[
-                        { required: true, message: 'Phone Number is required.' },
-                        {
-                            pattern: /^\+9665\d{8}$/,
-                            message: 'Phone number must start with +9665 and be followed by 8 digits.',
-                        },
-                    ]}
-                >
+            <Form.Item
+                label={
+                    <span style={{
+                        display: 'block',
+                        marginBottom: '5px',
+                        fontWeight: 'bold',
+                        color: '#059855',
+                        fontFamily: 'Open Sans',
+                        fontSize: '16px'
+                    }}>
+                        Phone Number
+                    </span>
+                }
+                name="PhoneNumber"
+                rules={[
+                    { required: true, message: 'Phone Number is required.' },
+                    {
+                        pattern: /^5\d{8}$/,
+                        message: 'Phone number must start with 5 and be followed by 8 digits.',
+                    },
+                ]}
+            >
+                <div style={{ position: 'relative' }}>
+                    <span style={{
+                        position: 'absolute',
+                        left: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#000',
+                        fontSize: '14px',
+                        fontFamily: 'Open Sans',
+                        pointerEvents: 'none',
+                        zIndex: 1
+                    }}>
+                        +966
+                    </span>
                     <Input
+                        maxLength={9} // Only allow 9 digits (Saudi number format)
+                        placeholder=""
                         style={{
                             width: '100%',
-                            padding: '10px',
+                            paddingLeft: '50px', // Adjust padding to leave space for +966
                             border: '1px solid #059855', // Green border
                             borderRadius: '8px',
                             fontSize: '14px',
                             transition: 'border-color 0.3s ease-in-out',
                             fontFamily: 'Open Sans',
+                            height:'43px',
                         }}
                         onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
                         onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
                     />
-                </Form.Item>
+                </div>
+            </Form.Item>
             </Col>
             <Col span={12}>
                 <Form.Item
@@ -439,7 +455,7 @@ const AddDriver = () => {
                         </span>
                     }
                     name="GPSnumber"
-                    rules={[{ required: true }]}
+                    rules={[{ required: true, message: 'GPS Number is required or You can choose None.'  }]}
                 >
                     <Select
                         placeholder="Select a motorcycle"

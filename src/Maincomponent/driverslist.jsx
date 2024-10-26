@@ -39,26 +39,31 @@ const DriverList = () => {
             title: 'Driver ID',
             dataIndex: 'DriverID',
             key: 'DriverID',
+            align:'center',
         },
         {
             title: 'Driver Name',
             dataIndex: 'DriverName',
             key: 'DriverName',
+            align:'center',
             render: (text, record) => `${record.Fname} ${record.Lname}`,
         },
         {
             title: 'Phone Number',
             dataIndex: 'PhoneNumber',
             key: 'PhoneNumber',
+            align:'center',
         },
         {
             title: 'Email',
             dataIndex: 'Email',
             key: 'Email',
+            align:'center',
         },
         {
             title: 'Details',
             key: 'Details',
+            align:'center',
             render: (text, record) => (
                 <img
                     style={{ cursor: 'pointer' }}
@@ -71,6 +76,7 @@ const DriverList = () => {
         {
             title: 'Actions',
             key: 'Actions',
+            align:'center',
             render: (text, record) => (
                 <div>
                     <img
@@ -176,7 +182,7 @@ const DriverList = () => {
                             <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
                             <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
                             <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-                            <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                            <li><a className="active" onClick={() => navigate('/driverslist')}>Drivers List</a></li>
                             <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
                             <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
                         </ul>
@@ -186,12 +192,12 @@ const DriverList = () => {
                     </button>
                 </nav>
             </header>     
-            <div className="breadcrumb">
+            <div className="breadcrumb" Style={{marginRight:'100px'}}>
                 <a onClick={() => navigate('/employer-home')}>Home</a>
                 <span> / </span>
                 <a onClick={() => navigate('/driverslist')}>Driver List</a>
             </div>
-            <div className='body'>
+            <div className='body' style={{padding:'0px 150px'}}>
                 <div className="driver-list-header-container">
                     <h1>Driver List</h1>
                     <div className={'driver-header-action'}>

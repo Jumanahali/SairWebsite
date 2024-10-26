@@ -39,7 +39,7 @@ function App() {
         <Route path="/violation/detail/:driverId" element={<ViolationDetail />} />
         <Route path="/edit-motorcycle/:motorcycleId" element={<EditMotorcycle />} />
         <Route path="/add-motorcycle" element={<AddMotorcycle />} />
-        <Route path="/driver-details/:driverId" element={<DriverDetails />} /> {/* Use element prop here */}
+        <Route path="/driver-details/:driverId" element={<DriverDetails />} /> 
       </Routes>
     </Router>
   );

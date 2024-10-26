@@ -185,25 +185,30 @@ const MotorcycleList = () => {
       title: 'Motorcycle ID',
       dataIndex: 'MotorcycleID',
       key: 'MotorcycleID',
+      align:'center',
     },
     {
       title: 'Motorcycle License Plate',
       dataIndex: 'LicensePlate',
       key: 'LicensePlate',
+      align:'center',
     },
     {
       title: 'Motorcycle Type',
       dataIndex: 'Type',
       key: 'Type',
+      align:'center',
     },
     {
       title: 'Motorcycle Brand',
       dataIndex: 'Brand',
       key: 'Brand',
+      align:'center',
     },
     {
       title: 'Details',
       key: 'Details',
+      align:'center',
       render: (text, record) => (
         <img
           style={{ cursor: 'pointer' }}
@@ -215,6 +220,7 @@ const MotorcycleList = () => {
     {
       title: 'Actions',
       key: 'Actions',
+      align:'center',
       render: (text, record) => (
         <div>
           <img
@@ -255,13 +261,14 @@ const MotorcycleList = () => {
             <img className="logout" src={logoutIcon} alt="Logout" />
           </button>
         </nav>
-      </header>
-      <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
-        <div className="breadcrumb">
+        <div className="breadcrumb" Style={{marginRight:'100px'}}> 
           <a onClick={() => navigate('/employer-home')}>Home</a>
           <span> / </span>
           <a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a>
         </div> 
+      </header>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
+        
 
         <div className="driver-list-header-container">
           <h1>Motorcycles List</h1>
