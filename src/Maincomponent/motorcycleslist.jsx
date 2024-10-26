@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import { collection, doc, onSnapshot, deleteDoc, addDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, deleteDoc, addDoc, getDoc, query , where } from 'firebase/firestore';
 import TrashIcon from '../images/Trash.png';
 import PencilIcon from '../images/pencil.png';
 import EyeIcon from '../images/eye.png';
@@ -36,8 +36,10 @@ const MotorcycleList = () => {
   const [isSuccess, setIsSuccess] = useState(true);
   const [motorcycleToRemove, setMotorcycleToRemove] = useState(null);
   const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
+  const [currentEmployerCompanyName, setCurrentEmployerCompanyName] = useState('');
 
   const navigate = useNavigate();
+  const employerUID = sessionStorage.getItem('employerUID');
 
   const handleLogout = () => {
     auth.signOut().then(() => {
@@ -47,73 +49,52 @@ const MotorcycleList = () => {
     });
   };
 
+
   useEffect(() => {
-    const employerUID = sessionStorage.getItem('employerUID');
-
-    const fetchUserName = async () => {
-      if (employerUID) {
-        try {
-          const userDocRef = doc(db, 'Employer', employerUID);
-          const docSnap = await getDoc(userDocRef);
-          if (docSnap.exists()) {
-            setCurrentUserName(docSnap.data().Fname);
-          } else {
-            console.log("No such document!");
-          }
-        } catch (error) {
-          console.error('Error fetching employer data:', error);
+    const fetchEmployerCompanyName = async () => {
+        if (employerUID) {
+            const employerDoc = await getDoc(doc(db, 'Employer', employerUID));
+            if (employerDoc.exists()) {
+                setCurrentEmployerCompanyName(employerDoc.data().CompanyName);
+            } else {
+                console.error("No such employer!");
+            }
         }
-      }
     };
 
-    const fetchMotorcycles = () => {
-      const motorcycleCollection = collection(db, 'Motorcycle');
-      const unsubscribe = onSnapshot(motorcycleCollection, (snapshot) => {
-        const motorcycleList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setMotorcycleData(motorcycleList);
-      });
-      return () => unsubscribe();
-    };
 
-    const fetchDrivers = () => {
-      const driverCollection = collection(db, 'Driver');
-      const unsubscribe = onSnapshot(driverCollection, (snapshot) => {
-        const driverList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setDriverData(driverList);
-      });
-      return () => unsubscribe();
-    };
+  const fetchMotorcycles = () => {
+    const motorcycleCollection = query(
+      collection(db, 'Motorcycle'),
+      where('CompanyName', '==', currentEmployerCompanyName)
+    );
+    const unsubscribe = onSnapshot(motorcycleCollection, (snapshot) => {
+      const motorcycleList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMotorcycleData(motorcycleList);
+    });
+    return () => unsubscribe();
+  };
 
-    const fetchCompanyData = async () => {
-      const employerUID = sessionStorage.getItem('employerUID');
-      if (employerUID) {
-        try {
-          const companyDocRef = doc(db, 'Employer', employerUID);
-          const docSnap = await getDoc(companyDocRef);
-          if (docSnap.exists()) {
-            const companyData = docSnap.data();
-            setCompanyName(companyData.CompanyName);
-          } else {
-            console.log("No such document!");
-          }
-        } catch (error) {
-          console.error('Error fetching company data:', error);
-        }
-      }
-    };
+  const fetchDrivers = () => {
+    const driverCollection = collection(db, 'Driver');
+    const unsubscribe = onSnapshot(driverCollection, (snapshot) => {
+      const driverList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setDriverData(driverList);
+    });
+    return () => unsubscribe();
+  };
 
-    fetchUserName();
+  fetchEmployerCompanyName().then(() => {
     fetchMotorcycles();
     fetchDrivers();
-    fetchCompanyData();
-  }, []);
-
+  });
+}, [employerUID, currentEmployerCompanyName]);
   const openDeleteConfirmation = (motorcycle) => {
     setMotorcycleToRemove(motorcycle);
     setIsDeletePopupVisible(true);

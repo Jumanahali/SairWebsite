@@ -118,7 +118,8 @@ const ForgetPassword = () => {
         >
           Send Reset Email
         </button>
-
+        <br/>
+        <a style={{ textDecoration: 'underline', color: '#059855', marginLeft:'-10px' }} onClick={() => navigate('/')}>Go to Log in</a>
        
 
       </div>

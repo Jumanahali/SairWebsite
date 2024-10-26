@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { db , auth } from '../firebase';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-    collection, doc, onSnapshot, deleteDoc, query, where
+    collection, doc, onSnapshot, deleteDoc, query, where, getDoc
 } from 'firebase/firestore';
 import TrashIcon from '../images/Trash.png';
 import PencilIcon from '../images/pencil.png';
@@ -26,9 +26,11 @@ const DriverList = () => {
     const [isNotificationVisible, setIsNotificationVisible] = useState(false);
     const [isSuccess, setIsSuccess] = useState(true);
     const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
+    const [currentEmployerCompanyName, setCurrentEmployerCompanyName] = useState('');
 
     const navigate = useNavigate();
     const { driverId } = useParams();
+    const employerUID = sessionStorage.getItem('employerUID');
 
     const handleEditDriver = (driver) => {
         navigate(`/edit-driver/${driver?.id}`);
@@ -106,8 +108,22 @@ const DriverList = () => {
     });
     
     useEffect(() => {
+        const fetchEmployerCompanyName = async () => {
+            if (employerUID) {
+                const employerDoc = await getDoc(doc(db, 'Employer', employerUID));
+                if (employerDoc.exists()) {
+                    setCurrentEmployerCompanyName(employerDoc.data().CompanyName);
+                } else {
+                    console.error("No such employer!");
+                }
+            }
+        };
+
         const fetchDrivers = () => {
-            const driverCollection = collection(db, 'Driver');
+            const driverCollection = query(
+                collection(db, 'Driver'),
+                where('CompanyName', '==', currentEmployerCompanyName)  // Filter by company name
+            );
             const unsubscribe = onSnapshot(driverCollection, (snapshot) => {
                 const driverList = snapshot.docs.map((doc) => ({
                     id: doc.id,
@@ -118,10 +134,10 @@ const DriverList = () => {
             return () => unsubscribe();
         };
 
-        const fetchMotorcycles = async () => {
+        const fetchMotorcycles = () => {
             const motorcycleQuery = query(
                 collection(db, 'Motorcycle'),
-                where('CompanyName', '==', 'Jahez') 
+                where('CompanyName', '==', currentEmployerCompanyName)  // Filter by company name
             );
             const unsubscribe = onSnapshot(motorcycleQuery, (snapshot) => {
                 const bikes = snapshot.docs.map((doc) => ({
@@ -133,9 +149,11 @@ const DriverList = () => {
             return () => unsubscribe();
         };
 
-        fetchDrivers();
-        fetchMotorcycles();
-    }, []);
+        fetchEmployerCompanyName().then(() => {
+            fetchDrivers();
+            fetchMotorcycles();
+        });
+    }, [employerUID, currentEmployerCompanyName]);
 
     const handleDeleteDriver = async (driverId) => {
         try {
