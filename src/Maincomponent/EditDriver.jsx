@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, query, collection, where, onSnapshot , getDocs} from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Form, Input, Button, notification, Card, Row, Col, Select } from 'antd';
 import styles from '../DriverList.module.css';
@@ -34,6 +34,9 @@ const EditDriver = () => {
                         ...driverData,
                         CompanyName: companyName // Include CompanyName
                     });
+
+                    // Fetch available motorcycles after driver data is set
+                    fetchAvailableMotorcycles(companyName);
                 } else {
                     notification.error({ message: 'Driver not found' });
                 }
@@ -66,18 +69,62 @@ const EditDriver = () => {
         }
     };
 
+    // Fetch available motorcycles based on company name
+    const fetchAvailableMotorcycles = async (companyName) => {
+        try {
+            const motorcycleQuery = query(
+                collection(db, 'Motorcycle'),
+                where('CompanyName', '==', companyName),
+                where('available', '==', true)
+            );
+
+            onSnapshot(motorcycleQuery, (snapshot) => {
+                const bikes = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    GPSnumber: doc.data().GPSnumber,
+                }));
+                setAvailableMotorcycles(bikes);
+            });
+        } catch (error) {
+            console.error('Error fetching motorcycles:', error);
+        }
+    };
+
     // Handle driver update
     const handleUpdateDriver = async (values) => {
         try {
             const driverDocRef = doc(db, 'Driver', driverId);
             const updatedData = {
-                ...driverData, // Spread existing data
-                ...values, // Only update the editable fields
+                ...driverData,
+                ...values,
                 CompanyName: driverData.CompanyName,
-                available: driverData.available, // Retain original available value
-                isDefaultPassword: driverData.isDefaultPassword, // Retain original isDefaultPassword value
+                available: values.GPSnumber && values.GPSnumber !== "None" ? false : true // Set based on motorcycle assignment
             };
+            
+            // Update the driver document
             await setDoc(driverDocRef, updatedData);
+    
+            // If a GPS number is selected, update the corresponding motorcycle
+            if (values.GPSnumber && values.GPSnumber !== "None") {
+                const motorcycleQuery = query(
+                    collection(db, 'Motorcycle'),
+                    where('GPSnumber', '==', values.GPSnumber)
+                );
+                const querySnapshot = await getDocs(motorcycleQuery);
+    
+                if (!querySnapshot.empty) {
+                    const motorcycleDocRef = querySnapshot.docs[0].ref; // Get the document reference
+                    // Update the DriverID and available fields in the motorcycle document
+                    await setDoc(motorcycleDocRef, {
+                        DriverID: values.DriverID, // Set the DriverID to the driver's ID
+                        available: false // Set motorcycle's available field to false
+                    }, { merge: true }); // Merge to avoid overwriting other fields
+                } else {
+                    console.error(`No motorcycle found with GPS number: ${values.GPSnumber}`);
+                }
+            }
+    
+            // Show success notification
             setNotificationMessage("Driver updated successfully!");
             setIsSuccess(true);
             setIsNotificationVisible(true);
@@ -88,7 +135,7 @@ const EditDriver = () => {
             setIsNotificationVisible(true);
         }
     };
-
+    
     const handleLogout = () => {
         auth.signOut().then(() => {
             navigate('/'); // Redirect to login page
@@ -303,23 +350,25 @@ const EditDriver = () => {
                                             }
                                             name="GPSnumber"
                                         >
-                                            <Select placeholder="Select a motorcycle" style={{
-                            width: '100%',
-                            height: '45px',
-                            border: '0.5px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color',
-                            fontFamily: 'Open Sans',
-                        }}
-                        dropdownStyle={{
-                            boxShadow: 'none',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                    >
+                                            <Select 
+                                                placeholder="Select a motorcycle"
+                                                style={{
+                                                    width: '100%',
+                                                    height: '45px',
+                                                    border: '0.5px solid #059855',
+                                                    borderRadius: '8px',
+                                                    fontSize: '14px',
+                                                    transition: 'border-color',
+                                                    fontFamily: 'Open Sans',
+                                                }}
+                                                dropdownStyle={{
+                                                    boxShadow: 'none',
+                                                }}
+                                                onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                                                onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                                            >
                                                 <Select.Option value="None">None</Select.Option>
-                                                {availableMotorcycles?.map((item) => (
+                                                {availableMotorcycles.map((item) => (
                                                     <Select.Option key={item.id} value={item.GPSnumber}>
                                                         {item.GPSnumber}
                                                     </Select.Option>

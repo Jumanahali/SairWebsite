@@ -61,9 +61,10 @@ const AddDriver = () => {
                 const motorcycleQuery = query(
                     collection(db, 'Motorcycle'),
                     where('CompanyName', '==', Employer.CompanyName),
-                    where('available', '==', true) // Ensure 'available' field exists
+                    where('available', '==', true)
                 );
                 const unsubscribe = onSnapshot(motorcycleQuery, (snapshot) => {
+                    console.log("Motorcycle snapshot:", snapshot.docs); // Debug log
                     const bikes = snapshot.docs.map((doc) => ({
                         id: doc.id,
                         GPSnumber: doc.data().GPSnumber,
@@ -80,71 +81,77 @@ const AddDriver = () => {
         try {
             let newErrors = {};
             const formattedPhoneNumber = `+966${values.PhoneNumber}`;
+            
             // Determine GPS number and availability
             const gpsNumber = values.GPSnumber === "None" ? null : values.GPSnumber;
-            const available = values.GPSnumber === "None";
-    
+            const available = gpsNumber === null; // Driver is available if no motorcycle is assigned
+        
             // Generate random password
             const generatedPassword = generateRandomPassword();
-    
+        
             // Create the user in Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 values.Email,
                 generatedPassword
             );
-    
+        
             // Get the new user's UID
             const user = userCredential.user;
-    
+        
             // Prepare the new driver object
             const newDriver = { 
                 ...values, 
-                PhoneNumber:formattedPhoneNumber,
+                PhoneNumber: formattedPhoneNumber,
                 GPSnumber: gpsNumber, 
                 CompanyName: Employer.CompanyName,
                 isDefaultPassword: true,
-                available: available,
+                available: available, // Set availability based on motorcycle assignment
                 UID: user.uid 
             };
-    
+        
             // Store the new driver in Firestore
-            await addDoc(collection(db, 'Driver'), newDriver);
-    
-            // If a motorcycle is assigned, update its availability to false
+            const driverDocRef = await addDoc(collection(db, 'Driver'), newDriver);
+        
+            // If a motorcycle is assigned, update its availability and DriverID
             if (gpsNumber) {
                 const q = query(
                     collection(db, 'Motorcycle'),
                     where('GPSnumber', '==', gpsNumber)
                 );
                 const querySnapshot = await getDocs(q);
-    
+        
                 if (!querySnapshot.empty) {
                     const motorcycleDocRef = querySnapshot.docs[0].ref; // Get the document reference
-                    await updateDoc(motorcycleDocRef, { available: false });
+                    
+                    // Update the motorcycle document
+                    await updateDoc(motorcycleDocRef, {
+                        available: false, // Set motorcycle's available field to false
+                        DriverID: values.DriverID // Set the DriverID to the driver's ID from the form
+                    });
                 } else {
                     console.error(`No motorcycle found with GPS number: ${gpsNumber}`);
                 }
             }
-    
-            // Call the backend API to send the email
-            const response = sendEmail({
+        
+            // Send welcome email
+            const response = await sendEmail({
                 email: values.Email,
                 subject: 'Welcome to SAIR!',
                 message: `Congratulations! 
-    
-    You are now a driver at ${Employer.CompanyName}.
-                  
-    We are excited to have you with us! 
-    
-    Your password is: ${generatedPassword}
-    
-    To ensure your safety, we have set up your account in SAIR Mobile app. Download SAIR now from Google play to monitor regulations and keep us informed about any crashes.
-    
-    Best Regards,  
-    SAIR Team`,
+        
+        You are now a driver at ${Employer.CompanyName}.
+                    
+        We are excited to have you with us! 
+        
+        Your password is: ${generatedPassword}
+        
+        To ensure your safety, we have set up your account in SAIR Mobile app. Download SAIR now from Google Play to monitor regulations and keep us informed about any crashes.
+        
+        Best Regards,  
+        SAIR Team`,
             });
-    
+        
             if (response.success) {
                 setPopupMessage("Driver added successfully!");
                 setPopupImage(successImage);
@@ -152,7 +159,7 @@ const AddDriver = () => {
                 setPopupMessage("Error adding driver");
                 setPopupImage(errorImage);
             }
-    
+        
             setPopupVisible(true);
         } catch (error) {
             console.error('Error adding driver:', error);
@@ -444,50 +451,54 @@ const AddDriver = () => {
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item 
-                    label={
-                        <span style={{
-                            display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: 'bold',
-                            color: '#059855',
-                            marginLeft: '0',
-                            marginTop: '0',
-                            fontFamily: 'Open Sans',
-                            fontSize: '16px'
-                        }}>
-                            GPS Number
-                        </span>
-                    }
-                    name="GPSnumber"
-                    rules={[{ required: true, message: 'GPS Number is required or You can choose None.'  }]}
-                >
-                    <Select
-                        placeholder="Select a motorcycle"
-                        style={{
-                            width: '100%',
-                            height: '45px',
-                            border: '0.5px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color',
-                            fontFamily: 'Open Sans',
-                        }}
-                        dropdownStyle={{
-                            boxShadow: 'none',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                    >
-                        <Select.Option value="None">None</Select.Option>
-                        {availableMotorcycles.map((item) => (
-                            <Select.Option key={item.id} value={item.GPSnumber}>
-                                {item.GPSnumber}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                </Form.Item>
-            </Col>
+    <Form.Item 
+        label={
+            <span style={{
+                display: 'block',
+                marginBottom: '5px',
+                fontWeight: 'bold',
+                color: '#059855',
+                marginLeft: '0',
+                marginTop: '0',
+                fontFamily: 'Open Sans',
+                fontSize: '16px'
+            }}>
+                GPS Number
+            </span>
+        }
+        name="GPSnumber"
+        rules={[{ required: true, message: 'GPS Number is required or you can choose None.' }]}
+    >
+        <Select
+            placeholder="Select a motorcycle or None"
+            style={{
+                width: '100%',
+                height: '45px',
+                border: '0.5px solid #059855', // Green border
+                borderRadius: '8px',
+                fontSize: '14px',
+                transition: 'border-color',
+                fontFamily: 'Open Sans',
+            }}
+            dropdownStyle={{
+                boxShadow: 'none',
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+            onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+        >
+            <Select.Option value="None">None</Select.Option>
+            {availableMotorcycles.length > 0 ? (
+                availableMotorcycles.map((item) => (
+                    <Select.Option key={item.id} value={item.GPSnumber}>
+                        {item.GPSnumber}
+                    </Select.Option>
+                ))
+            ) : (
+                <Select.Option disabled>No motorcycles available</Select.Option>
+            )}
+        </Select>
+    </Form.Item>
+</Col>
         </Row>
         <Form.Item>
             <Button style={{ backgroundColor: "#059855" }} type="primary" htmlType="submit">
