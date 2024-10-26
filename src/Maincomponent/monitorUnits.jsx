@@ -78,7 +78,7 @@ export const monitorUnits = (sess, fetchInterval) => {
         if(pos){
           const GPSserialnumber = unit.getName();
           console.log('gpsnum:',GPSserialnumber);
-          const maxSpeed = -1//await fetchMaxSpeed(pos.y,pos.x); 
+          const maxSpeed = await fetchMaxSpeed(pos.y,pos.x); 
           console.log('Max speed from API in proccess method:', maxSpeed);
 
         
