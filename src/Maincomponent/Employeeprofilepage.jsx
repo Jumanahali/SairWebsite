@@ -2,17 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { db , auth} from '../firebase'; 
 import { useNavigate } from 'react-router-dom'; 
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { updateEmail } from "firebase/auth";
 import successImage from '../images/Sucess.png'; 
 import errorImage from '../images/Error.png'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import SAIRLogo from '../images/SAIRlogo.png'; 
 import logoutIcon from '../images/logout.png'; 
-import { getAuth, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { getAuth, updatePassword, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification  } from 'firebase/auth';
 
 const Profile = () => {
     const [Employer, setEmployer] = useState({
-        Fname: '',
-        Lname: '',
         commercialNumber: '',
         PhoneNumber: '',
         CompanyName: '',
@@ -106,31 +105,18 @@ const Profile = () => {
             default:
                 break;
         }
-        
-      
     };
-
-
 
     const handlePhoneNumberChange = (e) => {
       console.log(e.target.value);
         let newPhoneNumber = e.target.value;
-        if (newPhoneNumber.startsWith('+966')) {
-                                                    
+        if (newPhoneNumber.startsWith('+966')) {                                         
          setEmployer({ ...Employer, PhoneNumber: newPhoneNumber }); // Store only the digits
-
         }
         else{
             newPhoneNumber = '+966' + newPhoneNumber.slice(3);
-           
-
             setEmployer({ ...Employer, PhoneNumber: newPhoneNumber }); // Store only the digits
         }
-       
-       
-console.log(newPhoneNumber);
-         // Only validate if there is more than just the prefix ('+966')
-        // const phoneError = newPhoneNumber !== '+966' ? validatePhoneNumber(newPhoneNumber) : '';
         let phoneError = '';
         if (newPhoneNumber.length > 4) {    
          if(validatePhoneNumber(newPhoneNumber) === ''){
@@ -163,21 +149,14 @@ console.log(newPhoneNumber);
         const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
         const phoneRegex1 = /^\+96605\d{8}$/; // Example for a specific format
         if(phoneRegex.test(phoneNumber)){
-
           return '';
-
         }
         else if(phoneRegex1.test(phoneNumber)){
-
           return '0';
-
         }
         else{
-
           return'Phone number must start with +9665 and be followed by 8 digits.';
-
         }
-
     };
 
     const validateCommercialNumber = (number) => {
@@ -189,9 +168,8 @@ console.log(newPhoneNumber);
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email) ? '' : 'Please enter a valid email address.';
     };
-//Hi
-    const handleVerifyCurrentPassword2 = async (e) => {
 
+    const handleVerifyCurrentPassword2 = async (e) => {
       console.log(e.target.value);
       Employer.currentPassword=e.target.value;
         if (!e.target.value) {
@@ -205,11 +183,6 @@ console.log(newPhoneNumber);
         }
         else if(e.target.value.length >= 10){
             console.log(e.target.value.length);
-
-
-        
-       
-    
         const auth = getAuth();
         const user = auth.currentUser;
     
@@ -263,11 +236,6 @@ console.log(newPhoneNumber);
         }
         else if(Employer.currentPassword.length >= 10){
             console.log(Employer.currentPassword.length);
-
-
-        
-       
-    
         const auth = getAuth();
         const user = auth.currentUser;
     
@@ -306,24 +274,19 @@ console.log(newPhoneNumber);
         }));
     }
     };
-    
-    
-
     const handleSave = async (e) => {
         e.preventDefault();
         setLoading(true);
-      
-       
         setValidationMessages((prev) => ({
             ...prev,
             currentPasswordError: '',
             currentPasswordEmpty: '',
-            currentPasswordsuccess:'',
+            currentPasswordsuccess: '',
             confirmNewPasswordError: '',
         }));
-        
-         
-         if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
+    
+        // Validate new password and confirm password
+        if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
             setValidationMessages((prev) => ({
                 ...prev,
                 confirmNewPasswordError: 'New passwords do not match.',
@@ -331,72 +294,93 @@ console.log(newPhoneNumber);
             setLoading(false);
             return;
         }
-      
-
-        setValidationMessages((prev) => ({
-            ...prev,
-            currentPasswordError: '',
-            currentPasswordEmpty: '',
-            currentPasswordsuccess:'',
-             confirmNewPasswordError: '',
-        }));
-
-
-        if (Object.values(validationMessages).some(msg => msg)) {
+    
+        if (Object.values(validationMessages).some((msg) => msg)) {
             setLoading(false);
             return;
         }
-    
-      
     
         const employerUID = sessionStorage.getItem('employerUID');
         const auth = getAuth();
         const user = auth.currentUser;
     
         try {
-          console.log(Employer);
-            // Update the Firestore document first (except password)
+            // Check if the email has been updated
+            if (Employer.CompanyEmail !== user.email) {
+                // console.log("Re-authenticating user...");
+                // Re-authenticate before updating the email
+                // const credential = EmailAuthProvider.credential(user.email, Employer.password);
+                // await reauthenticateWithCredential(user, credential);
+                // console.log("User re-authenticated successfully.");
+    
+                // Update the email in Firebase Authentication
+                await updateEmail(user, Employer.CompanyEmail);
+                console.log("Email updated successfully.");
+                // Send verification email
+                await user.sendEmailVerification();
+                console.log("Verification email sent.");
+    
+                setPopupMessage('A verification email has been sent. Please verify your new email address.');
+                setPopupImage(successImage);
+                setPopupVisible(true);
+    
+                // Log the user out after sending the verification email
+                await auth.signOut();
+                console.log("User logged out after email update.");
+    
+                // Redirect to the login page
+                setTimeout(() => {
+                    navigate('/');
+                }, 2000);
+    
+                return; // Stop further processing since we logged out the user
+            }
+    
+            // Update Firestore document
             const docRef = doc(db, 'Employer', employerUID);
             const updateData = { ...Employer };
             delete updateData.currentPassword;
             delete updateData.newPassword;
             delete updateData.confirmNewPassword;
-    
             await updateDoc(docRef, updateData);
+            console.log("Firestore document updated successfully.");
     
-            // If a new password is provided, re-authenticate and update it
+            // Re-authenticate if a new password is provided
             if (Employer.newPassword) {
                 const credential = EmailAuthProvider.credential(
                     user.email,
                     Employer.currentPassword // Use current password for re-authentication
                 );
     
-                // Re-authenticate and then update the password
+                // Re-authenticate and update the password
                 await reauthenticateWithCredential(user, credential);
                 await updatePassword(user, Employer.newPassword);
+                console.log("Password updated successfully.");
             }
-
-            
+    
+            // Clear password fields after a successful update
             setEmployer((prevState) => ({
                 ...prevState,
                 currentPassword: '',
                 newPassword: '',
                 confirmNewPassword: '',
             }));
-            setPopupMessage("Information Updated successfully.");
+    
+            setPopupMessage('Information updated successfully.');
             setPopupImage(successImage);
             setPopupVisible(true);
             setEditMode(false);
+    
         } catch (error) {
-            console.error("Error updating profile:", error);
-            
-            setPopupMessage('Failed to update profile.');
-            
+            console.error('Error updating profile:', error);
+            setPopupMessage(`Failed to update profile. Error: ${error.message}`);
+            setPopupImage(errorImage);
+            setPopupVisible(true);
         } finally {
             setLoading(false);
         }
     };
-
+    
     
 
     const handleCancel = () => {
@@ -487,32 +471,18 @@ console.log(newPhoneNumber);
    
             <h1>My Profile</h1>
             <form onSubmit={handleSave}>
-  <div className="form-row">
-    <div>
-      <label className="profileLabel">First Name</label>
-      <input
-        type="text"
-        name="Fname"
-        value={Employer.Fname}
-        onChange={handleChange}
-        disabled={!editMode}
-        required
-      />
-    </div>
-    <div>
-      <label className="profileLabel" >Last Name</label>
-      <input
-        type="text"
-        name="Lname"
-        value={Employer.Lname}
-        onChange={handleChange}
-        disabled={!editMode}
-        required
-      />
-    </div>
-  </div>
 
   <div className="form-row">
+   
+    <div>
+      <label className="profileLabel">Commercial Number</label>
+      <input
+        type="text"
+        name="commercialNumber"
+        value={Employer.commercialNumber}
+        readOnly
+      />
+    </div>
     <div>
       <label className="profileLabel">Phone Number</label>
       <input
@@ -526,15 +496,6 @@ console.log(newPhoneNumber);
         required
       />
       {validationMessages.phoneError && <p style={{ color: 'red' ,marginTop:'3px'}}>{validationMessages.phoneError}</p>}
-    </div>
-    <div>
-      <label className="profileLabel">Commercial Number</label>
-      <input
-        type="text"
-        name="commercialNumber"
-        value={Employer.commercialNumber}
-        readOnly
-      />
     </div>
   </div>
 
