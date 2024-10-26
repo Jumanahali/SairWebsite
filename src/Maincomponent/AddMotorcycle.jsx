@@ -51,48 +51,53 @@ const AddMotorcycle = () => {
 
   const handleAddMotorcycle = async (values) => {
     try {
-      const driverID = values.DriverID === "None" ? null : values.DriverID;
-      const motorcycleID = await generateMotorcycleID(values.GPSnumber);
-      const available = driverID === null;
-  
-      const motorcycleData = {
-        ...values,
-        MotorcycleID: motorcycleID,
-        DriverID: driverID,
-        CompanyName: Employer.CompanyName,
-        available: available,
-      };
-  
-      // Add the motorcycle to the Motorcycle collection
-      await addDoc(collection(db, 'Motorcycle'), motorcycleData);
-  
-      // If a driver was selected, update their availability to false
-      if (driverID) {
-        // Query the driver document using DriverID field
-        const q = query(
-          collection(db, 'Driver'),
-          where('DriverID', '==', driverID)
-        );
-        const querySnapshot = await getDocs(q);
-  
-        if (!querySnapshot.empty) {
-          const driverDocRef = querySnapshot.docs[0].ref; // Get the document reference
-          await updateDoc(driverDocRef, { available: false });
-        } else {
-          console.error(`No driver found with DriverID: ${driverID}`);
+        const driverID = values.DriverID === "None" ? null : values.DriverID;
+        const motorcycleID = await generateMotorcycleID(values.GPSnumber);
+        const available = driverID === null;
+
+        const motorcycleData = {
+            ...values,
+            MotorcycleID: motorcycleID,
+            DriverID: driverID,
+            CompanyName: Employer.CompanyName,
+            available: available,
+        };
+
+        // Add the motorcycle to the Motorcycle collection
+        const motorcycleDocRef = await addDoc(collection(db, 'Motorcycle'), motorcycleData);
+
+        // If a driver was selected, update their availability and GPSnumber
+        if (driverID) {
+            // Query the driver document using DriverID field
+            const q = query(
+                collection(db, 'Driver'),
+                where('DriverID', '==', driverID)
+            );
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const driverDocRef = querySnapshot.docs[0].ref; // Get the document reference
+                
+                // Update the driver's document
+                await updateDoc(driverDocRef, {
+                    available: false, // Set driver's available field to false
+                    GPSnumber: values.GPSnumber // Update GPSnumber with the motorcycle's GPS number
+                });
+            } else {
+                console.error(`No driver found with DriverID: ${driverID}`);
+            }
         }
-      }
-  
-      setIsSuccess(true);
-      setNotificationMessage('Motorcycle added successfully.');
+
+        setIsSuccess(true);
+        setNotificationMessage('Motorcycle added successfully.');
     } catch (error) {
-      console.error('Error adding motorcycle:', error);
-      setIsSuccess(false);
-      setNotificationMessage('Error adding motorcycle. Please try again.');
+        console.error('Error adding motorcycle:', error);
+        setIsSuccess(false);
+        setNotificationMessage('Error adding motorcycle. Please try again.');
     } finally {
-      setIsNotificationVisible(true);
+        setIsNotificationVisible(true);
     }
-  };
+};
   
 
   useEffect(() => {
