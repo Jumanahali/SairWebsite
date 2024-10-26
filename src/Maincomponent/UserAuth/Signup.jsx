@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { db, auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { doc, addDoc } from 'firebase/firestore';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import successImage from '../../images/Sucess.png';
 import errorImage from '../../images/Error.png';
 import backgroundImage from '../../images/sairbackground.png';
@@ -12,8 +12,6 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const SignUp = () => {
   const [user, setUser] = useState({
-    Fname: '',
-    Lname: '',
     commercialNumber: '',
     PhoneNumber: '',
     CompanyName: '',
@@ -70,13 +68,7 @@ const SignUp = () => {
         emailError: value === '' ? '' : emailError,
       }));
     } 
-    // else if (name === 'EmployeerEmail') {
-    //   const emailperError = validateEmail(value);
-    //   setValidationMessages((prev) => ({
-    //     ...prev,
-    //     emailperError: value === '' ? '' : emailperError,
-    //   }));
-    // }
+   
     if (name === 'Password') {
       // Check password requirements
       setPasswordRequirements({
@@ -154,27 +146,17 @@ const SignUp = () => {
   };
 
   const validatePhoneNumber = (phoneNumber) => {
-    // const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
-    // return phoneRegex.test(phoneNumber) ? '' : 'Phone number must start with +9665 and be followed by 8 digits.';
     const phoneRegex = /^\+9665\d{8}$/; // Example for a specific format
     const phoneRegex1 = /^\+96605\d{8}$/; // Example for a specific format
     if(phoneRegex.test(phoneNumber)){
-
       return '';
-
     }
     else if(phoneRegex1.test(phoneNumber)){
-
       return '0';
-
     }
     else{
-
       return'Phone number must start with +9665 and be followed by 8 digits.';
-
     }
-
-  
   };
 
   const validateCommercialNumber = (number) => {
@@ -202,8 +184,6 @@ const SignUp = () => {
       setLoading(false);
       return;
     }
-
-
     try {
       // Check if the commercialNumber already exists
       const existingUserQuery = await getDocs(query(collection(db, 'Employer'), where('commercialNumber', '==', user.commercialNumber)));
@@ -220,20 +200,21 @@ const SignUp = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, `${user.CompanyEmail}`, user.Password);      
       const newUser = userCredential.user;
 
+      // Send email verification
+    await sendEmailVerification(newUser);
+
+   
       // Add user data to Firestore
       await addDoc(collection(db, 'Employer'), {
-        Fname: user.Fname,
-        Lname: user.Lname,
         commercialNumber: user.commercialNumber,
         PhoneNumber: user.PhoneNumber,
         CompanyName: user.CompanyName,
-        // EmployeerEmail: user.EmployeerEmail,
         CompanyEmail: user.CompanyEmail,
         uid: newUser.uid,
       });
 
-      // Handle success
-      setPopupMessage("You have successfully signed up! Welcome aboard.");
+       // Inform the user to check their email for verification
+      setPopupMessage("You have successfully signed up! Please verify your email before logging in.");
       setPopupImage(successImage);
       setPopupVisible(true);
       setTimeout(() => {
@@ -296,44 +277,9 @@ const SignUp = () => {
           onSubmit={handleSignUp}
           
 
-        >   <div className="profile-field">
-            <label>First Name</label><br></br>
-            <input
-              type="text"
-              name="Fname"
-              value={user.Fname}
-              onChange={handleChange}
-              required
-              style={{ borderColor: getBorderColor('Fname') }}
-            />
-          </div>
-          <div className="profile-field">
-            <label>Last Name</label><br></br>
-            <input
-              type="text"
-              name="Lname"
-              value={user.Lname}
-              onChange={handleChange}
-
-              required
-              style={{ borderColor: getBorderColor('Lname') }}
-            />  
-          </div>
+        >   
          
-          <div className="profile-field">
-            <label>Phone Number</label><br />
-            <input
-              type="tel"
-              name="PhoneNumber"
-              placeholder='+966'
-              value={`${user.PhoneNumber}`}
-              onChange={handlePhoneNumberChange}
-              pattern="\+9665\d{8}"
-              required
-              style={{ borderColor: getBorderColor('PhoneNumber') }}
-            />
-            {validationMessages.phoneError && <p style={{ color: 'red' ,marginLeft:'22px'}}>{validationMessages.phoneError}</p>}
-          </div>
+         
 
 
           <div className="profile-field">
@@ -373,6 +319,20 @@ const SignUp = () => {
               style={{ borderColor: getBorderColor('CompanyEmail') }}
             />
             {validationMessages.emailError && <p style={{ color: 'red' ,marginLeft:'22px'}}>{validationMessages.emailError}</p>}
+            <div className="profile-field">
+            <label>Phone Number</label><br />
+            <input
+              type="tel"
+              name="PhoneNumber"
+              placeholder='+966'
+              value={`${user.PhoneNumber}`}
+              onChange={handlePhoneNumberChange}
+              pattern="\+9665\d{8}"
+              required
+              style={{ borderColor: getBorderColor('PhoneNumber') }}
+            />
+            {validationMessages.phoneError && <p style={{ color: 'red' ,marginLeft:'22px'}}>{validationMessages.phoneError}</p>}
+          </div>
 
           </div>
           <div style={{ position: 'relative', marginBottom: '20px' }}>

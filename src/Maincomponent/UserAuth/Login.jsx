@@ -82,82 +82,103 @@ const Login = () => {
    // }));
  // };
 
-  const handleSubmit = async (event) => {
+ const handleSubmit = async (event) => {
     // event.preventDefault();
-    if (!email || !password ) {
-        
-        return;
-      }
-    
-
+    if (!email || !password) {
+      return;
+    }
+  
     try {
       const auth = getAuth();
       let userFound = false;
-
+  
       if (role === 'gdtAdmin' || role === 'gdtStaff') {
         const q = query(collection(db, 'GDT'), where('PhoneNumber', '==', phoneNumber));
         const querySnapshot = await getDocs(q);
-
+  
         if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data();
-          await signInWithEmailAndPassword(auth, phoneNumber, password)
-            .then(() => {
-              userFound = true;
-              setPopupMessage("Login successful!");
-              setPopupImage(successImage);
-              setPopupVisible(true);
-              setTimeout(() => {
-                navigate(role === 'gdtAdmin' ? '/Adminhomepage' : '/Staffhomepage');
-              }, 1500);
-            })
-            .catch(() => {
-              setPopupMessage('Incorrect password for Admin/Staff.');
+          try {
+            const userCredential = await signInWithEmailAndPassword(auth, phoneNumber, password);
+            const user = userCredential.user;
+  
+            // Check if the user's email is verified
+            if (!user.emailVerified) {
+              setPopupMessage("Please verify your email before logging in.");
               setPopupImage(errorImage);
               setPopupVisible(true);
-            });
+              return;
+            }
+  
+            // If the email is verified, proceed with login
+            userFound = true;
+            setPopupMessage("Login successful!");
+            setPopupImage(successImage);
+            setPopupVisible(true);
+            setTimeout(() => {
+              navigate(role === 'gdtAdmin' ? '/Adminhomepage' : '/Staffhomepage');
+            }, 1500);
+          } catch (error) {
+            setPopupMessage('Incorrect password for Admin/Staff.');
+            setPopupImage(errorImage);
+            setPopupVisible(true);
+          }
         } else {
           setPopupMessage('Admin/Staff user not found.');
           setPopupImage(errorImage);
           setPopupVisible(true);
         }
       }
-
+  
       if (role === 'employer') {
         const q = query(collection(db, 'Employer'), where('CompanyEmail', '==', email));
         const querySnapshot = await getDocs(q);
-
+  
         if (!querySnapshot.empty) {
-
-          await signInWithEmailAndPassword(auth, email, password)
-            .then(() => {
-              userFound = true;
-              const employerUID = querySnapshot.docs[0].id;
-              sessionStorage.setItem('employerUID', employerUID);
-              setPopupMessage("Login successful!");
-              setPopupImage(successImage);
-              setPopupVisible(true);
-              setTimeout(() => {
-                navigate('/employer-home');
-              }, 1500);
-            })
-            .catch(() => {
-              setPopupMessage('Incorrect email or password');
+          try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+  
+            // Check if the user's email is verified
+            if (!user.emailVerified) {
+              setPopupMessage("Please verify your email before logging in.");
               setPopupImage(errorImage);
               setPopupVisible(true);
-            });
+              return;
+            }
+  
+            // If the email is verified, proceed with login
+            userFound = true;
+            const employerUID = querySnapshot.docs[0].id;
+            sessionStorage.setItem('employerUID', employerUID);
+            setPopupMessage("Login successful!");
+            setPopupImage(successImage);
+            setPopupVisible(true);
+            setTimeout(() => {
+              navigate('/employer-home');
+            }, 1500);
+          } catch (error) {
+            setPopupMessage('Incorrect email or password.');
+            setPopupImage(errorImage);
+            setPopupVisible(true);
+          }
+        } else {
+          setPopupMessage('Incorrect email or password.');
+          setPopupImage(errorImage);
+          setPopupVisible(true);
         }
       }
-
+  
       if (!userFound) {
-        setPopupMessage("Incorrect Email or password");
+        setPopupMessage("Incorrect Email or password.");
         setPopupImage(errorImage);
         setPopupVisible(true);
       }
     } catch (error) {
       console.error("Error fetching user: ", error);
     }
-
   };
+  
+  
 
   const handleClosePopup = () => {
     setPopupVisible(false);
