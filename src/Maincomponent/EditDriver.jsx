@@ -12,15 +12,7 @@ import logoutIcon from '../images/logout.png';
 const EditDriver = () => {
     const { driverId } = useParams();
     const navigate = useNavigate();
-    const [newDriver, setNewDriver] = useState({
-        DriverID: '',
-        Fname: '',
-        Lname: '',
-        PhoneNumber: '',
-        GPSnumber: '',
-        CompanyName: '',
-        Email: '',
-    });
+    const [driverData, setDriverData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [availableMotorcycles, setAvailableMotorcycles] = useState([]);
     const [isNotificationVisible, setIsNotificationVisible] = useState(false);
@@ -34,7 +26,14 @@ const EditDriver = () => {
                 const driverDocRef = doc(db, 'Driver', driverId);
                 const driverDoc = await getDoc(driverDocRef);
                 if (driverDoc.exists()) {
-                    setNewDriver(driverDoc.data());
+                    const driverData = driverDoc.data();
+                    const employerUID = sessionStorage.getItem('employerUID');
+                    const companyName = await fetchCompanyName(employerUID);
+                    
+                    setDriverData({
+                        ...driverData,
+                        CompanyName: companyName // Include CompanyName
+                    });
                 } else {
                     notification.error({ message: 'Driver not found' });
                 }
@@ -49,28 +48,48 @@ const EditDriver = () => {
         fetchDriverData();
     }, [driverId]);
 
+    // Function to fetch company name based on employerUID
+    const fetchCompanyName = async (employerUID) => {
+        try {
+            const companyDocRef = doc(db, 'Employer', employerUID);
+            const companyDoc = await getDoc(companyDocRef);
+            if (companyDoc.exists()) {
+                const data = companyDoc.data();
+                return data.CompanyName; // Return the CompanyName field
+            } else {
+                console.error('No such document!');
+                return '';
+            }
+        } catch (error) {
+            console.error('Error fetching company name:', error);
+            return '';
+        }
+    };
+
     // Handle driver update
     const handleUpdateDriver = async (values) => {
         try {
             const driverDocRef = doc(db, 'Driver', driverId);
-            await setDoc(driverDocRef, values);
+            const updatedData = {
+                ...driverData, // Spread existing data
+                ...values, // Only update the editable fields
+                CompanyName: driverData.CompanyName,
+                available: driverData.available, // Retain original available value
+                isDefaultPassword: driverData.isDefaultPassword, // Retain original isDefaultPassword value
+            };
+            await setDoc(driverDocRef, updatedData);
             setNotificationMessage("Driver updated successfully!");
             setIsSuccess(true);
             setIsNotificationVisible(true);
         } catch (error) {
             console.error('Error updating driver:', error);
-            setNotificationMessage("Error updating driver");
+            setNotificationMessage("Error updating driver: " + error.message);
             setIsSuccess(false);
             setIsNotificationVisible(true);
         }
     };
 
-    if (isLoading) {
-        return <p>Loading driver data...</p>;
-    }
-
     const handleLogout = () => {
-        // Ensure auth is imported and defined
         auth.signOut().then(() => {
             navigate('/'); // Redirect to login page
         }).catch((error) => {
@@ -91,7 +110,7 @@ const EditDriver = () => {
                             <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
                             <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>           
                             <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-                            <li><a class="active" onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                            <li><a className="active" onClick={() => navigate('/driverslist')}>Drivers List</a></li>
                             <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
                             <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
                         </ul>
@@ -106,211 +125,185 @@ const EditDriver = () => {
                 <span> / </span>
                 <a onClick={() => navigate('/driverslist')}>Driver List</a>
                 <span> / </span>
-                <a onClick={() => navigate('/edit-driver/:driverId')}>Edit Driver</a>
+                <a onClick={() => navigate(`/edit-driver/${driverId}`)}>Edit Driver</a>
             </div>
             <div>
                 <div className="driver-list-header-container">
                     <h1>Edit Driver</h1>
                 </div>
                 <div style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    marginTop:'-60px',
-    marginBottom: '20px' 
-}}>
-
-                <Card className={styles.card__Wrapper}
-                style={{ width: '900px' ,height:'450px'}}>
-                    <Form
-                        layout="vertical"
-                        onFinish={handleUpdateDriver}
-                        initialValues={newDriver}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '20px', 
-                            marginBottom: '20px',
-                            fontFamily: 'Open Sans',
-                        }}
-                    >
-                        <Row gutter={16}>
-                            
-
-                            <Col span={12}>
-                                <Form.Item
-                                    label={ <span style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                        fontWeight: 'bold',
-                                        color: '#059855',
-                                        marginLeft: '0',
-                                        marginTop: '0',
-                                        fontFamily: 'Open Sans',
-                                        fontSize: '16px'
-                                    }}>First Name
-                                    </span>}
-                                    name="Fname"
-                                    rules={[{ required: true, message: 'First name is required.' }]}
-                                >
-                                    <Input  style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color 0.3s ease-in-out',
-                            fontFamily: 'Open Sans',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                                    />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    label= { <span style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                        fontWeight: 'bold',
-                                        color: '#059855',
-                                        marginLeft: '0',
-                                        marginTop: '0',
-                                        fontFamily: 'Open Sans',
-                                        fontSize: '16px'
-                                    }}>Last Name
-                                    </span>}
-                                    name="Lname"
-                                    rules={[{ required: true, message: 'Please input the Last Name!' }]}
-                                >
-                                    <Input  style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color 0.3s ease-in-out',
-                            fontFamily: 'Open Sans',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                        />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        <Row gutter={16}>
-                            
-                            <Col span={12}>
-                                <Form.Item
-                                    label={ <span style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                        fontWeight: 'bold',
-                                        color: '#059855',
-                                        marginLeft: '0',
-                                        marginTop: '0',
-                                        fontFamily: 'Open Sans',
-                                        fontSize: '16px'
-                                    }}>Phone Number
-                                    </span>} 
-                                    name="PhoneNumber"
-                                    rules={[{ required: true, message: 'Please input the Phone Number!' }]}
-                                >
-                                    <Input style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color 0.3s ease-in-out',
-                            fontFamily: 'Open Sans',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                                     />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    label= { <span style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                        fontWeight: 'bold',
-                                        color: '#059855',
-                                        marginLeft: '0',
-                                        marginTop: '0',
-                                        fontFamily: 'Open Sans',
-                                        fontSize: '16px'
-                                    }}>Email
-                                    </span>} 
-                                    name="Email"
-                                    rules={[{ required: true, message: 'Please input the Email!' }]}
-                                >
-                                    <Input  style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color 0.3s ease-in-out',
-                            fontFamily: 'Open Sans',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                                    />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        <Row gutter={16}>
-                            
-                            <Col span={12}>
-                                <Form.Item
-                                    label= { <span style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                        fontWeight: 'bold',
-                                        color: '#059855',
-                                        marginLeft: '0',
-                                        marginTop: '0',
-                                        fontFamily: 'Open Sans',
-                                        fontSize: '16px'
-                                    }}>
-                                      Driver ID
-                                    </span>} 
-                                    name="DriverID"
-                                    rules={[{ required: true, message: 'Please input the Driver ID!' }]}
-                                    >
-                                    <Input style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color 0.3s ease-in-out',
-                            fontFamily: 'Open Sans',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                                    />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    label={ <span style={{
-                                        display: 'block',
-                                        marginBottom: '5px',
-                                        fontWeight: 'bold',
-                                        color: '#059855',
-                                        marginLeft: '0',
-                                        marginTop: '0',
-                                        fontFamily: 'Open Sans',
-                                        fontSize: '16px'
-                                    }}>GPS Number
-                                    </span>} 
-                                    name="GPSnumber"
-                                >
-                                    <Select placeholder="Select a motorcycle"
-                        style={{
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    marginTop: '-60px',
+                    marginBottom: '20px' 
+                }}>
+                    <Card className={styles.card__Wrapper} style={{ width: '900px', height: 'auto' }}>
+                        {isLoading ? (
+                            <p>Loading driver data...</p>
+                        ) : (
+                            <Form
+                                layout="vertical"
+                                onFinish={handleUpdateDriver}
+                                initialValues={driverData}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '20px', 
+                                    marginBottom: '20px',
+                                    fontFamily: 'Open Sans',
+                                }}
+                            >
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <span style={{
+                                                    display: 'block',
+                                                    marginBottom: '5px',
+                                                    fontWeight: 'bold',
+                                                    color: '#059855',
+                                                    fontFamily: 'Open Sans',
+                                                    fontSize: '16px'
+                                                }}>
+                                                    First Name
+                                                </span>
+                                            }
+                                            name="Fname"
+                                            rules={[{ required: true, message: 'First name is required.' }]}
+                                        >
+                                            <Input style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #059855',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                            }} />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <span style={{
+                                                    display: 'block',
+                                                    marginBottom: '5px',
+                                                    fontWeight: 'bold',
+                                                    color: '#059855',
+                                                    fontFamily: 'Open Sans',
+                                                    fontSize: '16px'
+                                                }}>
+                                                    Last Name
+                                                </span>
+                                            }
+                                            name="Lname"
+                                            rules={[{ required: true, message: 'Last name is required.' }]}
+                                        >
+                                            <Input style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #059855',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                            }} />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <span style={{
+                                                    display: 'block',
+                                                    marginBottom: '5px',
+                                                    fontWeight: 'bold',
+                                                    color: '#059855',
+                                                    fontFamily: 'Open Sans',
+                                                    fontSize: '16px'
+                                                }}>
+                                                    Phone Number
+                                                </span>
+                                            }
+                                            name="PhoneNumber"
+                                            rules={[{ required: true, message: 'Phone number is required.' }]}
+                                        >
+                                            <Input style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #059855',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                            }} />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <span style={{
+                                                    display: 'block',
+                                                    marginBottom: '5px',
+                                                    fontWeight: 'bold',
+                                                    color: '#059855',
+                                                    fontFamily: 'Open Sans',
+                                                    fontSize: '16px'
+                                                }}>
+                                                    Email
+                                                </span>
+                                            }
+                                            name="Email"
+                                        >
+                                            <Input style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #059855',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                            }} disabled />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <span style={{
+                                                    display: 'block',
+                                                    marginBottom: '5px',
+                                                    fontWeight: 'bold',
+                                                    color: '#059855',
+                                                    fontFamily: 'Open Sans',
+                                                    fontSize: '16px'
+                                                }}>
+                                                    Driver ID
+                                                </span>
+                                            }
+                                            name="DriverID"
+                                        >
+                                            <Input style={{
+                                                width: '100%',
+                                                padding: '10px',
+                                                border: '1px solid #059855',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                            }} />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={
+                                                <span style={{
+                                                    display: 'block',
+                                                    marginBottom: '5px',
+                                                    fontWeight: 'bold',
+                                                    color: '#059855',
+                                                    fontFamily: 'Open Sans',
+                                                    fontSize: '16px'
+                                                }}>
+                                                    GPS Number
+                                                </span>
+                                            }
+                                            name="GPSnumber"
+                                        >
+                                            <Select placeholder="Select a motorcycle" style={{
                             width: '100%',
                             height: '45px',
                             border: '0.5px solid #059855', // Green border
@@ -325,24 +318,25 @@ const EditDriver = () => {
                         onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
                         onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
                     >
-                                        <Select.Option value="None">None</Select.Option>
-                                        {availableMotorcycles?.map((item) => (
-                                            <Select.Option key={item.id} value={item.GPSnumber}>
-                                                {item.GPSnumber}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                            </Col>
-                        </Row>
+                                                <Select.Option value="None">None</Select.Option>
+                                                {availableMotorcycles?.map((item) => (
+                                                    <Select.Option key={item.id} value={item.GPSnumber}>
+                                                        {item.GPSnumber}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
 
-                        <Form.Item>
-                            <Button style={{ backgroundColor: '#059855' }} type="primary" htmlType="submit">
-                                Update Driver
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Card>
+                                <Form.Item>
+                                    <Button type="primary" htmlType="submit">
+                                        Update Driver
+                                    </Button>
+                                </Form.Item>
+                            </Form>
+                        )}
+                    </Card>
                 </div>
                 {isNotificationVisible && (
                     <div className={`notification-popup ${isSuccess ? 'success' : 'error'}`}>
