@@ -191,28 +191,52 @@ const DriverDetails = () => {
 
             {isPopupVisible && (
     <div className="popup-container" style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
         position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         width: 'auto',
-        height: 'auto', // Adjust height to auto for better content fit
+        height: 'auto',
         backgroundColor: 'var(--primary)',
         color: '#059855',
         boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.2)',
-        padding: '5px', // Optional: add some padding for the content
-        minWidth: '100px',
+        padding: '10px',
+        minWidth: '230px',
+        height:'180px',
         fontFamily: 'Open Sans',
     }}>
-        <div>
-            <span className="close-popup-btn1" onClick={() => setIsPopupVisible(false)}>&times;</span>
-            <p>This driver has no violations.</p>
+        <span 
+            className="close-popup-btn1" 
+            onClick={() => setIsPopupVisible(false)}
+            style={{
+                position: 'absolute',
+                top: '100px',
+                right: '10px',
+                cursor: 'pointer',
+                fontSize: '20px',
+                color: '#FF0000',
+            }}
+        >
+            &times;
+        </span>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            gap: '5px'
+        }}>
+            {/* SVG for the "No" icon */}
+            <svg width="70" height="70" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#FF0000" strokeWidth="2"/>
+                <line x1="8" y1="8" x2="16" y2="16" stroke="#FF0000" strokeWidth="2"/>
+                <line x1="8" y1="16" x2="16" y2="8" stroke="#FF0000" strokeWidth="2"/>
+            </svg>
+            <p style={{fontSize:'20px' , fontFamily:'Open Sans', marginTop:'20px'}}>This driver has no violations.</p>
         </div>
     </div>
 )}
+
         </div>
     );
 };
