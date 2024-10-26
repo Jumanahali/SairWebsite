@@ -11,13 +11,11 @@ export const monitorUnits = (sess, fetchInterval) => {
       
         try {
           const response = await axios.get(overpassUrl);
-          const ways = response.data.elements;
-      
-       
+          const ways = response.data.elements;       
           if (ways.length > 0) {
             // Get the first way found with a maxspeed tag
             const firstWay = ways[0];
-            const maxspeed = firstWay.tags.maxspeed || 'No maxspeeddddddddd found';
+            const maxspeed = firstWay.tags.maxspeed || 'No maxsped found';
             console.log('Max speed from API in fetchmax:', maxspeed);
 
             return parseMaxSpeed(maxspeed); // Use parseMaxSpeed to convert to a number
@@ -71,7 +69,7 @@ export const monitorUnits = (sess, fetchInterval) => {
   };
 
   const processUnits = async (units) => {
-    for (const unit of units) { //change foreach to for loop
+    for (const unit of units) { 
         const pos = unit.getPosition();
         console.log(pos);
         // Fetch max speed based on current position
@@ -102,13 +100,13 @@ export const monitorUnits = (sess, fetchInterval) => {
          console.log('viotime:',newViolationTime);
          const querySnapshot = await getDocs(
           query(
-              collection(db, 'Violation'),// I already done construct t table
+              collection(db, 'Violation'),// I already done construct violation table
               where('GPSnumber', '==', GPSserialnumber),
               where('driverID', '==', driverid),
               orderBy('time', 'desc'), // Order by time in descending order 
           )
          );          
-            const position = { longitude: pos.x, latitude: pos.y };
+            const position = { longitude:pos.x , latitude: pos.y }; 
             console.log(position);
             // Fetch location using GIS asynchronously
             const location = await new Promise((resolve) => {
@@ -117,10 +115,10 @@ export const monitorUnits = (sess, fetchInterval) => {
               });
            });
            console.log(location);
-           if (!querySnapshot.empty){//condition distance<30 if yes new condition about if same data no give مخالفه if yes new condition يكون about time 30-45 
+           if (!querySnapshot.empty){
             console.log('helo');
              const lastViolation = querySnapshot.docs[0];    
-             console.log(lastViolation.data().position.latitude);// make suuuuuuuuuuuuuuuuure
+             console.log(lastViolation.data().position.latitude);
              const distance = haversineDistance(lastViolation.data().position.latitude, lastViolation.data().position.longitude, pos.y, pos.x);
              console.log("distance before condition:",distance);
              console.log('retrived in query to in 30km:',lastViolation.data().GPSnumber, ' have :', lastViolation.data().location,' pri:',lastViolation.data().time , 'position lat:',lastViolation.data().position.latitude, ' long:',lastViolation.data().position.longitude);
@@ -129,7 +127,7 @@ export const monitorUnits = (sess, fetchInterval) => {
                await storeViolation(driverid,GPSserialnumber, location ,position, driverSpeed,maxSpeed, newViolationTime,price);
              }
              else{
-              const tenMinutesInSeconds = 1 * 60;
+              const tenMinutesInSeconds = 10 * 60;
               console.log('less than 30km');
               if (!areDatesEqual(lastViolation.data().time, newViolationTime)) {
                 console.log('not same date');
@@ -140,7 +138,7 @@ export const monitorUnits = (sess, fetchInterval) => {
                 await storeViolation(driverid,GPSserialnumber, location ,position, driverSpeed,maxSpeed, newViolationTime,price);
               }
               else{
-                console.log('same date and did not exceed 10 min');//i will remove this else 
+                console.log('same date and did not exceed 10 min');
               }
      
             }
@@ -157,11 +155,7 @@ export const monitorUnits = (sess, fetchInterval) => {
           } 
 
           
-        }//end of loop check speed>max
-
-        // else {
-        //   console.log("No need to store violation for", unit.getName());
-        // }
+        }
       
       }}
       };
@@ -207,7 +201,7 @@ const generateViolationId = () => {
     let price = 0;
     if (maxSpeed <= 120) {
       if (driverSpeed <= maxSpeed + 10) 
-        price = 1;//=0 
+        price = 0;//=0 
        else if (driverSpeed >maxSpeed + 10 && driverSpeed <=maxSpeed + 20) 
         price = 150;
        else if (driverSpeed >maxSpeed + 20 && driverSpeed <=maxSpeed + 30) 
@@ -237,7 +231,7 @@ const generateViolationId = () => {
 
   const storeViolation = async (driverid,GPSnumber, location,position, speed,maxSpeed, time,price) => {
     try {
-      const ViolationID = generateViolationId(); // Generate a unique ID for the violation
+      const ViolationID = generateViolationId(); 
       await addDoc(collection(db, 'Violation'), {
         violationID:ViolationID,
         driverID:driverid,
