@@ -48,6 +48,15 @@ const ViolationGeneral = () => {
   const goBack = () => {
     navigate(-1); // Navigate back to the previous page
 };
+
+const formatDate = (time) => {
+  const date = new Date(time * 1000); // Assuming timestamp is in seconds
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+  const day = date.getDate().toString().padStart(2, '0'); // Days are 1-based
+  
+  return `${month}/${day}/${year}`; // Format as YYYY-MM-DD
+};
   return (
     <div className="Header"> 
       <header>
@@ -108,12 +117,12 @@ const ViolationGeneral = () => {
         <p>{currentViolation.streetMaxSpeed}</p>
         <h3>Motorcycle Speed</h3>
         <p>{currentViolation.driverSpeed}</p>
-        <h3>Violation Price</h3>
+        <h3>Violation Amount</h3>
         <p>{currentViolation.price} SAR</p>
         <h3>Time</h3>
         <p>{new Date(currentViolation.time * 1000).toLocaleTimeString()}</p>
         <h3>Date</h3>
-        <p>{new Date(currentViolation.time * 1000).toLocaleDateString('en-US')}</p>
+        <p>{formatDate(currentViolation.time)}</p>
         <hr />
         <h3>Violation Location</h3>
         <p>{currentViolation.location}</p>
@@ -126,10 +135,12 @@ const ViolationGeneral = () => {
             />
           )}
         </div>
-        <Button onClick={goBack} style={{ float: 'right', margin: '10px', width: 'auto',
-        height: '60px', fontSize:'15px' }}>                  
+        <div style={{marginBottom:'100px'}}>
+        <Button onClick={goBack} style={{ float: 'right', marginBottom: '100px', width: 'auto',
+        height: '60px', fontSize:'15px' , color:'#059855' , borderColor:'#059855'}}>                  
     <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
 </Button>
+</div>
       </main>
     </div>
   );

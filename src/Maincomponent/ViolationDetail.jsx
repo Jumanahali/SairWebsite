@@ -124,10 +124,12 @@ const ViolationDetail = () => {
             <hr />
           </div>
         ))}
-            <Button onClick={goBack} style={{ float: 'right', width: 'auto',
-        height: '60px', fontSize:'15px', marginTop:'-8px' }}>           
+        <div style={{marginBottom:'50px'}}>
+            <Button onClick={goBack} style={{ float: 'right', marginBottom: '100px', width: 'auto',
+        height: '60px', fontSize:'15px' , color:'#059855' , borderColor:'#059855'}}>           
     <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
 </Button>
+</div>
       </main>
   
     </div>

@@ -329,7 +329,7 @@ const AddDriver = () => {
                     { required: true, message: 'Phone Number is required.' },
                     {
                         pattern: /^5\d{8}$/,
-                        message: 'Phone number must start with 5 and be followed by 8 digits.',
+                        message: 'Phone number must start with +9665 and be followed by 8 digits.',
                     },
                 ]}
             >
@@ -439,7 +439,7 @@ const AddDriver = () => {
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item
+                <Form.Item 
                     label={
                         <span style={{
                             display: 'block',

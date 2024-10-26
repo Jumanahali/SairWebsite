@@ -181,8 +181,8 @@ const DriverDetails = () => {
                             View Violations
                         </button>
                 
-                        <Button onClick={goBack} style={{ float: 'right', margin: '10px', width: 'auto',
-        height: '60px', fontSize:'15px' }}>                    
+                        <Button onClick={goBack} style={{ float: 'right', marginBottom: '100px', width: 'auto',
+        height: '60px', fontSize:'15px' , color:'#059855' , borderColor:'#059855'}}>                    
     <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
 </Button>
                     </>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../firebase';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, onSnapshot } from 'firebase/firestore'; 
+import { collection, onSnapshot, doc, getDoc, query, where } from 'firebase/firestore'; 
 import EyeIcon from '../images/eye.png';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../Violations.css';
@@ -10,68 +10,110 @@ import logoutIcon from '../images/logout.png';
 import { Table } from 'antd';
 
 const ViolationList = () => {
+  const [motorcycles, setMotorcycles] = useState([]);
   const [violations, setViolations] = useState([]);
   const [drivers, setDrivers] = useState({});
-  const [motorcycles, setMotorcycles] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchDate, setSearchDate] = useState('');
   const navigate = useNavigate();
+  const [currentEmployerCompanyName, setCurrentEmployerCompanyName] = useState('');
+  const employerUID = sessionStorage.getItem('employerUID');
 
-  // Fetch Drivers Data
+  // Fetch Employer Company Name and Motorcycles
   useEffect(() => {
-    const fetchDrivers = async () => {
-      const driverCollection = collection(db, 'Driver');
-      onSnapshot(driverCollection, (snapshot) => {
-        const driverMap = {};
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          driverMap[data.DriverID] = `${data.Fname} ${data.Lname}`;
-        });
-        setDrivers(driverMap);
-      });
+    const fetchEmployerCompanyName = async () => {
+      if (employerUID) {
+        const employerDoc = await getDoc(doc(db, 'Employer', employerUID));
+        if (employerDoc.exists()) {
+          setCurrentEmployerCompanyName(employerDoc.data().CompanyName);
+        } else {
+          console.error("No such employer!");
+        }
+      }
     };
 
-    const fetchMotorcycles = async () => {
-      const motorcycleCollection = collection(db, 'Motorcycle');
-      onSnapshot(motorcycleCollection, (snapshot) => {
-        const motorcycleMap = {};
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          motorcycleMap[data.GPSnumber] = data.LicensePlate;
-        });
-        setMotorcycles(motorcycleMap);
-      });
-    };
+    const fetchMotorcycles = () => {
+  const motorcycleCollection = query(
+    collection(db, 'Motorcycle'),
+    where('CompanyName', '==', currentEmployerCompanyName)
+  );
 
-    fetchDrivers();
-    fetchMotorcycles();
-  }, []);
+  const unsubscribe = onSnapshot(motorcycleCollection, (snapshot) => {
+    const motorcycleMap = {}; // Create an object to hold GPS to License Plate mapping
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      motorcycleMap[data.GPSnumber] = data.LicensePlate; // Map GPS number to License Plate
+    });
+    setMotorcycles(motorcycleMap); // Set the state with the mapped object
+    const gpsNumbers = Object.keys(motorcycleMap);
+    if (gpsNumbers.length > 0) {
+      fetchViolations(gpsNumbers);  // Fetch violations only if there are GPS numbers
+    } else {
+      setViolations([]); // Clear violations if no motorcycles found
+    }
+  });
 
-  // Fetch Violations Data
-  useEffect(() => {
-    const fetchViolations = () => {
-      const violationCollection = collection(db, 'Violation');
-      const unsubscribe = onSnapshot(violationCollection, (snapshot) => {
-        const violationList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setViolations(violationList);
-      });
       return () => unsubscribe();
     };
 
-    fetchViolations();
-  }, []);
+    fetchEmployerCompanyName(); // Fetch company name first
+    fetchMotorcycles(); // Fetch motorcycles based on company name
+  }, [employerUID, currentEmployerCompanyName]);
+
+  // Fetch Violations Data
+  const fetchViolations = (gpsNumbers) => {
+    // Run the query only if there are GPS numbers
+    if (gpsNumbers.length === 0) return;
+
+    const violationCollection = query(
+      collection(db, 'Violation'),
+      where('GPSnumber', 'in', gpsNumbers) // Fetch violations for these GPS numbers
+    );
+
+    const unsubscribe = onSnapshot(violationCollection, (snapshot) => {
+      const violationList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setViolations(violationList);
+      fetchDrivers(violationList); // Fetch drivers after getting violations
+    });
+
+    return () => unsubscribe();
+  };
+
+  // Fetch Drivers Data
+  const fetchDrivers = (violationList) => {
+    const driverIDs = violationList.map(v => v.driverID);
+    const driverCollection = collection(db, 'Driver');
+
+    const unsubscribe = onSnapshot(driverCollection, (snapshot) => {
+      const driverMap = {};
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        // Only add drivers that are in the violation list
+        if (driverIDs.includes(data.DriverID)) {
+          driverMap[data.DriverID] = `${data.Fname} ${data.Lname}`;
+        }
+      });
+      setDrivers(driverMap);
+    });
+
+    return () => unsubscribe();
+  };
 
   // Filtering logic based on searchQuery and searchDate
   const filteredViolations = violations.filter((violation) => {
-    const driverName = drivers[violation.driverID] || '';
-    const licensePlate = motorcycles[violation.GPSnumber] || '';
+    const driverName = drivers[violation.driverID] || 'Unknown Driver';
+    const licensePlate = motorcycles[violation.GPSnumber] || 'Unknown Plate';
 
     // Convert timestamp to date string for comparison
-    const violationDate = violation.timestamp ? new Date(violation.timestamp.toDate()).toISOString().split('T')[0] : '';
-
+  // Convert the Unix timestamp to a Date object
+  let violationDate = '';
+  if (violation.time) {
+    // Assuming violation.time is in seconds
+    violationDate = new Date(violation.time * 1000).toISOString().split('T')[0];
+  }
     // Check if the search query matches either driver name or license plate
     const matchesSearchQuery = driverName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       licensePlate.toLowerCase().includes(searchQuery.toLowerCase());
@@ -86,7 +128,7 @@ const ViolationList = () => {
     {
       title: 'Violation ID',
       dataIndex: 'violationID',
-      key: 'violationID',
+      key: 'id',
       align: 'center',
     },
     {
@@ -94,16 +136,15 @@ const ViolationList = () => {
       key: 'driverName',
       align: 'center',
       render: (text, record) => {
-        const driverName = drivers[record.driverID];
-        return driverName;
+        return drivers[record.driverID] || 'Unknown Driver'; // Fallback if driver not found
       },
     },
     {
-      title: 'Motorcycle License Plate',
+      title: 'Motorcycle Licence Plate Number',
       key: 'motorcyclePlate',
       align: 'center',
       render: (text, record) => {
-        return motorcycles[record.GPSnumber] ;
+        return motorcycles[record.GPSnumber] || 'Unknown Plate'; // Access the license plate from the motorcycles map
       },
     },
     {
@@ -155,16 +196,16 @@ const ViolationList = () => {
       </header>
 
       <main>
-        <div className="breadcrumb" Style={{marginRight:'100px'}}>
+        <div className="breadcrumb" style={{ marginRight: '100px' }}>
           <a onClick={() => navigate('/employer-home')}>Home</a>
           <span> / </span>
           <a onClick={() => navigate('/violations')}>Violations List</a>
         </div>
-        <div className='search-inputs' style={{padding:'0px 100px'}}>
-        <h2 className='title' style={{marginRight:'330px'}}>Violations List</h2>
+        <div className='search-inputs' style={{ padding: '0px 100px' }}>
+          <h2 className='title' style={{ marginRight: '330px' }}>Violations List</h2>
           <div className="search-container">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="#059855" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="#059855" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
             </svg>
             <input
               type="text"
