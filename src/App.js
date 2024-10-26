@@ -18,8 +18,44 @@ import ViolationGeneral from './Maincomponent/Violationgeneral';
 import AddMotorcycle from './Maincomponent/AddMotorcycle';
 import EditMotorcycle from './Maincomponent/EditMotorcycle';
 import DriverDetails from './Maincomponent/DriverDetails';
+import React, { useEffect } from 'react';
+import { monitorUnits } from './Maincomponent/monitorUnits';
 
 function App() {
+  useEffect(() => {
+    const sess = window.wialon.core.Session.getInstance();
+    console.log('Session:', sess);
+
+   const initSession = () => {
+     if (!window.wialon) {
+       console.log('Wialon SDK not loaded.');
+       return;
+     }
+
+     
+
+     sess.initSession('https://hst-api.wialon.com');
+     const token = '8ca297495a6d20aed50815e6f79cdd3b7D935A9E0820890BD1A035F245DE85BD67A0C71F'; // Use environment variable for the token
+     sess.loginToken(token, '', (code) => {
+       if (code) {
+         console.error('Login failed with code:', code, 'Error:', window.wialon.core.Errors.getErrorText(code));
+         return;
+       }
+       console.log('Session:', sess);
+       // Start monitoring units
+       // Start monitoring units continuously
+    monitorUnits(sess, 10000); // 10 seconds fetch interval
+  });
+};
+
+
+   // Initialize session
+   initSession();
+ }, []); // Empty dependency array ensures effect runs only once
+
+
+
+
   return (
     <Router>
       <Routes>
