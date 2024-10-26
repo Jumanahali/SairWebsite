@@ -292,14 +292,33 @@ const Profile = () => {
 
 
         // Validate new password and confirm password
-        if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
+        // if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
+        //     setValidationMessages((prev) => ({
+        //         ...prev,
+        //         confirmNewPasswordError: 'New passwords do not match.',
+        //     }));
+        //     setLoading(false);
+        //     return;
+        // }
+        if (Employer.newPassword||Employer.confirmNewPassword){
+            if(
+            Employer.newPassword !== Employer.confirmNewPassword || // Check if passwords match
+            !passwordRequirements.length || // Check if password meets length requirement
+            !passwordRequirements.uppercase || // Check for uppercase
+            !passwordRequirements.lowercase || // Check for lowercase
+            !passwordRequirements.number || // Check for a number
+            !passwordRequirements.special // Check for a special character
+          ) {
             setValidationMessages((prev) => ({
-                ...prev,
-                confirmNewPasswordError: 'New passwords do not match.',
+              ...prev,
+              confirmPasswordError: Employer.newPassword !== Employer.confirmNewPassword ? 'Passwords do not match.' : '',
+              passwordError: !(passwordRequirements.length && passwordRequirements.uppercase && passwordRequirements.lowercase && passwordRequirements.number && passwordRequirements.special)
+                ? 'Password does not meet the requirements.'
+                : '',
             }));
             setLoading(false);
             return;
-        }
+          }}
     
         if (Object.values(validationMessages).some((msg) => msg)) {
             setLoading(false);

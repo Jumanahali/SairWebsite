@@ -185,9 +185,22 @@ const SignUp = () => {
       return;
     }
 
-    if(!setPasswordRequirements){
+    if (
+        !passwordRequirements.length ||
+        !passwordRequirements.uppercase ||
+        !passwordRequirements.lowercase ||
+        !passwordRequirements.number ||
+        !passwordRequirements.special
+      ) {
+        setValidationMessages((prev) => ({
+          ...prev,
+          passwordError: 'Password does not meet the requirements.',
+        }));
+        setLoading(false);
         return;
-    }
+      }
+    
+
     try {
       // Check if the commercialNumber already exists
       const existingUserQuery = await getDocs(query(collection(db, 'Employer'), where('commercialNumber', '==', user.commercialNumber)));
