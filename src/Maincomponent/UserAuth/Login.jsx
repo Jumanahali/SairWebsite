@@ -193,7 +193,7 @@ const Login = () => {
 
       </div>
 
-      <h1 style={{ marginTop: '40px' }}>Welcome to SAIR!</h1>
+      <h1 style={{ marginTop: '40px', fontWeight:"bold" }}>Welcome to SAIR!</h1>
       <p style={{ marginLeft: '120px', marginTop: '38px', color: '#211d1d', fontSize: "20px" }}>Please Select your Role</p><br></br>
 
 
