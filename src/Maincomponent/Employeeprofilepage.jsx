@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { db , auth} from '../firebase'; 
 import { useNavigate } from 'react-router-dom'; 
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { updateEmail } from "firebase/auth";
 import successImage from '../images/Sucess.png'; 
 import errorImage from '../images/Error.png'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -303,47 +302,22 @@ const Profile = () => {
         const employerUID = sessionStorage.getItem('employerUID');
         const auth = getAuth();
         const user = auth.currentUser;
+
+        
     
         try {
-            // Check if the email has been updated
-            if (Employer.CompanyEmail !== user.email) {
-                // console.log("Re-authenticating user...");
-                // Re-authenticate before updating the email
-                // const credential = EmailAuthProvider.credential(user.email, Employer.password);
-                // await reauthenticateWithCredential(user, credential);
-                // console.log("User re-authenticated successfully.");
-    
-                // Update the email in Firebase Authentication
-                await updateEmail(user, Employer.CompanyEmail);
-                console.log("Email updated successfully.");
-                // Send verification email
-                await user.sendEmailVerification();
-                console.log("Verification email sent.");
-    
-                setPopupMessage('A verification email has been sent. Please verify your new email address.');
-                setPopupImage(successImage);
-                setPopupVisible(true);
-    
-                // Log the user out after sending the verification email
-                await auth.signOut();
-                console.log("User logged out after email update.");
-    
-                // Redirect to the login page
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000);
-    
-                return; // Stop further processing since we logged out the user
-            }
-    
-            // Update Firestore document
+
+            
+            // Update Firestore document first
             const docRef = doc(db, 'Employer', employerUID);
             const updateData = { ...Employer };
             delete updateData.currentPassword;
             delete updateData.newPassword;
             delete updateData.confirmNewPassword;
+    
             await updateDoc(docRef, updateData);
-            console.log("Firestore document updated successfully.");
+    
+           
     
             // Re-authenticate if a new password is provided
             if (Employer.newPassword) {
@@ -351,11 +325,10 @@ const Profile = () => {
                     user.email,
                     Employer.currentPassword // Use current password for re-authentication
                 );
-    
+                
                 // Re-authenticate and update the password
                 await reauthenticateWithCredential(user, credential);
                 await updatePassword(user, Employer.newPassword);
-                console.log("Password updated successfully.");
             }
     
             // Clear password fields after a successful update
@@ -366,14 +339,14 @@ const Profile = () => {
                 confirmNewPassword: '',
             }));
     
-            setPopupMessage('Information updated successfully.');
+            setPopupMessage('Information Updated successfully.');
             setPopupImage(successImage);
             setPopupVisible(true);
             setEditMode(false);
     
         } catch (error) {
             console.error('Error updating profile:', error);
-            setPopupMessage(`Failed to update profile. Error: ${error.message}`);
+            setPopupMessage('Failed to update profile.');
             setPopupImage(errorImage);
             setPopupVisible(true);
         } finally {
@@ -381,6 +354,7 @@ const Profile = () => {
         }
     };
     
+
     
 
     const handleCancel = () => {
@@ -523,7 +497,7 @@ const Profile = () => {
         value={Employer.CompanyEmail}
         onChange={handleChange}
         disabled={!editMode}
-        required
+        readOnly
       />
       {validationMessages.emailError && <p style={{ color: 'red' ,marginTop:'3px'}}>{validationMessages.emailError}</p>}
     </div>
