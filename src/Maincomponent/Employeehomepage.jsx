@@ -91,7 +91,7 @@ const EmployeeHome = () => {
                 alt="Vision" 
                 style={{ width: '75px', height: 'auto', marginRight: '5px',marginTop:'-35px' }} 
               />     
-              <h1 style={{ color: '#059855' }}>SAIR Vision</h1>
+              <h1 style={{ color: '#059855' , fontWeight:"bold"}}>SAIR Vision</h1>
             </div>   
             <p style={{ fontSize: '20px', color: "black" }}>
               The SAIR initiative enhances road safety for delivery motorcycle drivers by providing the 

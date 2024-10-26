@@ -135,7 +135,7 @@ const EditDriver = () => {
             setIsNotificationVisible(true);
         }
     };
-    
+
     const handleLogout = () => {
         auth.signOut().then(() => {
             navigate('/'); // Redirect to login page
@@ -187,7 +187,7 @@ const EditDriver = () => {
                 }}>
                     <Card className={styles.card__Wrapper} style={{ width: '900px', height: 'auto' }}>
                         {isLoading ? (
-                            <p>Loading driver data...</p>
+                            <p>   </p>
                         ) : (
                             <Form
                                 layout="vertical"
@@ -297,6 +297,7 @@ const EditDriver = () => {
                                                 </span>
                                             }
                                             name="Email"
+                                            rules={[{ required: true, message: 'Email is required.' }]}
                                         >
                                             <Input style={{
                                                 width: '100%',
@@ -320,10 +321,11 @@ const EditDriver = () => {
                                                     fontFamily: 'Open Sans',
                                                     fontSize: '16px'
                                                 }}>
-                                                    Driver ID
+                                                    Driver ID  (National ID / Residency Number)
                                                 </span>
                                             }
                                             name="DriverID"
+                                            rules={[{ required: true, message: 'Driver ID is required.' }]}
                                         >
                                             <Input style={{
                                                 width: '100%',
@@ -349,6 +351,7 @@ const EditDriver = () => {
                                                 </span>
                                             }
                                             name="GPSnumber"
+                                            rules={[{ required: true, message: 'GPS number is required or You can choose None.' }]}
                                         >
                                             <Select 
                                                 placeholder="Select a motorcycle"
