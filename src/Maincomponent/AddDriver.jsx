@@ -79,17 +79,7 @@ const AddDriver = () => {
     const handleAddDriver = async (values) => {
         try {
             let newErrors = {};
-    
-            // Phone number validation
-            if (!values.PhoneNumber.startsWith('+9665') || values.PhoneNumber.length !== 13) {
-                newErrors.PhoneNumber = 'Phone number must start with +9665 and be followed by 8 digits.';
-            }
-    
-            if (Object.keys(newErrors).length > 0) {
-                form.setFields([{ name: 'PhoneNumber', errors: [newErrors.PhoneNumber] }]);
-                return; // Stop the submission
-            }
-    
+            const formattedPhoneNumber = `+966${values.PhoneNumber}`;
             // Determine GPS number and availability
             const gpsNumber = values.GPSnumber === "None" ? null : values.GPSnumber;
             const available = values.GPSnumber === "None";
@@ -110,6 +100,7 @@ const AddDriver = () => {
             // Prepare the new driver object
             const newDriver = { 
                 ...values, 
+                PhoneNumber:formattedPhoneNumber,
                 GPSnumber: gpsNumber, 
                 CompanyName: Employer.CompanyName,
                 isDefaultPassword: true,
@@ -312,59 +303,73 @@ const AddDriver = () => {
         <Row gutter={16}>
             <Col span={12}>
             <Form.Item
-                label={
-                    <span style={{
-                        display: 'block',
-                        marginBottom: '5px',
-                        fontWeight: 'bold',
-                        color: '#059855',
-                        fontFamily: 'Open Sans',
-                        fontSize: '16px'
-                    }}>
-                        Phone Number
-                    </span>
+    label={
+        <span style={{
+            display: 'block',
+            marginBottom: '5px',
+            fontWeight: 'bold',
+            color: '#059855',
+            fontFamily: 'Open Sans',
+            fontSize: '16px'
+        }}>
+            Phone Number
+        </span>
+    }
+    name="PhoneNumber"
+    rules={[
+        { required: true, message: 'Phone Number is required.' },
+        {
+            validator: (_, value) => {
+                if (!value || value.length !== 9) {
+                    return Promise.reject(new Error('Phone number must be 9 digits long (after +966).'));
                 }
-                name="PhoneNumber"
-                rules={[
-                    { required: true, message: 'Phone Number is required.' },
-                    {
-                        pattern: /^5\d{8}$/,
-                        message: 'Phone number must start with +9665 and be followed by 8 digits.',
-                    },
-                ]}
-            >
-                <div style={{ position: 'relative' }}>
-                    <span style={{
-                        position: 'absolute',
-                        left: '10px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: '#000',
-                        fontSize: '14px',
-                        fontFamily: 'Open Sans',
-                        pointerEvents: 'none',
-                        zIndex: 1
-                    }}>
-                        +966
-                    </span>
-                    <Input
-                        maxLength={9} // Only allow 9 digits (Saudi number format)
-                        placeholder=""
-                        style={{
-                            width: '100%',
-                            paddingLeft: '50px', // Adjust padding to leave space for +966
-                            border: '1px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color 0.3s ease-in-out',
-                            fontFamily: 'Open Sans',
-                            height:'43px',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                    />
-                </div>
-            </Form.Item>
+                // Check if the value is numeric
+                if (!/^\d{9}$/.test(value)) {
+                    return Promise.reject(new Error('Phone number must contain only digits.'));
+                }
+                // Check if it starts with 5 (assuming you want it to start with 5)
+                if (!/^5\d{8}$/.test(value)) {
+                    return Promise.reject(new Error('Phone number must start with 5 and be followed by 8 digits.'));
+                }
+                return Promise.resolve();
+            },
+        },
+    ]}
+>
+    <div style={{ position: 'relative' }}>
+        <span style={{
+            position: 'absolute',
+            left: '10px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: '#000',
+            fontSize: '14px',
+            padding: '8px',
+            marginBottom:"100px",
+            fontFamily: 'Open Sans',
+            pointerEvents: 'none',
+            zIndex: 1
+        }}>
+            +966
+        </span>
+        <Input
+            maxLength={9}  //Only allow 9 digits (after +966)
+            //placeholder="Enter your phone number"
+            style={{
+                width: '100%',
+                paddingLeft: '50px', // Adjust padding to leave space for +966
+                border: '1px solid #059855', // Green border
+                borderRadius: '8px',
+                fontSize: '14px',
+                transition: 'border-color 0.3s ease-in-out',
+                fontFamily: 'Open Sans',
+                height: '43px',
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+            onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+        />
+    </div>
+</Form.Item>
             </Col>
             <Col span={12}>
                 <Form.Item
