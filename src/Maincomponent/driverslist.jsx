@@ -217,7 +217,7 @@ const DriverList = () => {
             </div>
             <div className='body' style={{padding:'0px 150px'}}>
                 <div className="driver-list-header-container">
-                    <h1>Driver List</h1>
+                    <h1 Style={{ fontWeight:"bold" }}>Driver List</h1>
                     <div className={'driver-header-action'}>
                         <div className="search-container">
                         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

@@ -475,7 +475,7 @@ const Profile = () => {
     </div>
         <div className="profile-container">
    
-            <h1>My Profile</h1>
+            <h1  style={{ fontWeight:"bold" }}>My Profile</h1>
             <form onSubmit={handleSave}>
 
   <div className="form-row">

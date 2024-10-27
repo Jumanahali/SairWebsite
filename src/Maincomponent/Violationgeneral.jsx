@@ -89,7 +89,7 @@ const formatDate = (time) => {
         <a onClick={() => navigate(`/violation/general/${violationId}`)}>Violation Details</a>
       </div>
       <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
-        <h2 className="title">Violation Details</h2>
+        <h2 className="title" style={{ fontWeight:"bold" }}>Violation Details</h2>
         {currentViolation.GPSnumber && currentMotorCycle && (
           <>
             <hr />

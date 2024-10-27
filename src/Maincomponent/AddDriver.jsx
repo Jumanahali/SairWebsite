@@ -193,7 +193,7 @@ const AddDriver = () => {
                             <li><a onClick={() => navigate('/violations')}>Violations List</a></li>
                             <li><a onClick={() => navigate('/crashes')}>Crashes List</a></li>
                             <li><a onClick={() => navigate('/complaints')}>Complaints List</a></li>
-                            <li><a onClick={() => navigate('/driverslist')}>Drivers List</a></li>
+                            <li><a class="active" onClick={() => navigate('/driverslist')}>Drivers List</a></li>
                             <li><a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a></li>
                             <li><a onClick={() => navigate('/employee-profile')}>Profile</a></li>
                         </ul>
@@ -213,7 +213,7 @@ const AddDriver = () => {
 
             <div>
                 <div className="driver-list-header-container">
-                    <h1>Add Driver</h1>
+                    <h1 style={{fontWeight:"bold"}}>Add Driver</h1>
                 </div>
                 <div style={{ 
     display: 'flex', 
