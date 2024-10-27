@@ -109,7 +109,7 @@ const EmployeeHome = () => {
                 alt="Mission" 
                 style={{ width: '70px', height: 'auto', marginRight: '10px' ,marginTop:'-35px'}} 
               />    
-              <h1 style={{ color: '#059855' }}>SAIR Mission</h1>
+              <h1 style={{ color: '#059855' , fontWeight:'bold' }}>SAIR Mission</h1>
             </div>
             <p style={{ fontSize: '20px', color: "black" }}>
               The mission of the SAIR initiative is to enhance road safety and reduce traffic violations by 

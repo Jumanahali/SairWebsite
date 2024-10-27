@@ -117,7 +117,7 @@ const DriverDetails = () => {
             </div>
 
             <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
-                <h2 className="title">Driver Details</h2>
+                <h2 className="title" style={{ fontWeight:"bold" }}>Driver Details</h2>
                 <hr />
                 {error ? (
                     <p>{error}</p>
@@ -141,6 +141,7 @@ const DriverDetails = () => {
         color: '#059855',
         fontSize: '32px',
         margin: '20px 0',
+        fontWeight:"bold" 
     }}>Motorcycles Details</h3>
                         <hr />
                         {motorcycles.length > 0 ? (

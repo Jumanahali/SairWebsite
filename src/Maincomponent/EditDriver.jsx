@@ -176,7 +176,7 @@ const EditDriver = () => {
             </div>
             <div>
                 <div className="driver-list-header-container">
-                    <h1>Edit Driver</h1>
+                    <h1  style={{fontWeight:"bold"}} >Edit Driver</h1>
                 </div>
                 <div style={{ 
                     display: 'flex', 
