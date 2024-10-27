@@ -311,7 +311,7 @@ const Profile = () => {
           ) {
             setValidationMessages((prev) => ({
               ...prev,
-              confirmPasswordError: Employer.newPassword !== Employer.confirmNewPassword ? 'Passwords do not match.' : '',
+              confirmNewPasswordError: Employer.newPassword !== Employer.confirmNewPassword ? 'Passwords do not match.' : '',
               passwordError: !(passwordRequirements.length && passwordRequirements.uppercase && passwordRequirements.lowercase && passwordRequirements.number && passwordRequirements.special)
                 ? 'Password does not meet the requirements.'
                 : '',
@@ -515,7 +515,7 @@ const Profile = () => {
         value={Employer.CompanyName}
         onChange={handleChange}
         disabled={!editMode}
-        required
+        readOnly
       />
     </div>
   </div>
