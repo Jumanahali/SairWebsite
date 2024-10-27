@@ -31,6 +31,7 @@ import SAIRLogo from '../images/SAIRlogo.png';
 import logoutIcon from '../images/logout.png'; 
 import { sendEmail } from '../utils/email';
 
+
 const AddDriver = () => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
@@ -39,6 +40,8 @@ const AddDriver = () => {
     const [popupVisible, setPopupVisible] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
     const [popupImage, setPopupImage] = useState('');
+    const [driverIdError, setDriverIdError] = useState('');
+
 
     useEffect(() => {
         const employerUID = sessionStorage.getItem('employerUID');
@@ -163,8 +166,10 @@ const AddDriver = () => {
             setPopupVisible(true);
         } catch (error) {
             console.error('Error adding driver:', error);
+            // setPopupMessage("Driver email exist!");
+            // setPopupImage(errorImage);
             notification.error({
-                message: 'Error adding driver. Please try again.',
+                message: 'Driver email already exist!',
             });
         }
     };
@@ -213,7 +218,7 @@ const AddDriver = () => {
 
             <div>
                 <div className="driver-list-header-container">
-                    <h1 style={{fontWeight:"bold"}}>Add Driver</h1>
+                    <h1>Add Driver</h1>
                 </div>
                 <div style={{ 
     display: 'flex', 
@@ -416,40 +421,56 @@ const AddDriver = () => {
             </Col>
         </Row>
         <Row gutter={16}>
-            <Col span={12}>
-                <Form.Item
-                    label={
-                        <span style={{
-                            display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: 'bold',
-                            color: '#059855',
-                            marginLeft: '0',
-                            marginTop: '0',
-                            fontFamily: 'Open Sans',
-                            fontSize: '16px'
-                        }}>
-                            Driver ID (National ID / Residency Number)
-                        </span>
+        <Col span={12}>
+    <Form.Item
+        label={
+            <span style={{
+                display: 'block',
+                marginBottom: '5px',
+                fontWeight: 'bold',
+                color: '#059855',
+                marginLeft: '0',
+                marginTop: '0',
+                fontFamily: 'Open Sans',
+                fontSize: '16px'
+            }}>
+                Driver ID (National ID / Residency Number)
+            </span>
+        }
+        name="DriverID"
+        rules={[
+            { required: true, message: 'Driver ID is required.' },
+            {
+                validator: (_, value) => {
+                    if (!value) {
+                        return Promise.reject(new Error('Driver ID is required.'));
                     }
-                    name="DriverID"
-                    rules={[{ required: true, message: 'Driver ID is required.' }]}
-                >
-                    <Input
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #059855', // Green border
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            transition: 'border-color 0.3s ease-in-out',
-                            fontFamily: 'Open Sans',
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
-                        onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
-                    />
-                </Form.Item>
-            </Col>
+                    if (!/^\d{10}$/.test(value)) {
+                        return Promise.reject(new Error('Driver ID must be exactly 10 digits long and contain only digits.'));
+                    }
+                    return Promise.resolve();
+                },
+            },
+        ]}
+    >
+        <Input
+            style={{
+                width: '100%',
+                padding: '10px',
+                border: '1px solid #059855', // Green border
+                borderRadius: '8px',
+                fontSize: '14px',
+                transition: 'border-color 0.3s ease-in-out',
+                fontFamily: 'Open Sans',
+            }}
+            maxLength={10} // Set the maximum length to 10
+            onFocus={(e) => {
+                e.target.style.borderColor = '#1c7a50'; // Darker green on focus
+            }} 
+            onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+        />
+    </Form.Item>
+</Col>
             <Col span={12}>
     <Form.Item 
         label={

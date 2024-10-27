@@ -98,7 +98,8 @@ const EditDriver = () => {
                 ...driverData,
                 ...values,
                 CompanyName: driverData.CompanyName,
-                available: values.GPSnumber && values.GPSnumber !== "None" ? false : true // Set based on motorcycle assignment
+                available: values.GPSnumber && values.GPSnumber !== "None" ? false : true, // Set based on motorcycle assignment
+                PhoneNumber: `+966${values.PhoneNumber}`,
             };
             
             // Update the driver document
@@ -176,7 +177,7 @@ const EditDriver = () => {
             </div>
             <div>
                 <div className="driver-list-header-container">
-                    <h1  style={{fontWeight:"bold"}} >Edit Driver</h1>
+                    <h1>Edit Driver</h1>
                 </div>
                 <div style={{ 
                     display: 'flex', 
@@ -256,32 +257,75 @@ const EditDriver = () => {
                                     </Col>
                                 </Row>
                                 <Row gutter={16}>
-                                    <Col span={12}>
-                                        <Form.Item
-                                            label={
-                                                <span style={{
-                                                    display: 'block',
-                                                    marginBottom: '5px',
-                                                    fontWeight: 'bold',
-                                                    color: '#059855',
-                                                    fontFamily: 'Open Sans',
-                                                    fontSize: '16px'
-                                                }}>
-                                                    Phone Number
-                                                </span>
-                                            }
-                                            name="PhoneNumber"
-                                            rules={[{ required: true, message: 'Phone number is required.' }]}
-                                        >
-                                            <Input style={{
-                                                width: '100%',
-                                                padding: '10px',
-                                                border: '1px solid #059855',
-                                                borderRadius: '8px',
-                                                fontSize: '14px',
-                                            }} />
-                                        </Form.Item>
-                                    </Col>
+                                <Col span={12}>
+    <Form.Item
+        label={
+            <span style={{
+                display: 'block',
+                marginBottom: '5px',
+                fontWeight: 'bold',
+                color: '#059855',
+                fontFamily: 'Open Sans',
+                fontSize: '16px'
+            }}>
+                Phone Number
+            </span>
+        }
+        name="PhoneNumber"
+        rules={[
+            { required: true, message: 'Phone Number is required.' },
+            {
+                validator: (_, value) => {
+                    if (!value || value.length !== 9) {
+                        return Promise.reject(new Error('Phone number must be 9 digits long (after +966).'));
+                    }
+                    // Check if the value is numeric
+                    if (!/^\d{9}$/.test(value)) {
+                        return Promise.reject(new Error('Phone number must contain only digits.'));
+                    }
+                    // Check if it starts with 5
+                    if (!/^5\d{8}$/.test(value)) {
+                        return Promise.reject(new Error('Phone number must start with 5 and be followed by 8 digits.'));
+                    }
+                    return Promise.resolve();
+                },
+            },
+        ]}
+    >
+        <div style={{ position: 'relative' }}>
+            <span style={{
+                position: 'absolute',
+                left: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#000',
+                fontSize: '14px',
+                padding: '8px',
+                fontFamily: 'Open Sans',
+                pointerEvents: 'none',
+                zIndex: 1
+            }}>
+                +966
+            </span>
+            <Input
+                maxLength={9}  // Only allow 9 digits (after +966)
+                style={{
+                    width: '100%',
+                    paddingLeft: '50px', // Leave space for +966
+                    border: '1px solid #059855', // Green border
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    transition: 'border-color 0.3s ease-in-out',
+                    fontFamily: 'Open Sans',
+                    height: '43px',
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#1c7a50'} // Darker green on focus
+                onBlur={(e) => e.target.style.borderColor = '#059855'} // Revert border color
+                defaultValue={driverData.PhoneNumber ? driverData.PhoneNumber.slice(4):''} // Pre-fill with driver's phone number
+            />
+        </div>
+    </Form.Item>
+</Col>
                                     <Col span={12}>
                                         <Form.Item
                                             label={
@@ -382,7 +426,7 @@ const EditDriver = () => {
                                 </Row>
 
                                 <Form.Item>
-                                    <Button type="primary" htmlType="submit">
+                                    <Button style={{ backgroundColor: "#059855" }} type="primary" htmlType="submit">
                                         Update Driver
                                     </Button>
                                 </Form.Item>
