@@ -481,9 +481,11 @@ const Profile = () => {
       <span> / </span>
       <a onClick={() => navigate('/employee-profile')}>Profile</a>
     </div>
-        <div className="profile-container">
+    <div> 
+  <h1 style={{ marginLeft: '30px', marginTop:'43px' }}>My Profile</h1>
+</div>        <div className="profile-container">
    
-            <h1>My Profile</h1>
+           
             <form onSubmit={handleSave}>
 
   <div className="form-row">

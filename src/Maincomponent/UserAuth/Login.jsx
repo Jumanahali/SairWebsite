@@ -268,6 +268,7 @@ const Login = () => {
                 onFocus={(e) => e.target.placeholder = ''} // Clear placeholder on focus
                 onBlur={(e) => e.target.placeholder = 'Enter your Company email'} // Restore placeholder on blur if empty
                 onChange={(e) => setEmail(e.target.value )}
+                required
               /><br></br>
               <label htmlFor="password"></label><br />
               <div className="password-container">
