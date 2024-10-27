@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db , auth} from '../firebase'; 
 import { useNavigate } from 'react-router-dom'; 
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc,where ,getDocs, query, collection} from 'firebase/firestore';
 import successImage from '../images/Sucess.png'; 
 import errorImage from '../images/Error.png'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -290,7 +290,15 @@ const Profile = () => {
         setShowNewPassword(false);
         setShowConfirmNewPassword(false);
 
+        const existingUserQuery1 = await getDocs(query(collection(db, 'Employer'), where('PhoneNumber', '==', Employer.PhoneNumber)));
 
+        if (!existingUserQuery1.empty) {
+          setPopupMessage("The phone number is already used. Please use a correct number.");
+          setPopupImage(errorImage);
+          setPopupVisible(true);
+          setLoading(false);
+          return; // Prevent sign-up if commercial number exists
+        }
         // Validate new password and confirm password
         // if (Employer.newPassword && Employer.newPassword !== Employer.confirmNewPassword) {
         //     setValidationMessages((prev) => ({

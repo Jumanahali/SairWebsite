@@ -213,6 +213,16 @@ const SignUp = () => {
         return; // Prevent sign-up if commercial number exists
       }
 
+      const existingUserQuery1 = await getDocs(query(collection(db, 'Employer'), where('PhoneNumber', '==', user.PhoneNumber)));
+
+      if (!existingUserQuery1.empty) {
+        setPopupMessage("The phone number is already used. Please use a correct number.");
+        setPopupImage(errorImage);
+        setPopupVisible(true);
+        setLoading(false);
+        return; // Prevent sign-up if commercial number exists
+      }
+
       // Create user with Firebase Authentication using email
       const userCredential = await createUserWithEmailAndPassword(auth, `${user.CompanyEmail}`, user.Password);      
       const newUser = userCredential.user;
