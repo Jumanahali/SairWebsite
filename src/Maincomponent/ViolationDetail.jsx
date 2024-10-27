@@ -94,7 +94,7 @@ const ViolationDetail = () => {
          <a onClick={() => navigate(`/violation/detail/${driverId}`)}>Violation Details</a>
       </div>
       <main style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
-        <h2 className="title">Violation Details for Driver ID: {driverId}</h2>
+        <h2 className="title" style={{fontWeight:'bold'}}>Violation Details for Driver ID: {driverId}</h2>
         {violations.map((violation, index) => (
           <div key={violation.id}>
             <hr />
